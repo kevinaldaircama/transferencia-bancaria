@@ -1,0 +1,328 @@
+</div><!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transferencia Bancaria</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #ffffff;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            font-weight: bold;
+            color: #555;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .hidden {
+            display: none;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            margin: 15% auto;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        .modal-content button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        .modal-content button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Formulario de Transferencia</h2>
+    
+    <label>Nombre Completo:</label>
+    <input type="text" id="nombre" placeholder="Ingrese su nombre completo">
+
+    <label>Tipo de Transferencia:</label>
+    <select id="tipo" onchange="mostrarModal()">
+        <option value="">Seleccione</option>
+        <option value="banco">Cuenta Bancaria</option>
+        <option value="billetera">Billetera Digital</option>
+    </select>
+
+    <label>Monto:</label>
+    <input type="number" id="monto" oninput="ajustarMonto()" placeholder="Ingrese el monto">
+    <p>Monto Ajustado: <span id="montoAjustado">0</span></p>
+
+    <label>Nombre del Vendedor:</label>
+    <input type="text" id="vendedor" placeholder="Ingrese nombre del vendedor">
+
+
+<!-- Modal para Cuenta Bancaria -->
+<div id="modalBanco" class="modal">
+    <div class="modal-content">
+        <h3>Datos de la Cuenta Bancaria</h3>
+        <label>Nombre del Banco:</label>
+        <input type="text" id="banco" placeholder="Banco">
+        
+        <label>Nombre de la Cuenta:</label>
+        <input type="text" id="nombreCuenta" placeholder="Nombre de la cuenta">
+        
+        <label>Número de Cuenta:</label>
+        <input type="text" id="numCuenta" placeholder="Número de cuenta">
+        
+        <label>CCI:</label>
+        <input type="text" id="cci" placeholder="Código CCI">
+        
+        <button onclick="guardarDatosBanco()">Guardar</button>
+    </div>
+</div>
+
+<!-- Modal para Billetera Digital -->
+<div id="modalBilletera" class="modal">
+    <div class="modal-content">
+        <h3>Datos de la Billetera Digital</h3>
+        <label>Nombre de la Billetera:</label>
+        <input type="text" id="billetera" placeholder="Ej: PayPal, Yape">
+        
+        <label>Nombre del Titular:</label>
+        <input type="text" id="titular" placeholder="Nombre del titular">
+        
+        <label>Número Telefónico:</label>
+        <input type="text" id="telefono" placeholder="Número de teléfono">
+        
+        <button onclick="guardarDatosBilletera()">Guardar</button>
+    </div>
+</div>
+
+<!-- Modal de Proceso -->
+<div id="modalProceso" class="modal">
+    <div class="modal-content" id="resultado">
+        <p id="modal-text">Procesando...</p>
+    </div>
+</div>
+
+
+<!-- Agregado: Selección de Proveedor o Personal -->
+<label>Seleccionar:</label>
+<select id="seleccion" onchange="mostrarModalSeleccion()">
+    <option value="">Seleccione</option>
+    <option value="proveedor">personal</option>
+    <option value="personal">Proveedor</option>
+</select>
+
+<!-- Modal Proveedor -->
+<div id="modalProveedor" class="modal">
+    <div class="modal-content">
+        <h3>Datos del personal</h3>
+        <label>Número de la Persona:</label>
+        <input type="text" id="numProveedor" placeholder="Ingrese número">
+        
+        <label>Foto:</label>
+        <input type="file" id="fotoProveedor">
+        
+        <button onclick="guardarDatosProveedor()">Guardar</button>
+        <button onclick="cerrarModalProveedor()">Cerrar</button>
+    </div>
+</div>
+
+<button onclick="procesarTransferencia()">Enviar Transferencia</button>
+
+</div>
+<!-- Modal Personal -->
+<div id="modalPersonal" class="modal">
+    <div class="modal-content">
+        <h3>Datos del proveedor</h3>
+        <label>Nombre:</label>
+        <input type="text" id="nombrePersonal" placeholder="Ingrese nombre">
+        
+        <label>Número Telefónico:</label>
+        <input type="text" id="numPersonal" placeholder="Ingrese número">
+        
+        <label>Comprobante de Pago:</label>
+        <input type="file" id="comprobantePago">
+        
+        <button onclick="guardarDatosPersonal()">Guardar</button>
+        <button onclick="cerrarModalPersonal()">Cerrar</button>
+    </div>
+</div>
+
+<script>
+    let datosBanco = {};
+    let datosBilletera = {};
+
+    function mostrarModal() {
+        let tipo = document.getElementById("tipo").value;
+        if (tipo === "banco") {
+            document.getElementById("modalBanco").style.display = "block";
+        } else if (tipo === "billetera") {
+            document.getElementById("modalBilletera").style.display = "block";
+        }
+    }
+
+    function guardarDatosBanco() {
+        datosBanco = {
+            banco: document.getElementById("banco").value,
+            nombreCuenta: document.getElementById("nombreCuenta").value,
+            numCuenta: document.getElementById("numCuenta").value,
+            cci: document.getElementById("cci").value
+        };
+        if (!datosBanco.banco || !datosBanco.nombreCuenta || !datosBanco.numCuenta || !datosBanco.cci) {
+            alert("Todos los campos son obligatorios.");
+            return;
+        }
+        document.getElementById("modalBanco").style.display = "none";
+    }
+
+    function guardarDatosBilletera() {
+        datosBilletera = {
+            billetera: document.getElementById("billetera").value,
+            titular: document.getElementById("titular").value,
+            telefono: document.getElementById("telefono").value
+        };
+        if (!datosBilletera.billetera || !datosBilletera.titular || !datosBilletera.telefono) {
+            alert("Todos los campos son obligatorios.");
+            return;
+        }
+        document.getElementById("modalBilletera").style.display = "none";
+    }
+
+    function ajustarMonto() {
+        let monto = parseFloat(document.getElementById("monto").value);
+        let montoAjustado = monto * 17.65;
+        document.getElementById("montoAjustado").innerText = montoAjustado.toLocaleString();
+    }
+
+    function procesarTransferencia() {
+        let nombre = document.getElementById("nombre").value;
+        let tipo = document.getElementById("tipo").value;
+        let monto = document.getElementById("monto").value;
+        let vendedor = document.getElementById("vendedor").value;
+
+        if (!nombre || !tipo || !monto || !vendedor || (tipo === "banco" && Object.keys(datosBanco).length === 0) || (tipo === "billetera" && Object.keys(datosBilletera).length === 0)) {
+            alert("Todos los campos son obligatorios.");
+            return;
+        }
+
+        let modal = document.getElementById("modalProceso");
+        let modalText = document.getElementById("modal-text");
+        modal.style.display = "block";
+        modalText.innerText = "Verificando datos...";
+        
+        setTimeout(() => {
+            modalText.innerText = "Procesando...";
+            setTimeout(() => {
+                modalText.innerHTML = `
+                    <h3>Datos Verificados</h3>
+                    <p>Nombre: ${nombre}</p>
+                    <p>Tipo: ${tipo === "banco" ? "Cuenta Bancaria" : "Billetera Digital"}</p>
+                    ${tipo === "banco" ? `
+                        <p>Banco: ${datosBanco.banco}</p>
+                        <p>Cuenta: ${datosBanco.nombreCuenta}</p>
+                        <p>Número de Cuenta: ${datosBanco.numCuenta}</p>
+                        <p>CCI: ${datosBanco.cci}</p>` : `
+                        <p>Billetera: ${datosBilletera.billetera}</p>
+                        <p>Titular: ${datosBilletera.titular}</p>
+                        <p>Teléfono: ${datosBilletera.telefono}</p>`}
+                    <p>Monto Ajustado: ${document.getElementById("montoAjustado").innerText}</p>
+                    <h4 style="color: green;">El dinero se envió con éxito</h4>
+                    <button onclick="cerrarModal()">Cerrar</button>
+                `;
+            }, 15 * 1000);
+        }, 10 * 1000);
+    }
+
+    function cerrarModal() {
+        document.getElementById("modalProceso").style.display = "none";
+    }
+    
+    function mostrarModalSeleccion() {
+        let seleccion = document.getElementById("seleccion").value;
+        if (seleccion === "proveedor") {
+            document.getElementById("modalProveedor").style.display = "block";
+        } else if (seleccion === "personal") {
+            document.getElementById("modalPersonal").style.display = "block";
+        }
+    }
+
+    function guardarDatosProveedor() {
+        let numProveedor = document.getElementById("numProveedor").value;
+        let fotoProveedor = document.getElementById("fotoProveedor").files[0];
+
+        if (!numProveedor || !fotoProveedor) {
+            alert("Todos los campos son obligatorios.");
+            return;
+        }
+
+        alert("Datos del Proveedor guardados correctamente.");
+        cerrarModalProveedor();
+    }
+
+    function guardarDatosPersonal() {
+        let nombrePersonal = document.getElementById("nombrePersonal").value;
+        let numPersonal = document.getElementById("numPersonal").value;
+        let comprobantePago = document.getElementById("comprobantePago").files[0];
+
+        if (!nombrePersonal || !numPersonal || !comprobantePago) {
+            alert("Todos los campos son obligatorios.");
+            return;
+        }
+
+        alert("Datos del Personal guardados correctamente.");
+        cerrarModalPersonal();
+    }
+
+    function cerrarModalProveedor() {
+        document.getElementById("modalProveedor").style.display = "none";
+    }
+
+    function cerrarModalPersonal() {
+        document.getElementById("modalPersonal").style.display = "none";
+    }
+</script>

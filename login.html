@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login de inicio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 300px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: #2a5298;
+            outline: none;
+            box-shadow: 0 0 10px rgba(42, 82, 152, 0.3);
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #2a5298;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #1e3c72;
+        }
+
+        .message {
+            margin-top: 15px;
+            font-size: 14px;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .error {
+            background: #ff4d4d;
+        }
+
+        .success {
+            background: #28a745;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+        }
+
+        .close {
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+
+        .buy-btn {
+            background: #ff9800;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Iniciar Sesión</h2>
+    <input type="text" id="usuario" placeholder="Usuario">
+    <input type="password" id="password" placeholder="Contraseña">
+    <button onclick="verificarLogin()">Ingresar</button>
+    <div id="mensaje" class="message"></div>
+</div>
+
+<div class="modal" id="modal">
+    <div class="modal-content">
+        <h3>Compra tu acceso</h3>
+        <p>Para registrarte, haz clic en el botón de abajo.</p>
+        <button class="buy-btn" onclick="window.location.href='pago/index.html'">Comprar</button>
+        <button class="close" onclick="cerrarModal()">Cerrar</button>
+    </div>
+</div>
+
+<script>
+    const usuariosRegistrados = {
+        "admin": "1234",
+        "usuario1": "abc123",
+        "prueba": "clave456"
+    };
+
+    function verificarLogin() {
+        const usuario = document.getElementById("usuario").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const mensaje = document.getElementById("mensaje");
+
+        // Validación de campos obligatorios
+        if (usuario === "" || password === "") {
+            mensaje.textContent = "Todos los campos son obligatorios.";
+            mensaje.className = "message error";
+            mensaje.style.display = "block";
+            return;
+        }
+
+        if (usuariosRegistrados[usuario] && usuariosRegistrados[usuario] === password) {
+            mensaje.textContent = "Usuario verificado";
+            mensaje.className = "message success";
+            mensaje.style.display = "block";
+
+            setTimeout(() => {
+                window.location.href = "home.html";
+            }, 1000);
+        } else {
+            mensaje.textContent = "Usuario y contraseña no registrados.";
+            mensaje.className = "message error";
+            mensaje.style.display = "block";
+
+            setTimeout(() => {
+                abrirModal();
+            }, 1000);
+        }
+    }
+
+    function abrirModal() {
+        document.getElementById("modal").style.display = "flex";
+    }
+
+    function cerrarModal() {
+        document.getElementById("modal").style.display = "none";
+    }
+</script>
+
+</body>
+</html>
