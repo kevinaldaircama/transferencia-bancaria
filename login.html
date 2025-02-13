@@ -155,6 +155,7 @@
         const password = document.getElementById("password").value.trim();
         const mensaje = document.getElementById("mensaje");
 
+        // Validación de campos obligatorios
         if (usuario === "" || password === "") {
             mensaje.textContent = "Todos los campos son obligatorios.";
             mensaje.className = "message error";
@@ -166,9 +167,6 @@
             mensaje.textContent = "Usuario verificado";
             mensaje.className = "message success";
             mensaje.style.display = "block";
-
-            // Guardar sesión del usuario
-            sessionStorage.setItem("usuarioAutenticado", "true");
 
             setTimeout(() => {
                 window.location.href = "home.html";
@@ -191,22 +189,6 @@
     function cerrarModal() {
         document.getElementById("modal").style.display = "none";
     }
-
-    function verificarSesion() {
-        const estaAutenticado = sessionStorage.getItem("usuarioAutenticado");
-
-        if (!estaAutenticado) {
-            if (window.location.pathname !== "/login.html" && window.location.pathname !== "/") {
-                window.location.href = "login.html"; // Si no está en login y no está autenticado, redirige
-            }
-        } else {
-            if (window.location.pathname === "/login.html" || window.location.pathname === "/") {
-                window.location.href = "home.html"; // Si ya inició sesión y está en login, lo manda a home
-            }
-        }
-    }
-
-    verificarSesion();
 </script>
 
 </body>
