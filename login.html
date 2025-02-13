@@ -155,7 +155,6 @@
         const password = document.getElementById("password").value.trim();
         const mensaje = document.getElementById("mensaje");
 
-        // Validación de campos obligatorios
         if (usuario === "" || password === "") {
             mensaje.textContent = "Todos los campos son obligatorios.";
             mensaje.className = "message error";
@@ -193,17 +192,21 @@
         document.getElementById("modal").style.display = "none";
     }
 
-    // Verificar si el usuario ha iniciado sesión antes de acceder a otras páginas
     function verificarSesion() {
-        if (!sessionStorage.getItem("usuarioAutenticado")) {
-            window.location.href = "login.html"; // Redirige al login si no ha iniciado sesión
+        const estaAutenticado = sessionStorage.getItem("usuarioAutenticado");
+
+        if (!estaAutenticado) {
+            if (window.location.pathname !== "/login.html" && window.location.pathname !== "/") {
+                window.location.href = "login.html"; // Si no está en login y no está autenticado, redirige
+            }
+        } else {
+            if (window.location.pathname === "/login.html" || window.location.pathname === "/") {
+                window.location.href = "home.html"; // Si ya inició sesión y está en login, lo manda a home
+            }
         }
     }
 
-    // Ejecutar verificación en todas las páginas excepto en login.html
-    if (window.location.pathname !== "/login.html" && window.location.pathname !== "/") {
-        verificarSesion();
-    }
+    verificarSesion();
 </script>
 
 </body>
