@@ -138,7 +138,7 @@
     <div class="modal-content">
         <h3>Compra tu acceso</h3>
         <p>Para registrarte, haz clic en el botón de abajo.</p>
-        <button class="buy-btn" onclick="window.location.href='Pago.html'">Comprar</button>
+        <button class="buy-btn" onclick="window.location.href='pago/index.html'">Comprar</button>
         <button class="close" onclick="cerrarModal()">Cerrar</button>
     </div>
 </div>
@@ -168,6 +168,9 @@
             mensaje.className = "message success";
             mensaje.style.display = "block";
 
+            // Guardar sesión del usuario
+            sessionStorage.setItem("usuarioAutenticado", "true");
+
             setTimeout(() => {
                 window.location.href = "home.html";
             }, 1000);
@@ -188,6 +191,18 @@
 
     function cerrarModal() {
         document.getElementById("modal").style.display = "none";
+    }
+
+    // Verificar si el usuario ha iniciado sesión antes de acceder a otras páginas
+    function verificarSesion() {
+        if (!sessionStorage.getItem("usuarioAutenticado")) {
+            window.location.href = "login.html"; // Redirige al login si no ha iniciado sesión
+        }
+    }
+
+    // Ejecutar verificación en todas las páginas excepto en login.html
+    if (window.location.pathname !== "/login.html" && window.location.pathname !== "/") {
+        verificarSesion();
     }
 </script>
 
