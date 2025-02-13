@@ -325,4 +325,8 @@
     function cerrarModalPersonal() {
         document.getElementById("modalPersonal").style.display = "none";
     }
+    function verificarSesion() {
+        if (!localStorage.getItem("usuarioAutenticado")) {
+            window.location.href = "login.html"; // Redirige si no ha iniciado sesión
+    }
 </script>
