@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pantalla de Carga</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #ff0a00; /* Color de fondo */
+      color: white;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    .loader {
+      text-align: center;
+    }
+
+    /* Círculo animado */
+    .circle {
+      width: 80px;
+      height: 80px;
+      border: 8px solid rgba(255, 255, 255, 0.3);
+      border-top: 8px solid white;
+      border-radius: 50%;
+      animation: spin 3s linear infinite; /* Animación lenta */
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loader p {
+      font-size: 1.5rem;
+      margin-top: 20px;
+    }
+
+    .progress-bar {
+      width: 300px;
+      height: 20px;
+      background: #444;
+      border-radius: 10px;
+      margin: 20px auto;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-bar .progress {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(to right, #4caf50, #8bc34a);
+      border-radius: 10px;
+      transition: width 0.1s ease-in-out;
+    }
+  </style>
+</head>
+<body>
+  <div class="loader">
+    <div class="circle"></div>
+    <p id="progress-text">Cargando: 0%</p>
+    <div class="progress-bar">
+      <div class="progress"></div>
+    </div>
+  </div>
+
+  <script>
+    let progress = 0;
+    const progressText = document.getElementById("progress-text");
+    const progressBar = document.querySelector(".progress");
+
+    const interval = setInterval(() => {
+      progress += 1;
+      progressText.textContent = `Cargando: ${progress}%`;
+      progressBar.style.width = `${progress}%`;
+
+      if (progress === 100) {
+        clearInterval(interval);
+        progressText.textContent = "¡Carga completa!";
+        // Redirige a otra página después de un breve delay
+        setTimeout(() => {
+          window.location.href = "login.html"; // Cambia esta URL por la página a la que quieras redirigir
+        }, 1000); // 1 segundo de espera antes de redirigir
+      }
+    }, 50);
+  </script>
+</body>
+</html>

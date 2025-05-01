@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recarga de todo operador</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #4CAF50, #2196F3);
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            margin: auto;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            margin-top: 10px;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+        }
+
+        input, select {
+            background: white;
+            color: black;
+        }
+
+        button {
+            background: #ff9800;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #e68900;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Recarga de Saldo</h2>
+        <label>Nombre del Usuario:</label>
+        <input type="text" id="nombre" placeholder="Ej. Juan Pérez">
+
+        <label>País:</label>
+        <input type="text" value="+51" disabled>
+
+        <label>Número de Teléfono:</label>
+        <input type="tel" id="telefono" placeholder="Ingrese su número" maxlength="9">
+
+        <label>Operador:</label>
+        <select id="operador">
+            <option value="Movistar">Movistar</option>
+            <option value="Claro">Claro</option>
+            <option value="Bitel">Bitel</option>
+            <option value="Entel">Entel</option>
+        </select>
+
+        <label>Monto de Recarga:</label>
+        <select id="monto">
+            <option value="5">S/ 5</option>
+            <option value="10">S/ 10</option>
+            <option value="20">S/ 20</option>
+            <option value="50">S/ 50</option>
+        </select>
+
+        <label>Vendedor Autorizado:</label>
+        <input type="text" id="vendedor" placeholder="Ej. RecargasPerú">
+
+        <button onclick="realizarRecarga()">Realizar Recarga</button>
+
+        <p id="mensaje" class="hidden"></p>
+    </div>
+
+    <script>
+        function realizarRecarga() {
+            let nombre = document.getElementById("nombre").value;
+            let telefono = document.getElementById("telefono").value;
+            let operador = document.getElementById("operador").value;
+            let monto = document.getElementById("monto").value;
+            let vendedor = document.getElementById("vendedor").value;
+            let mensaje = document.getElementById("mensaje");
+
+            if (nombre === "" || telefono === "" || vendedor === "") {
+                mensaje.textContent = "Por favor, complete todos los campos.";
+                mensaje.style.color = "red";
+                mensaje.classList.remove("hidden");
+                return;
+            }
+
+            if (telefono.length !== 9 || isNaN(telefono)) {
+                mensaje.textContent = "Ingrese un número de teléfono válido (9 dígitos).";
+                mensaje.style.color = "red";
+                mensaje.classList.remove("hidden");
+                return;
+            }
+
+            mensaje.textContent = "Procesando recarga...";
+            mensaje.style.color = "yellow";
+            mensaje.classList.remove("hidden");
+
+            setTimeout(() => {
+                mensaje.textContent = `Recarga de S/ ${monto} a ${telefono} (${operador}) realizada con éxito.`;
+                mensaje.style.color = "lightgreen";
+            }, 3000);
+        }
+    </script>
+
+</body>
+</html>

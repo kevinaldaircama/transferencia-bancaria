@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Inicio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        .contenedor {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .caja {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .mensaje {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+            border: 2px solid #007BFF;
+            background: #E3F2FD;
+        }
+
+        .descripcion {
+            font-size: 16px;
+            color: #555;
+            border: 2px solid #28A745;
+            background: #E9F7EF;
+        }
+
+        .botones {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            border: 2px solid #FFC107;
+            background: #FFF8E1;
+        }
+
+        .boton {
+            background: #007BFF;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+            width: 100%;
+        }
+
+        .boton:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contenedor">
+        <!-- Cuadro del mensaje de bienvenida -->
+        <div class="caja mensaje">¡Bienvenido!</div>
+
+        <!-- Cuadro de la descripción -->
+        <div class="caja descripcion">Bienvenido a la mejor página VIP donde podrás pagar cualquier servicio gratis.</div>
+
+        <!-- Cuadro de los botones -->
+        <div class="caja botones">
+            <button class="boton" onclick="irA('#')">Inicio</button>
+            <button class="boton" onclick="irA('sistema.html')">sistema</button>
+            <button class="boton" onclick="irA('fake.html')">apps fake</button>
+            <button class="boton" onclick="irA('https://kevinaldaircama.github.io/perutrans/home.html')">transferencia bancaria</button>
+            <button class="boton" onclick="irA('https://t.me/kevintechtutorialssoporte')">soporte</button>
+        <button class="boton" onclick="irA('lodin.html')">cerrar seción</button>
+        
+        </div>
+    </div>
+
+    <script>
+        function irA(url) {
+            window.location.href = url;
+        }
+    </script>
+
+</body>
+</html>

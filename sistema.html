@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Inicio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            background: #f4f4f4;
+            padding: 20px;
+        }
+
+        .contenedor {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .caja {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .botones {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .boton {
+            background: linear-gradient(135deg, #007BFF, #00BFFF);
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            text-transform: uppercase;
+        }
+
+        .boton:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .boton:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contenedor">
+        <div class="caja botones">
+            <button class="boton" onclick="irA('recarga.html')">sistema de recargas de todo operador</button>
+            <button class="boton" onclick="irA('billetera.html')">sistema de Tumbar billetera digital</button>
+            <button class="boton" onclick="irA('tunbarwha.html')">sistema para tumbar WhatsApp</button>
+            <button class="boton" onclick="irA('diamantes.html')">sistema de Recargas Free Fire</button>
+            <button class="boton" onclick="irA('https://www.twitter.com')">Más apps Fake</button>
+            
+        </div>
+    </div>
+
+    <script>
+        function irA(url) {
+            window.location.href = url;
+        }
+    </script>
+
+</body>
+</html>

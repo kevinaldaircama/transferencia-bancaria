@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recarga de Diamantes Free Fire</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ff9800, #ff5722);
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            margin: auto;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            margin-top: 10px;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+        }
+
+        input, select {
+            background: white;
+            color: black;
+        }
+
+        button {
+            background: #fbc02d;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #f9a825;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Recarga de Diamantes Free Fire</h2>
+        
+        <label>ID del Jugador:</label>
+        <input type="text" id="idJugador" placeholder="Ej. 123456789">
+
+        <label>Cantidad de Diamantes:</label>
+        <select id="diamantes">
+            <option value="100">100 Diamantes</option>
+            <option value="310">310 Diamantes</option>
+            <option value="520">520 Diamantes</option>
+            <option value="1060">1060 Diamantes</option>
+            <option value="2180">2180 Diamantes</option>
+        </select>
+
+        <label>Región:</label>
+        <select id="region">
+            <option value="Latinoamérica">Latinoamérica</option>
+            <option value="Norteamérica">Norteamérica</option>
+            <option value="Europa">Europa</option>
+            <option value="Asia">Asia</option>
+            <option value="latam">LATAM</option>
+        </select>
+
+        <label>Dispositivo:</label>
+        <select id="dispositivo">
+            <option value="Android">Android</option>
+            <option value="iOS">iOS</option>
+            <option value="PC">PC</option>
+        </select>
+
+        <label>Vendedor Autorizado:</label>
+        <input type="text" id="vendedor" placeholder="Ej. RecargasGaming">
+
+        <button onclick="realizarRecarga()">Comprar Diamantes</button>
+
+        <p id="mensaje" class="hidden"></p>
+    </div>
+
+    <script>
+        function realizarRecarga() {
+            let idJugador = document.getElementById("idJugador").value;
+            let diamantes = document.getElementById("diamantes").value;
+            let region = document.getElementById("region").value;
+            let dispositivo = document.getElementById("dispositivo").value;
+            let vendedor = document.getElementById("vendedor").value;
+            let mensaje = document.getElementById("mensaje");
+
+            if (idJugador === "" || vendedor === "") {
+                mensaje.textContent = "Por favor, complete todos los campos.";
+                mensaje.style.color = "red";
+                mensaje.classList.remove("hidden");
+                return;
+            }
+
+            mensaje.textContent = "Procesando recarga...";
+            mensaje.style.color = "yellow";
+            mensaje.classList.remove("hidden");
+
+            setTimeout(() => {
+                mensaje.textContent = `Se han agregado ${diamantes} diamantes al ID ${idJugador}. Región: ${region}, Dispositivo: ${dispositivo}.`;
+                mensaje.style.color = "lightgreen";
+            }, 3000);
+        }
+    </script>
+
+</body>
+</html>

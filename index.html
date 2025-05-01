@@ -1,99 +1,144 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pantalla de Carga</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-color: #FFA726; /* Color de fondo */
-      color: white;
-      font-family: Arial, sans-serif;
-      overflow: hidden;
-    }
-
-    .loader {
-      text-align: center;
-    }
-
-    /* Círculo animado */
-    .circle {
-      width: 80px;
-      height: 80px;
-      border: 8px solid rgba(255, 255, 255, 0.3);
-      border-top: 8px solid white;
-      border-radius: 50%;
-      animation: spin 3s linear infinite; /* Animación lenta */
-      margin: 0 auto;
-    }
-
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-
-    .loader p {
-      font-size: 1.5rem;
-      margin-top: 20px;
-    }
-
-    .progress-bar {
-      width: 300px;
-      height: 20px;
-      background: #444;
-      border-radius: 10px;
-      margin: 20px auto;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .progress-bar .progress {
-      height: 100%;
-      width: 0;
-      background: linear-gradient(to right, #4caf50, #8bc34a);
-      border-radius: 10px;
-      transition: width 0.1s ease-in-out;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>index</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background: linear-gradient(to right, #35424a, #e8491d);
+            color: #ffffff;
+            padding: 40px 0;
+            text-align: center;
+        }
+        header img {
+            width: 100px; /* Ajusta el tamaño del ícono aquí */
+            margin-bottom: 20px;
+        }
+        .cta {
+            background: #e8491d;
+            color: #ffffff;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+            font-size: 18px;
+        }
+        .cta:hover {
+            background: #c43e17;
+        }
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            padding: 20px 0;
+        }
+        .feature {
+            background: #ffffff;
+            border: 1px solid #dddddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 10px;
+            flex: 1 1 30%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .feature h3 {
+            color: #35424a;
+        }
+        .screenshots {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 20px 0;
+        }
+        .screenshot {
+            margin: 10px;
+        }
+        .screenshot img {
+            max-width: 300px; /* Ajusta el tamaño de las capturas aquí */
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            background: #35424a;
+            color: #ffffff;
+        }
+        @media (max-width: 768px) {
+            .features {
+                flex-direction: column;
+            }
+            .feature {
+                flex: 1 1 100%;
+            }
+            .screenshots {
+                flex-direction: column;
+            }
+        }
+        .extra-info {
+            background: #ffffff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .extra-info p {
+            font-size: 16px;
+        }
+        .emoji {
+            font-size: 24px;
+        }
+    </style>
 </head>
 <body>
-  <div class="loader">
-    <div class="circle"></div>
-    <p id="progress-text">Cargando: 0%</p>
-    <div class="progress-bar">
-      <div class="progress"></div>
+    <header>
+<h1>🌟sistema multi funcional 🌟</h1>
+        <p>¡la mejor página web donde vas a poder ganar dinero!</p>
+        <a href="carga.html" class="cta">compra tu acceso</a>
+    </header>
+
+    <div class="container">
+        <section class="features">
+            <div class="feature">
+                <h3>✨ sistema de calidad</h3>
+                <p>sistema de calidad con las mejores referencias.</p>
+            </div>
+            <div class="feature">
+                <h3>📄 monto a tu gusto</h3>
+                <p>puedes tener el monto que tu desees solo comprando el sistema.</p>
+            </div>
+            <div class="feature">
+                <h3>💬 Buen entretenimiento </h3>
+                <p>puedes entretenerte mientras ver películas y ganando dinero.</p>
+            </div>
+            <div class="feature">
+                <h3>👤 tus datos son seguros</h3>
+                <p>toda tu información son guardados y no le damos a nadie sin permiso de ustedes.</p>
+            </div>
+        </section>
+
+        <!-- Información adicional -->
+        <section class="extra-info">
+            <h2>🔗 Más Información</h2>
+            <p>si quieres comunicate con el creador bienvenido:</p>
+            <a href="https://appcreator24herramientas.blogspot.com/" class="cta">contacto del creador 🌐</a>
+        </section>
     </div>
-  </div>
 
-  <script>
-    let progress = 0;
-    const progressText = document.getElementById("progress-text");
-    const progressBar = document.querySelector(".progress");
-
-    const interval = setInterval(() => {
-      progress += 1;
-      progressText.textContent = `Cargando: ${progress}%`;
-      progressBar.style.width = `${progress}%`;
-
-      if (progress === 100) {
-        clearInterval(interval);
-        progressText.textContent = "¡Carga completa!";
-        // Redirige a otra página después de un breve delay
-        setTimeout(() => {
-          window.location.href = "login.html"; // Cambia esta URL por la página a la que quieras redirigir
-        }, 1000); // 1 segundo de espera antes de redirigir
-      }
-    }, 50);
-  </script>
+    <footer>
+        <p>Desarrollado por <strong>KEVINTECHTUTORIALS </strong></p>
+        <p>todo los derechos reservados ©️</p>
+    </footer>
 </body>
 </html>
