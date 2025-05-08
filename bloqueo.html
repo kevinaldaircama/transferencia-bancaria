@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suspender Línea</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+      background-color: #f4f6f9;
+      margin: 0;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    }
+
+    label {
+      margin-top: 10px;
+      font-weight: 600;
+    }
+
+    input {
+      padding: 10px;
+      width: 100%;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      background-color: #007bff;
+      border: none;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    #modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 90%;
+      width: 400px;
+      text-align: left;
+      animation: pop 0.5s ease forwards;
+      font-family: monospace;
+    }
+
+    @keyframes pop {
+      from {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .fade-text {
+      animation: fadeText 0.5s ease forwards;
+    }
+
+    @keyframes fadeText {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 15px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+
+      button {
+        font-size: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Suspensión de Línea</h2>
+
+    <label for="telefono">Número de Teléfono:</label>
+    <input type="text" id="telefono" placeholder="+51912345678">
+
+    <label for="dni">DNI:</label>
+    <input type="text" id="dni" placeholder="12345678">
+
+    <button onclick="bloquearLinea()">Bloquear Línea</button>
+  </div>
+
+  <div id="modal">
+    <div id="modal-content"></div>
+  </div>
+
+  <script>
+    function generarAleatorio(lista) {
+      return lista[Math.floor(Math.random() * lista.length)];
+    }
+
+    function generarIMEI() {
+      return Array(15).fill(0).map(() => Math.floor(Math.random() * 10)).join('');
+    }
+
+    function generarCodigo() {
+      const letras = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+      return letras[Math.floor(Math.random() * letras.length)] + '-' + Math.floor(100000 + Math.random() * 900000);
+    }
+
+    function bloquearLinea() {
+      const telefono = document.getElementById("telefono").value.trim();
+      const dni = document.getElementById("dni").value.trim();
+      const modal = document.getElementById("modal");
+      const modalContent = document.getElementById("modal-content");
+
+      const telefonoValido = /^\+51\d{9}$/.test(telefono);
+      const dniValido = /^\d{8}$/.test(dni);
+
+      if (!telefonoValido) {
+        alert("El número debe empezar con +51 y tener 9 dígitos (ej: +51912345678).");
+        return;
+      }
+
+      if (!dniValido) {
+        alert("El DNI debe tener exactamente 8 dígitos.");
+        return;
+      }
+
+      modal.style.display = "flex";
+      modalContent.innerHTML = `<p class="fade-text">Procesando datos...</p>`;
+
+      setTimeout(() => {
+        modalContent.innerHTML = `<p class="fade-text">Datos encontrados...</p>`;
+
+        setTimeout(() => {
+          const operadores = ["Claro", "Movistar", "Entel", "Bitel"];
+          const planes = ["Prepago", "Postpago"];
+          const montos = ["S/ 29.90", "S/ 59.90", "S/ 89.00", "S/ 10.00"];
+          const marcas = ["Samsung", "Huawei", "Motorola", "Xiaomi", "Apple", "Oppo"];
+          const modelos = ["A32", "Redmi Note 11", "iPhone 12", "P40 Lite", "Moto G60", "Reno 8"];
+          
+          const operador = generarAleatorio(operadores);
+          const plan = generarAleatorio(planes);
+          const monto = generarAleatorio(montos);
+          const marca = generarAleatorio(marcas);
+          const modelo = generarAleatorio(modelos);
+          const imei = generarIMEI();
+          const codBloqueo = generarCodigo();
+          const userId = "A-73882912";
+
+          modalContent.innerHTML = `
+            <div class="fade-text">
+              <h3># Operación Completada usuario ${userId}</h3>
+              <p>¡Se bloqueó exitosamente su número y equipo con los siguientes datos!</p>
+              <hr>
+              <p>~ Número bloqueado: ${telefono}</p>
+              <p>~ DNI: ${dni}</p>
+              <p>~ Operador: ${operador}</p>
+              <p>~ Plan: ${plan}</p>
+              <p>~ Monto: ${monto}</p>
+              <p>~ Código de bloqueo: ${codBloqueo}</p>
+              <p>~ IMEI: ${imei}</p>
+              <p>~ Marca del equipo: ${marca}</p>
+              <p>~ Modelo: ${modelo}</p>
+              <br>
+              <strong>"Sistem AUTOGESTIÓN-SITEL COMPLETADO"</strong>
+              <br><br>
+              <p>~ ID Usuario: ${userId}</p>
+              <button onclick="cerrarModal()">Cerrar</button>
+            </div>
+          `;
+        }, 2000);
+      }, 3000);
+    }
+
+    function cerrarModal() {
+      document.getElementById("modal").style.display = "none";
+    }
+  </script>
+
+</body>
+</html>
