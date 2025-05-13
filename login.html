@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login de inicio</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: Arial, sans-serif;
     }
 
     body {
@@ -21,139 +21,124 @@
     }
 
     .container {
-      background: #fff;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
-      width: 320px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
       text-align: center;
+      width: 300px;
       animation: fadeIn 1s ease-in-out;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-20px); }
+      from { opacity: 0; transform: translateY(-30px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     h2 {
-      margin-bottom: 20px;
-      color: #2a5298;
-    }
-
-    label {
-      display: block;
-      text-align: left;
-      margin: 10px 0 5px;
-      color: #555;
-      font-weight: bold;
+      margin-bottom: 15px;
+      color: #333;
     }
 
     input {
       width: 100%;
       padding: 10px;
+      margin: 10px 0;
       border: 1px solid #ccc;
-      border-radius: 6px;
-      margin-bottom: 10px;
-      transition: border 0.3s, box-shadow 0.3s;
+      border-radius: 5px;
+      transition: 0.3s;
     }
 
     input:focus {
       border-color: #2a5298;
-      box-shadow: 0 0 8px rgba(42, 82, 152, 0.4);
       outline: none;
+      box-shadow: 0 0 10px rgba(42, 82, 152, 0.3);
     }
 
     button {
       width: 100%;
       padding: 10px;
       background: #2a5298;
-      color: #fff;
+      color: white;
       border: none;
-      border-radius: 6px;
-      font-size: 16px;
+      border-radius: 5px;
       cursor: pointer;
-      transition: background 0.3s;
+      font-size: 16px;
+      transition: 0.3s;
     }
 
     button:hover {
       background: #1e3c72;
     }
 
+    .solicitar-btn {
+      background: #ff9800;
+      margin-top: 10px;
+    }
+
     .message {
       margin-top: 15px;
-      padding: 10px;
       font-size: 14px;
+      color: white;
+      padding: 10px;
       border-radius: 5px;
       display: none;
-      transition: all 0.3s ease;
     }
 
     .error {
       background: #ff4d4d;
-      color: white;
     }
 
     .success {
       background: #28a745;
-      color: white;
     }
 
     .modal {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       background: rgba(0, 0, 0, 0.5);
       display: none;
       justify-content: center;
       align-items: center;
-      z-index: 1000;
     }
 
     .modal-content {
       background: white;
       padding: 20px;
       border-radius: 10px;
-      width: 280px;
+      width: 300px;
       text-align: center;
     }
 
-    .close, .buy-btn {
-      margin-top: 10px;
-      padding: 8px 12px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      color: white;
-    }
-
     .close {
-      background: #f44336;
+      background: red;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      margin-top: 10px;
+      border-radius: 5px;
     }
 
     .buy-btn {
       background: #ff9800;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
 
-  <form class="container" onsubmit="event.preventDefault(); verificarLogin();">
-  <h2>Iniciar Sesión</h2>
-
-  <label for="usuario">Usuario</label>
-  <input type="text" id="usuario" placeholder="Ej kevinvps" autocomplete="off">
-
-  <label for="password">Contraseña</label>
-  <input type="password" id="password" placeholder="Tu contraseña" autocomplete="off">
-
-  <button type="submit">Ingresar</button>
-
-  <button type="button" onclick="window.location.href='pago.html'" style="margin-top: 10px; background: #ff9800;">
-    Solicitar acceso
-  </button>
-
-  <div id="mensaje" class="message"></div>  
-  </form>
+  <div class="container">
+    <h2>Iniciar Sesión</h2>
+    <input type="text" id="usuario" placeholder="👤" />
+    <input type="password" id="password" placeholder="🔓" />
+    <button onclick="verificarLogin()">Ingresar</button>
+    <button class="solicitar-btn" onclick="window.location.href='pago.html'">Solicitar acceso</button>
+    <div id="mensaje" class="message"></div>
+  </div>
 
   <div class="modal" id="modal">
     <div class="modal-content">
@@ -166,9 +151,9 @@
 
   <script>
     const usuariosRegistrados = {
-      "admin": "1234",
-      "usuario1": "usuario",
-      "prueba": "prueba"
+      "admin": { password: "1234", destino: "menu.html" },
+      "sistema": { password: "sistema", destino: "sistema.html" },
+      "fake": { password: "fake", destino: "fake.html" }, "dinero": { password: "dinerovip", destino: "nuevaPagina.html" }
     };
 
     function verificarLogin() {
@@ -181,9 +166,13 @@
         return;
       }
 
-      if (usuariosRegistrados[usuario] === password) {
+      const datosUsuario = usuariosRegistrados[usuario];
+
+      if (datosUsuario && datosUsuario.password === password) {
         mostrarMensaje("Usuario verificado", "success");
-        setTimeout(() => window.location.href = "menu.html", 1000);
+        setTimeout(() => {
+          window.location.href = datosUsuario.destino;
+        }, 1000);
       } else {
         mostrarMensaje("Usuario y contraseña no registrados.", "error");
         setTimeout(abrirModal, 1000);
@@ -207,4 +196,4 @@
   </script>
 
 </body>
-    </html>
+</html>
