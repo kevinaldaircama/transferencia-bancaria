@@ -1,296 +1,203 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paga con Yape</title>
-    <style>
-        /* Fuentes y diseño general */
-        body {
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #8e44ad, #7c47ff);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: #333;
-            text-align: center;
-        }
+  <meta charset="UTF-8">
+  <title>Pagar con Yape</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+    }
+    .container h2 {
+      margin-bottom: 10px;
+      color: #800080;
+    }
+    .container p {
+      margin: 10px 0;
+    }
+    .container img {
+      width: 220px;
+      margin: 20px 0;
+    }
+    .container button {
+      background-color: #800080;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .container button:hover {
+      background-color: #660066;
+    }
 
-        .container {
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            width: 100%;
-            max-width: 380px;
-            animation: fadeIn 0.5s ease-out;
-        }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background-color: white;
+      padding: 30px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 400px;
+      position: relative;
+      box-shadow: 0 0 25px rgba(0,0,0,0.2);
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: scale(0.9);}
+      to {opacity: 1; transform: scale(1);}
+    }
+    .close {
+      position: absolute;
+      top: 12px;
+      right: 15px;
+      font-size: 22px;
+      color: #555;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    form input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    .submit-btn {
+      margin-top: 20px;
+      background-color: #800080;
+      color: white;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .submit-btn:hover {
+      background-color: #660066;
+    }
 
-        /* Animación de aparición suave */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    .mensaje {
+      text-align: center;
+      padding: 20px;
+      font-size: 16px;
+    }
 
-        h2 {
-            font-size: 28px;
-            margin-bottom: 25px;
-            color: #7c47ff;
-            font-weight: 600;
-        }
+    .mensaje strong {
+      color: green;
+    }
 
-        /* Estilos de los botones */
-        .button {
-            background-color: #7c47ff;
-            color: white;
-            border: none;
-            padding: 14px 20px;
-            width: 100%;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 15px;
-        }
-
-        .button:hover {
-            background-color: #5b30cc;
-        }
-
-        /* Estilos de los inputs */
-        input[type="text"], select {
-            width: 100%;
-            padding: 12px;
-            border-radius: 6px;
-            border: 1px solid #ddd;
-            font-size: 16px;
-            margin: 10px 0;
-            box-sizing: border-box;
-        }
-
-        input[type="text"]:focus, select:focus {
-            border-color: #7c47ff;
-            outline: none;
-        }
-
-        /* Modales */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            justify-content: center;
-            align-items: center;
-            animation: fadeInModal 0.3s ease-out;
-        }
-
-        @keyframes fadeInModal {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .modal-content {
-            background-color: #fff;
-            padding: 25px;
-            border-radius: 10px;
-            width: 80%;
-            max-width: 400px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .continue-button {
-            display: none;
-            background-color: #28a745;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 6px;
-            font-size: 16px;
-            text-align: center;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-
-        /* Detalles después de la verificación */
-        .details-container {
-            margin-top: 25px;
-            padding: 20px;
-            background: #f4f4f4;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .details-container p {
-            margin: 10px 0;
-            font-size: 16px;
-            color: #333;
-        }
-
-        .details-container strong {
-            font-weight: bold;
-        }
-
-        /* Estilo para el título de cada sección */
-        label {
-            font-size: 16px;
-            font-weight: 500;
-            color: #555;
-            text-align: left;
-            margin-top: 15px;
-            display: block;
-        }
-
-        .close-button {
-            background-color: #dc3545;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 10px;
-            border: none;
-        }
-
-        .close-button:hover {
-            background-color: #c82333;
-        }
-    </style>
+    .resumen {
+      background: #f8f8f8;
+      border: 1px solid #ddd;
+      padding: 15px;
+      margin-top: 15px;
+      border-radius: 10px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Paga con Yape</h2>
-        <button class="button" onclick="abrirModal('modalImagen')">📷 Ver Imagen</button>
 
-        <p>Total a pagar: <strong id="total">S/ 50</strong></p>
+  <div class="container">
+    <h2>Pagar con Yape</h2>
+    <p>Escanea el siguiente código QR para realizar el pago:</p>
+    <img src="qr.png" alt="QR Yape de ejemplo">
+    <p><strong>Monto:</strong> S/ 20.00</p>
+    <button onclick="abrirModal()">Ya pagué</button>
+  </div>
 
-        <label for="nombre">Nombre del titular del Yape</label>
-        <input type="text" id="nombre" placeholder="Ej: Carlos Perez Gomez">
-
-        <div>
-            <label for="descuento">¿Tienes un código de descuento?</label>
-            <select id="descuento" onchange="abrirModalCupon()">
-                <option value="no">No</option>
-                <option value="si">Sí</option>
-            </select>
-        </div>
-
-        <button class="button" onclick="verificarPago()">✔ Verificar Yapeo</button>
+  <!-- Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-content" id="modalContent">
+      <span class="close" onclick="cerrarModal()">&times;</span>
+      <h3>Confirma tu pago</h3>
+      <form id="formulario">
+        <input type="text" name="nombre" placeholder="Tu nombre completo" required>
+        <input type="text" name="monto" placeholder="Monto pagado (S/)" required>
+        <input type="text" name="codigo_seguridad" placeholder="Código de seguridad" required>
+        <input type="text" name="operacion" placeholder="N° de operación (opcional)">
+        <button type="submit" class="submit-btn">Enviar comprobante</button>
+      </form>
     </div>
+  </div>
 
-    <!-- Modal de Validación de Pago -->
-    <div id="modalPago" class="modal">
-        <div class="modal-content">
-            <p id="mensajePago">Validando pago...</p>
-            <a id="botonContinuar" class="continue-button" href="#">CONTINUAR</a>
-            <button class="button" onclick="cerrarModal('modalPago')">CERRAR</button>
+  <script>
+    function abrirModal() {
+      document.getElementById('modal').style.display = 'flex';
+    }
+
+    function cerrarModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById('modal');
+      if (event.target == modal) {
+        modal.style.display = 'none';
+      }
+    }
+
+    document.getElementById('formulario').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const nombre = this.nombre.value;
+      const monto = this.monto.value;
+      const codigo = this.codigo_seguridad.value;
+      const operacion = this.operacion.value;
+
+      const modalContent = document.getElementById('modalContent');
+      modalContent.innerHTML = `
+        <div class="mensaje">
+          <p><strong>Su pago se está procesando...</strong><br>Por favor espere un momento (5 minutos).</p>
         </div>
-    </div>
+      `;
 
-    <!-- Modal para la imagen -->
-    <div id="modalImagen" class="modal">
-        <div class="modal-content">
-            <img src="yape.png" alt="Imagen de pago" style="width: 100%; border-radius: 8px;">
-            <button class="close-button" onclick="cerrarModal('modalImagen')">CERRAR</button>
-        </div>
-    </div>
+      setTimeout(() => {
+        modalContent.innerHTML = `
+          <span class="close" onclick="cerrarModal()">&times;</span>
+          <h3><strong>¡Pago realizado con éxito!</strong></h3>
+          <div class="resumen">
+            <p><strong>Nombre:</strong> ${nombre}</p>
+            <p><strong>Monto:</strong> S/ ${monto}</p>
+            <p><strong>Código de seguridad:</strong> ${codigo}</p>
+            <p><strong>N° de operación:</strong> ${operacion || 'No ingresado'}</p>
+          </div>
+          <p style="margin-top: 15px; font-weight: bold;">
+            Por favor tómale captura y envíale al propietario<br>
+            <strong>934075884</strong> por <strong>WhatsApp</strong>.
+          </p>
+        `;
+     }, 60000); // 1 minuto
+    });
+  </script>
 
-    <!-- Modal para el cupón -->
-    <div id="modalCupon" class="modal">
-        <div class="modal-content">
-            <label for="cupon">Ingresa tu código de descuento</label>
-            <input type="text" id="cupon" placeholder="Ej: DESCUENTO10">
-            <button class="button" onclick="verificarCupon()">VERIFICAR CUPÓN</button>
-            <p id="mensajeCupon"></p>
-            <button class="close-button" onclick="cerrarModalCupon()">CERRAR</button>
-        </div>
-    </div>
-
-    <script>
-        let intentos = 0; // Contador de intentos
-        let totalPagar = 30;  // Total inicial
-
-        const cuponesValidos = {
-            "DESCUENTOSANVALENTI25": 25,
-            "PROMO530": 30,
-            "OFERTA2010": 10
-        };
-
-        function abrirModal(id) {
-            document.getElementById(id).style.display = 'flex';
-        }
-
-        function cerrarModal(id) {
-            document.getElementById(id).style.display = 'none';
-        }
-
-        function abrirModalCupon() {
-            if (document.getElementById('descuento').value === 'si') {
-                abrirModal('modalCupon');
-            }
-        }
-
-        function cerrarModalCupon() {
-            cerrarModal('modalCupon');
-        }
-
-        function verificarCupon() {
-            const cupon = document.getElementById('cupon').value.trim().toUpperCase();
-            const mensajeCupon = document.getElementById('mensajeCupon');
-
-            if (cuponesValidos[cupon]) {
-                let descuento = cuponesValidos[cupon];
-                totalPagar -= descuento;
-                document.getElementById('total').textContent = `S/ ${totalPagar}`;
-                mensajeCupon.textContent = 'Descuento aplicado con éxito.';
-                mensajeCupon.style.color = 'green';
-            } else {
-                mensajeCupon.textContent = 'El cupón ingresado es incorrecto.';
-                mensajeCupon.style.color = 'red';
-            }
-        }
-
-        function verificarPago() {
-            const nombre = document.getElementById('nombre').value.trim();
-            const mensajePago = document.getElementById('mensajePago');
-            const botonContinuar = document.getElementById('botonContinuar');
-
-            if (!nombre) {
-                alert('Por favor, ingresa el nombre del titular.');
-                return;
-            }
-
-            intentos++;
-            abrirModal('modalPago');
-            mensajePago.textContent = 'Validando pago...';
-            botonContinuar.style.display = 'none';
-
-            setTimeout(() => {
-                mensajePago.textContent = `Verificando nombre "${nombre}"...`;
-
-                setTimeout(() => {
-                    if (intentos === 2) {
-                        mensajePago.textContent = '⚠ No se pudo verificar el pago. Inténtalo nuevamente.';
-                    } else if (intentos >= 3) {
-                        // Detalles del pago al tercer intento
-                        mensajePago.innerHTML = `
-                            ✔ Pago verificado con éxito.<br><br>
-                            <strong>Nombre del titular:</strong> ${nombre}<br>
-                            <strong>Total a pagar:</strong> S/ ${totalPagar}<br>
-                            <strong>Descuento aplicado:</strong> ${document.getElementById('descuento').value === 'si' ? 'Sí' : 'No'}<br>
-                            <strong>Código de descuento:</strong> ${document.getElementById('cupon').value || 'Ninguno'}
-                        `;
-                        botonContinuar.style.display = 'block';
-                        botonContinuar.href = 'https://wa.me/message/VWVEPJCHEHHJB1'; // Cambia este enlace según sea necesario
-                    }
-                }, 2000); // Espera de 2 segundos para continuar con el siguiente paso
-            }, 2000); // Espera de 2 segundos para mostrar el mensaje de validación
-        }
-    </script>
 </body>
 </html>
