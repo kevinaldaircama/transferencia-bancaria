@@ -35,6 +35,7 @@
 
     input[type="text"],
     input[type="password"],
+    select,
     button {
       width: 100%;
       padding: 12px;
@@ -45,10 +46,15 @@
     }
 
     input[type="text"],
-    input[type="password"] {
+    input[type="password"],
+    select {
       background-color: #ffffff10;
       color: #fff;
       border: 1px solid #ffffff30;
+    }
+
+    select option {
+      color: #000;
     }
 
     input::placeholder {
@@ -149,6 +155,14 @@
     <label for="vendedor">Nombre del vendedor:</label>
     <input type="text" id="vendedor" placeholder="Nombre del vendedor">
 
+    <label for="meses">Duración de la cuenta:</label>
+    <select id="meses">
+      <option value="1">1 mes</option>
+      <option value="3">3 meses</option>
+      <option value="6">6 meses</option>
+      <option value="12">12 meses</option>
+    </select>
+
     <button onclick="crearCuenta()">Crear cuenta</button>
   </div>
 
@@ -205,6 +219,7 @@
       const usuario = document.getElementById('usuario').value.trim();
       const password = document.getElementById('password').value.trim();
       const vendedor = document.getElementById('vendedor').value.trim();
+      const meses = document.getElementById('meses').value;
 
       if (!nombreUsuario || !nombre || !usuario || !password || !vendedor) {
         alert("Por favor completa todos los campos.");
@@ -222,6 +237,7 @@
           <strong>Usuario:</strong> ${usuario}<br>
           <strong>Contraseña:</strong> ${password}<br>
           <strong>Vendedor:</strong> ${vendedor}<br>
+          <strong>Duración:</strong> ${meses} mes(es)<br>
         `;
 
         if (document.getElementById('pinCheck').checked && pinGuardado) {
@@ -235,4 +251,4 @@
     }
   </script>
 </body>
-</html>
+      </html>
