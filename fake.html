@@ -1,108 +1,95 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página de Inicio</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            height: 100vh;
-            background-color: #f4f4f4;
-            padding: 20px;
-        }
-
-        .contenedor {
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .caja {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .mensaje {
-            font-size: 22px;
-            font-weight: bold;
-            color: #333;
-            border: 2px solid #007BFF;
-            background: #E3F2FD;
-        }
-
-        .descripcion {
-            font-size: 16px;
-            color: #555;
-            border: 2px solid #28A745;
-            background: #E9F7EF;
-        }
-
-        .botones {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            border: 2px solid #FFC107;
-            background: #FFF8E1;
-        }
-
-        .boton {
-            background: #007BFF;
-            color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: 0.3s;
-            width: 100%;
-        }
-
-        .boton:hover {
-            background: #0056b3;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>apps fake</title>
+<style>
+  /* Reset */
+  * {
+    margin: 0; padding: 0; box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #222831;
+    padding: 20px;
+    color: #eeeeee;
+  }
+  .contenedor {
+    max-width: 420px;
+    width: 100%;
+    background: #393e46;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    padding: 2.5rem 2rem;
+    text-align: center;
+  }
+  .mensaje {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #00adb5;
+    margin-bottom: 1rem;
+  }
+  .descripcion {
+    font-size: 1.1rem;
+    color: #eeeeee;
+    margin-bottom: 2.5rem;
+    line-height: 1.4;
+  }
+  .botones {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+  }
+  .boton {
+    background: #00adb5;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 0;
+    font-weight: 700;
+    color: #222831;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,173,181,0.5);
+    transition: background 0.3s ease, transform 0.2s ease;
+    user-select: none;
+  }
+  .boton:hover {
+    background: #08c4cc;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(8,196,204,0.6);
+  }
+  .boton:active {
+    transform: translateY(-1px);
+  }
+</style>
 </head>
 <body>
-
-    <div class="contenedor">
-        <!-- Cuadro del mensaje de bienvenida -->
-        <div class="caja mensaje">¡Bienvenido!</div>
-
-        <!-- Cuadro de la descripción -->
-        <div class="caja descripcion">Bienvenido a la sección de aplicaciones fake aquí encontrarás todas las apps fake</div>
-
-        <!-- Cuadro de los botones -->
-        <div class="caja botones">
-            <button class="boton" onclick="irA('https://dominio-yape.netlify.app/')">yape</button>
-            <button class="boton" onclick="irA('https://dominio-bcp.netlify.app/')">BCP</button>
-            <button class="boton" onclick="irA('https://dominio-pypl.netlify.app')">Paypal</button>
-            <button class="boton" onclick="irA('https://dominio-interbank.netlify.app/')">Interbank</button>
-            <button class="boton" onclick="irA('https://dominio-plin.netlify.app/')">plin</button>
-        <button class="boton" onclick="irA('https://dominio-bbva.netlify.app/')">BBVA</button>
-        <button class="boton" onclick="irA('https://dominio-bn.netlify.app/')">banco de la nación</button>
-        <button class="boton" onclick="irA('https://dominio-plin.netlify.app/')">caja Arequipa</button>
-        </div>
-    </div>
-
-    <script>
-        function irA(url) {
-            window.location.href = url;
-        }
-    </script>
-
+  <main class="contenedor" role="main" aria-label="Sección de aplicaciones fake">
+    <h1 class="mensaje" tabindex="0">¡Bienvenido!</h1>
+    <p class="descripcion" tabindex="0">
+      Bienvenido a la sección de aplicaciones fake. Aquí encontrarás todas las apps fake más populares.
+    </p>
+    <nav class="botones" aria-label="Enlaces a aplicaciones fake">
+      <button class="boton" data-url="https://dominio-yape.netlify.app/">Yape</button>
+      <button class="boton" data-url="https://dominio-bcp.netlify.app/">BCP</button>
+      <button class="boton" data-url="https://dominio-pypl.netlify.app/">Paypal</button>
+      <button class="boton" data-url="https://dominio-interbank.netlify.app/">Interbank</button>
+      <button class="boton" data-url="https://dominio-plin.netlify.app/">Plin</button>
+      <button class="boton" data-url="https://dominio-bbva.netlify.app/">BBVA</button>
+      <button class="boton" data-url="https://dominio-bn.netlify.app/">Banco de la Nación</button>
+      <button class="boton" data-url="https://dominio-cajaarequipa.netlify.app/">Caja Arequipa</button>
+    </nav>
+  </main>
+  <script>
+    document.querySelectorAll('.boton').forEach(button => {
+      button.addEventListener('click', () => {
+        window.location.href = button.getAttribute('data-url');
+      });
+    });
+  </script>
 </body>
 </html>
