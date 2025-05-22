@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Perfil Editable con Avatar y localStorage</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #eef2f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .perfil-container {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      width: 360px;
+      text-align: center;
+    }
+    .avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #4a90e2;
+      margin-bottom: 15px;
+      cursor: pointer;
+    }
+    .nombre,
+    .usuario,
+    .dato {
+      margin: 10px 0;
+      color: #333;
+    }
+    .dato span {
+      font-weight: bold;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    input[type="file"] {
+      display: none;
+    }
+    .boton {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background-color: #4a90e2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .boton:hover {
+      background-color: #357bd8;
+    }
+  </style>
+</head>
+<body>
+  <div class="perfil-container">
+    <label for="avatarInput">
+      <img class="avatar" id="avatarImg" src="https://i.pravatar.cc/150?img=15" alt="Avatar" title="Haz clic para cambiar avatar" />
+    </label>
+    <input type="file" id="avatarInput" accept="image/*" />
+
+    <div class="nombre" id="nombreDisplay"></div>
+    <div class="usuario" id="usuarioDisplay"></div>
+
+    <div class="dato">
+      <span>Correo:</span>
+      <div id="correoDisplay"></div>
+    </div>
+
+    <div class="dato">
+      <span>Contraseña:</span>
+      <div id="claveDisplay">********</div>
+    </div>
+
+    <div id="editFields" style="display: none;">
+      <input type="text" id="nombreInput" placeholder="Nombre" />
+      <input type="text" id="usuarioInput" placeholder="Usuario" />
+      <input type="email" id="correoInput" placeholder="Correo" />
+      <input type="password" id="claveInput" placeholder="Contraseña" />
+    </div>
+
+    <button class="boton" onclick="toggleEdit()" id="editBtn">Editar Perfil</button>
+  </div>
+
+  <script>
+    let editando = false;
+
+    // Cargar datos guardados o por defecto
+    function cargarDatos() {
+      const nombre = localStorage.getItem('nombre') || 'soporte vip';
+      const usuario = localStorage.getItem('usuario') || '@kevintechtutorialsoporte';
+      const correo = localStorage.getItem('correo') || 'soporte@example.com';
+      const clave = localStorage.getItem('clave') || '';
+      const avatar = localStorage.getItem('avatar');
+
+      document.getElementById('nombreDisplay').textContent = nombre;
+      document.getElementById('usuarioDisplay').textContent = usuario;
+      document.getElementById('correoDisplay').textContent = correo;
+      document.getElementById('claveDisplay').textContent = clave ? '********' : '';
+
+      if (avatar) {
+        document.getElementById('avatarImg').src = avatar;
+      }
+    }
+
+    // Guardar datos en localStorage
+    function guardarDatos(nombre, usuario, correo, clave) {
+      localStorage.setItem('nombre', nombre);
+      localStorage.setItem('usuario', usuario);
+      localStorage.setItem('correo', correo);
+      if (clave) {
+        localStorage.setItem('clave', clave);
+      }
+    }
+
+    // Alternar edición
+    function toggleEdit() {
+      const nombreDisplay = document.getElementById('nombreDisplay');
+      const usuarioDisplay = document.getElementById('usuarioDisplay');
+      const correoDisplay = document.getElementById('correoDisplay');
+      const claveDisplay = document.getElementById('claveDisplay');
+
+      const nombreInput = document.getElementById('nombreInput');
+      const usuarioInput = document.getElementById('usuarioInput');
+      const correoInput = document.getElementById('correoInput');
+      const claveInput = document.getElementById('claveInput');
+
+      const editFields = document.getElementById('editFields');
+      const editBtn = document.getElementById('editBtn');
+
+      if (!editando) {
+        // Modo edición
+        nombreInput.value = nombreDisplay.textContent;
+        usuarioInput.value = usuarioDisplay.textContent;
+        correoInput.value = correoDisplay.textContent;
+        claveInput.value = '';
+
+        nombreDisplay.style.display = 'none';
+        usuarioDisplay.style.display = 'none';
+        correoDisplay.style.display = 'none';
+        claveDisplay.style.display = 'none';
+        editFields.style.display = 'block';
+        editBtn.textContent = 'Guardar';
+        editando = true;
+      } else {
+        // Guardar cambios
+        const nombreVal = nombreInput.value.trim() || 'Sin nombre';
+        const usuarioVal = usuarioInput.value.trim() || '@sinusuario';
+        const correoVal = correoInput.value.trim() || 'sin@correo.com';
+        const claveVal = claveInput.value;
+
+        nombreDisplay.textContent = nombreVal;
+        usuarioDisplay.textContent = usuarioVal;
+        correoDisplay.textContent = correoVal;
+        claveDisplay.textContent = claveVal ? '********' : '';
+
+        guardarDatos(nombreVal, usuarioVal, correoVal, claveVal);
+
+        nombreDisplay.style.display = 'block';
+        usuarioDisplay.style.display = 'block';
+        correoDisplay.style.display = 'block';
+        claveDisplay.style.display = 'block';
+        editFields.style.display = 'none';
+        editBtn.textContent = 'Editar Perfil';
+        editando = false;
+      }
+    }
+
+    // Cambiar avatar y guardarlo en localStorage como base64
+    document.getElementById('avatarInput').addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const imgBase64 = e.target.result;
+        document.getElementById('avatarImg').src = imgBase64;
+        localStorage.setItem('avatar', imgBase64);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    window.onload = cargarDatos;
+  </script>
+</body>
+</html>
