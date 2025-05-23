@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Página de Inicio</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #121212;
+      color: #f0f0f0;
+      height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .menu-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1001;
+    }
+
+    .hamburger {
+      font-size: 32px;
+      background: none;
+      border: none;
+      color: #ffffff;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .hamburger:hover {
+      transform: scale(1.1);
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      right: -260px;
+      width: 250px;
+      height: 100%;
+      background-color: #1f1f1f;
+      box-shadow: -3px 0 8px rgba(0, 0, 0, 0.4);
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      transition: right 0.3s ease;
+      z-index: 1000;
+    }
+
+    .sidebar.mostrar {
+      right: 0;
+    }
+
+    .boton {
+      background: #007bff;
+      color: #fff;
+      border: none;
+      padding: 12px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s ease;
+    }
+
+    .boton:hover {
+      background: #0056b3;
+    }
+
+    .contenedor {
+      max-width: 600px;
+      margin: 120px auto 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .caja {
+      background-color: #1e1e1e;
+      padding: 25px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .mensaje {
+      font-size: 26px;
+      font-weight: bold;
+      color: #00bcd4;
+    }
+
+    .descripcion {
+      font-size: 17px;
+      color: #cccccc;
+    }
+
+    .ocultar {
+      display: none;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px 0;
+      background: #35424a;
+      color: #ffffff;
+    }
+
+    @media (max-width: 768px) {
+      .features {
+        flex-direction: column;
+      }
+      .feature {
+        flex: 1 1 100%;
+      }
+      .screenshots {
+        flex-direction: column;
+      }
+    }
+
+    .extra-info {
+      background: #ffffff;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .extra-info p {
+      font-size: 16px;
+    }
+
+    .emoji {
+      font-size: 24px;
+    }
+
+    /* Estilos del modal VIP */
+    #vipModal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: #1f1f1f;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 400px;
+      color: #fff;
+    }
+
+    .modal-content h2 {
+      margin-bottom: 15px;
+      color: #ff5252;
+    }
+
+    .modal-content p {
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+
+    .modal-content button {
+      background-color: #ff5252;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .modal-content button:hover {
+      background-color: #ff0000;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Botón hamburguesa -->
+  <div class="menu-toggle">
+    <button class="hamburger" onclick="toggleSidebar()">☰</button>
+  </div>
+
+  <!-- Menú lateral -->
+  <div class="sidebar" id="sidebar">
+    <button class="boton" onclick="irA('#')">Perfil</button>
+    <button class="boton" onclick="irA('#')">Sistema</button>
+    <button class="boton" onclick="irA('#')">Apps Fake</button>
+    <button class="boton" onclick="irA('#')">Transferencia Bancaria</button>
+    <button class="boton" onclick="irA('#')">Soporte</button>
+    <button class="boton" onclick="irA('#')">Cerrar Sesión</button>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="contenedor" id="contenido">
+    <div class="caja mensaje" id="mensaje">¡Bienvenido!</div>
+
+    <div class="caja descripcion" id="descripcion">
+      Bienvenido a la mejor página donde podrás pagar cualquier servicio de manera profesional.
+    </div>
+
+    <div class="caja descripcion">Todos nuestros sistemas están sincronizados a APIs reales</div>
+    <div class="caja descripcion">Contamos con soporte para cualquier duda o apoyo</div>
+    <div class="caja descripcion">Todos los datos son entregados a cada uno y si hace mal uso no nos hacemos responsables</div>
+    <div class="caja descripcion">El sistema cuenta con un seguimiento de lo que haces. Si haces algo malo, se suspenderá tu cuenta.</div>
+
+    <footer>
+      <p>Desarrollado por <strong>KEVINTECHTUTORIALS</strong></p>
+      <p>Todos los derechos reservados ©️</p>
+    </footer>
+  </div>
+
+  <!-- Modal de advertencia VIP -->
+  <div id="vipModal">
+    <div class="modal-content">
+      <h2>Acceso Restringido</h2>
+      <p>Para acceder a esta página necesitas una suscripción VIP.</p>
+      <a href="https://tusitio.com/suscripcion" target="_blank">
+        <button>Obtener Suscripción VIP</button>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    function irA(url) {
+      window.location.href = url;
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const mensaje = document.getElementById('mensaje');
+      const descripcion = document.getElementById('descripcion');
+
+      sidebar.classList.toggle('mostrar');
+
+      if (sidebar.classList.contains('mostrar')) {
+        mensaje.classList.add('ocultar');
+        descripcion.classList.add('ocultar');
+      } else {
+        mensaje.classList.remove('ocultar');
+        descripcion.classList.remove('ocultar');
+      }
+    }
+
+    // Mostrar el modal después de 10 segundos
+    window.onload = function () {
+      setTimeout(() => {
+        document.getElementById("vipModal").style.display = "flex";
+        document.getElementById("contenido").style.display = "none";
+      }, 4000);
+    };
+  </script>
+
+</body>
+</html>

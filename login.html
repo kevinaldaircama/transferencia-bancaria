@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Iniciar sesión</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Iniciar sesión</h2>
+    <form id="loginForm">
+      <input type="email" id="logEmail" placeholder="Correo electrónico" required />
+      <input type="password" id="logPass" placeholder="Contraseña" required />
+      <button type="submit">Entrar</button>
+    </form>
+    <p>¿No tienes cuenta? <a href="register.html">Regístrate aquí</a></p>
+  </div>
+
+  <script>
+      // Configuración Firebase (igual que en register.js)
+const firebaseConfig = {
+  apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
+    authDomain: "sistema-27b31.firebaseapp.com",
+    projectId: "sistema-27b31",
+    storageBucket: "sistema-27b31.firebasestorage.app",
+    messagingSenderId: "32031316083",
+    appId: "1:32031316083:web:32cef8736c5a77fbb9f206",
+    measurementId: "G-JSXX8PF8BC"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+document.getElementById('loginForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const email = document.getElementById('logEmail').value;
+  const password = document.getElementById('logPass').value;
+
+  auth.signInWithEmailAndPassword(email, password)
+    .then(userCredential => {
+      const user = userCredential.user;
+      if (user.emailVerified) {
+        // Redirigir a página principal
+        window.location.href = "bienvenido.html";
+      } else {
+        alert('Debes verificar tu correo antes de iniciar sesión.');
+        auth.signOut();
+      }
+    })
+    .catch(error => {
+      alert('Error: ' + error.message);
+    });
+});
+  </script>
+</body>
+</html>
