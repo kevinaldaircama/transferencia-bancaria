@@ -1,73 +1,110 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>index</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            color: #333;
-        }
-        header {
-            background: linear-gradient(to right, #35424a, #e8491d);
-            color: #ffffff;
-            padding: 40px 0;
-            text-align: center;
-        }
-        header img {
-            width: 100px; /* Ajusta el tamaño del ícono aquí */
-            margin-bottom: 20px;
-        }
-        .cta {
-            background: #e8491d;
-            color: #ffffff;
-            padding: 15px 30px;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background 0.3s;
-            font-size: 18px;
-        }
-        .cta:hover {
-            background: #c43e17;
-        }
-        .features {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-            padding: 20px 0;
-        }
-        .feature {
-            background: #ffffff;
-            border: 1px solid #dddddd;
-            border-radius: 5px;
-            padding: 20px;
-            margin: 10px;
-            flex: 1 1 30%;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        .feature h3 {
-            color: #35424a;
-        }
-        .screenshots {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            padding: 20px 0;
-        }
-        .screenshot {
-            margin: 10px;
-        }
-        .screenshot img {
-            max-width: 300px; /* Ajusta el tamaño de las capturas aquí */
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Inicio</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #121212;
+      color: #f0f0f0;
+      height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .menu-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1001;
+    }
+
+    .hamburger {
+      font-size: 32px;
+      background: none;
+      border: none;
+      color: #ffffff;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .hamburger:hover {
+      transform: scale(1.1);
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      right: -260px;
+      width: 250px;
+      height: 100%;
+      background-color: #1f1f1f;
+      box-shadow: -3px 0 8px rgba(0, 0, 0, 0.4);
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      transition: right 0.3s ease;
+      z-index: 1000;
+    }
+
+    .sidebar.mostrar {
+      right: 0;
+    }
+
+    .boton {
+      background: #007bff;
+      color: #fff;
+      border: none;
+      padding: 12px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s ease;
+    }
+
+    .boton:hover {
+      background: #0056b3;
+    }
+
+    .contenedor {
+      max-width: 600px;
+      margin: 120px auto 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .caja {
+      background-color: #1e1e1e;
+      padding: 25px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .mensaje {
+      font-size: 26px;
+      font-weight: bold;
+      color: #00bcd4;
+    }
+
+    .descripcion {
+      font-size: 17px;
+      color: #cccccc;
+    }
+
+    .ocultar {
+      display: none;
+    }
+    
+     }
         footer {
             text-align: center;
             padding: 20px 0;
@@ -99,46 +136,73 @@
         .emoji {
             font-size: 24px;
         }
-    </style>
+  </style>
 </head>
 <body>
-    <header>
-<h1>🌟sistema multi funcional 🌟</h1>
-        <p>¡la mejor página web donde vas a poder ganar dinero!</p>
-        <a href="carga.html" class="cta">compra tu acceso</a>
-    </header>
 
-    <div class="container">
-        <section class="features">
-            <div class="feature">
-                <h3>✨ sistema de calidad</h3>
-                <p>sistema de calidad con las mejores referencias.</p>
-            </div>
-            <div class="feature">
-                <h3>📄 monto a tu gusto</h3>
-                <p>puedes tener el monto que tu desees solo comprando el sistema.</p>
-            </div>
-            <div class="feature">
-                <h3>💬 Buen entretenimiento </h3>
-                <p>puedes entretenerte mientras ver películas y ganando dinero.</p>
-            </div>
-            <div class="feature">
-                <h3>👤 tus datos son seguros</h3>
-                <p>toda tu información son guardados y no le damos a nadie sin permiso de ustedes.</p>
-            </div>
-        </section>
+  <!-- Botón hamburguesa -->
+  <div class="menu-toggle">
+    <button class="hamburger" onclick="toggleSidebar()">☰</button>
+  </div>
 
-        <!-- Información adicional -->
-        <section class="extra-info">
-            <h2>🔗 Más Información</h2>
-            <p>si quieres comunicate con el creador bienvenido:</p>
-            <a href="https://appcreator24herramientas.blogspot.com/" class="cta">contacto del creador 🌐</a>
-        </section>
+  <!-- Menú lateral -->
+  <div class="sidebar" id="sidebar">
+    <button class="boton" onclick="irA('#')">inicio</button>
+    <button class="boton" onclick="irA('sistema.html')">contacto</button>
+    <button class="boton" onclick="irA('registro.html')">registrarse</button>
+    <button class="boton" onclick="irA('login.html')">iniciar sesión</button>
+    <button class="boton" onclick="irA('menu.html')">cuenta premium</button>
+    <button class="boton" onclick="irA('idioma.html')">lenguaje</button>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="contenedor" id="contenido">
+    <div class="caja mensaje" id="mensaje">¡Bienvenido!</div>
+    
+    <div class="caja descripcion" id="descripcion">
+      Bienvenido a la mejor página donde podrás pagar cualquier servicio de manera profesional.
     </div>
-
+    
+    <div class="caja descripcion" id="descripcion">
+     todos nuestros sistema están sincronizadas a api reales 
+    </div>
+    <div class="caja descripcion" id="descripcion">
+      contamos con soporte para cualquier duda o apoyo 
+    </div>
+    <div class="caja descripcion" id="descripcion">
+      todos los datos son entregados a cada uno y si hace mal uso no nos hacemos responsable 
+    </div>
+    <div class="caja descripcion" id="descripcion">
+      el sistema cuenta con un seguimiento de lo que hace si haces algo malo te suspendemos la cuenta 
+    </div>
     <footer>
         <p>Desarrollado por <strong>KEVINTECHTUTORIALS </strong></p>
         <p>todo los derechos reservados ©️</p>
     </footer>
+  </div>
+
+  <script>
+    function irA(url) {
+      window.location.href = url;
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const mensaje = document.getElementById('mensaje');
+      const descripcion = document.getElementById('descripcion');
+
+      sidebar.classList.toggle('mostrar');
+
+      // Ocultar mensaje y descripción si se muestra el menú
+      if (sidebar.classList.contains('mostrar')) {
+        mensaje.classList.add('ocultar');
+        descripcion.classList.add('ocultar');
+      } else {
+        mensaje.classList.remove('ocultar');
+        descripcion.classList.remove('ocultar');
+      }
+    }
+  </script>
+
 </body>
 </html>
