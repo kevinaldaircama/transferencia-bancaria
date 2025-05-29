@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style.css" />
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
 
@@ -15,45 +16,52 @@
     <form id="registerForm">
       <input type="email" id="regEmail" placeholder="Correo electrónico" required />
       <input type="password" id="regPass" placeholder="Contraseña" required />
+      <div class="g-recaptcha" data-sitekey="6LelTk8rAAAAAM2svsIw-flrlvqhBZiNIuKgiqHw"></div>
       <button type="submit">Registrarse</button>
     </form>
     <p>¿Ya tienes cuenta? <a href="login.html">Inicia sesión aquí</a></p>
   </div>
 
   <script>
-      // Configuración Firebase (reemplaza con tus datos)
-const firebaseConfig = {
-  apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
-    authDomain: "sistema-27b31.firebaseapp.com",
-    projectId: "sistema-27b31",
-    storageBucket: "sistema-27b31.firebasestorage.app",
-    messagingSenderId: "32031316083",
-    appId: "1:32031316083:web:32cef8736c5a77fbb9f206",
-    measurementId: "G-JSXX8PF8BC"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
+      authDomain: "sistema-27b31.firebaseapp.com",
+      projectId: "sistema-27b31",
+      storageBucket: "sistema-27b31.firebasestorage.app",
+      messagingSenderId: "32031316083",
+      appId: "1:32031316083:web:32cef8736c5a77fbb9f206",
+      measurementId: "G-JSXX8PF8BC"
+    };
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
 
-document.getElementById('registerForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const email = document.getElementById('regEmail').value;
-  const password = document.getElementById('regPass').value;
+    document.getElementById('registerForm').addEventListener('submit', (e) => {
+      e.preventDefault();
 
-  auth.createUserWithEmailAndPassword(email, password)
-    .then(userCredential => {
-      const user = userCredential.user;
-      return user.sendEmailVerification();
-    })
-    .then(() => {
-      alert('Correo de verificación enviado. Revisa tu bandeja de entrada.');
-      auth.signOut();
-      window.location.href = "login.html";  // Llevar a login después del registro
-    })
-    .catch(error => {
-      alert('Error: ' + error.message);
+      const email = document.getElementById('regEmail').value;
+      const password = document.getElementById('regPass').value;
+      const recaptchaResponse = grecaptcha.getResponse();
+
+      if (!recaptchaResponse) {
+        alert('Por favor verifica que no eres un robot.');
+        return;
+      }
+
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          const user = userCredential.user;
+          return user.sendEmailVerification();
+        })
+        .then(() => {
+          alert('Correo de verificación enviado. Revisa tu bandeja de entrada.');
+          auth.signOut();
+          window.location.href = "login.html";
+        })
+        .catch(error => {
+          alert('Error: ' + error.message);
+        });
     });
-});
   </script>
 </body>
 </html>
