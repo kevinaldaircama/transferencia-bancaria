@@ -2,197 +2,188 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login de inicio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Iniciar Sesión</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
-
     body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
+      justify-content: center;
       height: 100vh;
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
     }
-
-    .container {
-      background: white;
+    form, #google-btn {
+      background: #fff;
       padding: 20px;
       border-radius: 10px;
-      box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
-      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin: 10px;
       width: 300px;
-      animation: fadeIn 1s ease-in-out;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    h2 {
-      margin-bottom: 15px;
-      color: #333;
-    }
-
-    input {
+    input, button {
       width: 100%;
-      padding: 10px;
       margin: 10px 0;
+      padding: 10px;
+      border-radius: 5px;
       border: 1px solid #ccc;
-      border-radius: 5px;
-      transition: 0.3s;
     }
-
-    input:focus {
-      border-color: #2a5298;
-      outline: none;
-      box-shadow: 0 0 10px rgba(42, 82, 152, 0.3);
-    }
-
     button {
-      width: 100%;
-      padding: 10px;
-      background: #2a5298;
-      color: white;
+      background-color: #007bff;
+      color: #fff;
       border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-      transition: 0.3s;
     }
-
-    button:hover {
-      background: #1e3c72;
-    }
-
-    .solicitar-btn {
-      background: #ff9800;
-      margin-top: 10px;
-    }
-
-    .message {
-      margin-top: 15px;
-      font-size: 14px;
+    #google-btn {
+      background-color: #db4437;
       color: white;
-      padding: 10px;
-      border-radius: 5px;
-      display: none;
+      cursor: pointer;
     }
 
-    .error {
-      background: #ff4d4d;
-    }
-
-    .success {
-      background: #28a745;
-    }
-
+    /* Modal */
     .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
       display: none;
-      justify-content: center;
-      align-items: center;
+      position: fixed;
+      z-index: 999;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      align-items: center; justify-content: center;
     }
-
     .modal-content {
       background: white;
-      padding: 20px;
+      padding: 30px;
       border-radius: 10px;
-      width: 300px;
       text-align: center;
+      width: 80%;
+      max-width: 400px;
     }
-
-    .close {
-      background: red;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      cursor: pointer;
-      margin-top: 10px;
-      border-radius: 5px;
-    }
-
-    .buy-btn {
-      background: #ff9800;
-      margin-top: 10px;
+    .modal button {
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h2>Iniciar Sesión</h2>
-    <input type="text" id="usuario" placeholder="👤" />
-    <input type="password" id="password" placeholder="🔓" />
-    <button onclick="verificarLogin()">Ingresar</button>
-    <button class="solicitar-btn" onclick="window.location.href='pago.html'">Solicitar acceso</button>
-    <div id="mensaje" class="message"></div>
-  </div>
+  <h2>Iniciar Sesión</h2>
+  <form id="loginForm">
+    <input type="email" id="email" placeholder="Correo electrónico" required />
+    <input type="password" id="password" placeholder="Contraseña" required />
+    <button type="submit">Entrar</button>
+  </form>
+  <button id="google-btn">Iniciar sesión con Google</button>
 
-  <div class="modal" id="modal">
+  <!-- Modal -->
+  <div class="modal" id="estadoModal">
     <div class="modal-content">
-      <h3>Compra tu acceso</h3>
-      <p>Para registrarte, haz clic en el botón de abajo.</p>
-      <button class="buy-btn" onclick="window.location.href='pago.html'">Comprar</button>
-      <button class="close" onclick="cerrarModal()">Cerrar</button>
+      <p id="modalMensaje"></p>
+      <button id="continuarBtn">Continuar</button>
     </div>
   </div>
 
-  <script>
-    const usuariosRegistrados = {
-      "admin": { password: "1234", destino: "menu.html" },
-      "sistema": { password: "sistema", destino: "sistema.html" },
-      "fake": { password: "fake", destino: "fake.html" }, "dinero": { password: "dinerovip", destino: "nuevaPagina.html" }
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      signInWithPopup,
+      GoogleAuthProvider
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB8trNcvfkXBo6eMfQc85O5J1R-s8sF-rQ",
+    authDomain: "sistem-86419.firebaseapp.com",
+    projectId: "sistem-86419",
+    storageBucket: "sistem-86419.firebasestorage.app",
+    messagingSenderId: "370404958161",
+    appId: "1:370404958161:web:4502f01d9a5b71961d0af0",
+    measurementId: "G-PLNZV8YC4F"
     };
 
-    function verificarLogin() {
-      const usuario = document.getElementById("usuario").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const mensaje = document.getElementById("mensaje");
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
 
-      if (!usuario || !password) {
-        mostrarMensaje("Todos los campos son obligatorios.", "error");
-        return;
-      }
+    const modal = document.getElementById("estadoModal");
+    const mensaje = document.getElementById("modalMensaje");
+    const continuarBtn = document.getElementById("continuarBtn");
 
-      const datosUsuario = usuariosRegistrados[usuario];
-
-      if (datosUsuario && datosUsuario.password === password) {
-        mostrarMensaje("Usuario verificado", "success");
-        setTimeout(() => {
-          window.location.href = datosUsuario.destino;
-        }, 1000);
-      } else {
-        mostrarMensaje("Usuario y contraseña no registrados.", "error");
-        setTimeout(abrirModal, 1000);
-      }
-    }
-
-    function mostrarMensaje(texto, tipo) {
-      const mensaje = document.getElementById("mensaje");
+    const mostrarModal = (texto, redireccion) => {
       mensaje.textContent = texto;
-      mensaje.className = `message ${tipo}`;
-      mensaje.style.display = "block";
-    }
+      modal.style.display = "flex";
+      continuarBtn.onclick = () => window.location.href = redireccion;
+    };
 
-    function abrirModal() {
-      document.getElementById("modal").style.display = "flex";
-    }
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
 
-    function cerrarModal() {
-      document.getElementById("modal").style.display = "none";
-    }
+      try {
+        const result = await signInWithEmailAndPassword(auth, email, password);
+        const uid = result.user.uid;
+        const docRef = doc(db, "usuarios", uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const estado = docSnap.data().estado;
+          switch (estado) {
+            case "aprobado":
+              mostrarModal("Tu cuenta fue aprobada.", "dashboard.html");
+              break;
+            case "rechazado":
+              mostrarModal("Tu cuenta fue rechazada.", "rechazado.html");
+              break;
+            case "eliminado":
+              mostrarModal("Tu cuenta fue eliminada.", "eliminado.html");
+              break;
+            default:
+              mostrarModal("Tu cuenta está en revisión.", "revision.html");
+          }
+        } else {
+          alert("No se encontró información de usuario.");
+        }
+      } catch (error) {
+        alert("Error: " + error.message);
+      }
+    });
+
+    document.getElementById("google-btn").addEventListener("click", async () => {
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const uid = result.user.uid;
+        const docRef = doc(db, "usuarios", uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const estado = docSnap.data().estado;
+          switch (estado) {
+            case "aprobado":
+              mostrarModal("Tu cuenta fue aprobada.", "dashboard.html");
+              break;
+            case "rechazado":
+              mostrarModal("Tu cuenta fue rechazada.", "rechazado.html");
+              break;
+            case "eliminado":
+              mostrarModal("Tu cuenta fue eliminada.", "eliminado.html");
+              break;
+            default:
+              mostrarModal("Tu cuenta está en revisión.", "revision.html");
+          }
+        } else {
+          mostrarModal("Cuenta registrada por Google, pero aún no tienes acceso. Espera aprobación.", "revision.html");
+        }
+      } catch (error) {
+        alert("Error con Google: " + error.message);
+      }
+    });
   </script>
 
 </body>
