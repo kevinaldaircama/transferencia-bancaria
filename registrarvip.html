@@ -19,6 +19,8 @@
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
     }
     input, button {
       width: 100%;
@@ -31,12 +33,11 @@
       background-color: #007bff;
       color: #fff;
       border: none;
-    }
-    #google-btn {
-      background-color: #db4437;
-      color: #fff;
+      cursor: pointer;
     }
   </style>
+  <!-- ✅ reCAPTCHA -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
 
@@ -45,18 +46,19 @@
     <input type="text" id="name" placeholder="Nombre completo" required />
     <input type="email" id="email" placeholder="Correo electrónico" required />
     <input type="password" id="password" placeholder="Contraseña" required />
+    
+    <!-- 🧠 CAPTCHA -->
+    <div class="g-recaptcha" data-sitekey="6LelTk8rAAAAAM2svsIw-flrlvqhBZiNIuKgiqHw"></div> <!-- REEMPLAZA ESTO -->
+
     <button type="submit">Registrarse</button>
   </form>
-  <button id="google-btn">Registrarse con Google</button>
 
   <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
       getAuth,
-      createUserWithEmailAndPassword,
-      signInWithPopup,
-      GoogleAuthProvider
+      createUserWithEmailAndPassword
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import {
       getFirestore,
@@ -77,14 +79,19 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    const provider = new GoogleAuthProvider();
 
     const form = document.getElementById("registerForm");
-    const googleBtn = document.getElementById("google-btn");
 
-    // Registro con correo y contraseña
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+
+      // Validar CAPTCHA
+      const captchaResponse = grecaptcha.getResponse();
+      if (!captchaResponse) {
+        alert("Por favor, completa el reCAPTCHA.");
+        return;
+      }
+
       const name = document.getElementById("name").value;
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
@@ -104,25 +111,6 @@
         window.location.href = "login.html";
       } catch (error) {
         alert("Error: " + error.message);
-      }
-    });
-
-    // Registro con Google
-    googleBtn.addEventListener("click", async () => {
-      try {
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-        const docRef = doc(db, "usuarios", user.uid);
-        await setDoc(docRef, {
-          nombre: user.displayName,
-          email: user.email,
-          fechaRegistro: new Date().toLocaleString(),
-          estado: "pendiente"
-        });
-        alert("Registro con Google exitoso. Tu cuenta está en revisión.");
-        window.location.href = "login.html";
-      } catch (error) {
-        alert("Error con Google: " + error.message);
       }
     });
   </script>
