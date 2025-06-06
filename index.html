@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Inicio</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#121212" />
+  <link rel="icon" type="image/png" href="icon-192.png">
   <style>
     * {
       margin: 0;
@@ -11,21 +14,18 @@
       box-sizing: border-box;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-
     body {
       background-color: #121212;
       color: #f0f0f0;
       height: 100vh;
       overflow-x: hidden;
     }
-
     .menu-toggle {
       position: fixed;
       top: 20px;
       right: 20px;
       z-index: 1001;
     }
-
     .hamburger {
       font-size: 32px;
       background: none;
@@ -34,11 +34,9 @@
       cursor: pointer;
       transition: transform 0.2s ease;
     }
-
     .hamburger:hover {
       transform: scale(1.1);
     }
-
     .sidebar {
       position: fixed;
       top: 0;
@@ -54,11 +52,9 @@
       transition: right 0.3s ease;
       z-index: 1000;
     }
-
     .sidebar.mostrar {
       right: 0;
     }
-
     .boton {
       background: #007bff;
       color: #fff;
@@ -69,18 +65,15 @@
       font-size: 16px;
       transition: background 0.3s ease;
     }
-
     .boton:hover {
       background: #0056b3;
     }
-
     .contenedor {
       max-width: 600px;
       margin: 120px auto 0;
       padding: 20px;
       text-align: center;
     }
-
     .caja {
       background-color: #1e1e1e;
       padding: 25px;
@@ -88,64 +81,55 @@
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
-
     .mensaje {
       font-size: 26px;
       font-weight: bold;
       color: #00bcd4;
     }
-
     .descripcion {
       font-size: 17px;
       color: #cccccc;
     }
-
     .ocultar {
       display: none;
     }
-    
-     }
-        footer {
-            text-align: center;
-            padding: 20px 0;
-            background: #35424a;
-            color: #ffffff;
-        }
-        @media (max-width: 768px) {
-            .features {
-                flex-direction: column;
-            }
-            .feature {
-                flex: 1 1 100%;
-            }
-            .screenshots {
-                flex-direction: column;
-            }
-        }
-        .extra-info {
-            background: #ffffff;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        .extra-info p {
-            font-size: 16px;
-        }
-        .emoji {
-            font-size: 24px;
-        }
+    footer {
+      text-align: center;
+      padding: 20px 0;
+      background: #35424a;
+      color: #ffffff;
+    }
+    @media (max-width: 768px) {
+      .features {
+        flex-direction: column;
+      }
+      .feature {
+        flex: 1 1 100%;
+      }
+      .screenshots {
+        flex-direction: column;
+      }
+    }
+    .extra-info {
+      background: #ffffff;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .extra-info p {
+      font-size: 16px;
+    }
+    .emoji {
+      font-size: 24px;
+    }
   </style>
 </head>
 <body>
-
-  <!-- Botón hamburguesa -->
   <div class="menu-toggle">
     <button class="hamburger" onclick="toggleSidebar()">☰</button>
   </div>
-
-  <!-- Menú lateral -->
   <div class="sidebar" id="sidebar">
     <button class="boton" onclick="irA('#')">inicio</button>
     <button class="boton" onclick="irA('conctacto.html')">contacto</button>
@@ -154,46 +138,29 @@
     <button class="boton" onclick="irA('loginvip.html')">cuenta premium</button>
     <button class="boton" onclick="irA('idioma.html')">lenguaje</button>
   </div>
-
-  <!-- Contenido principal -->
   <div class="contenedor" id="contenido">
     <div class="caja mensaje" id="mensaje">¡Bienvenido!</div>
-    
     <div class="caja descripcion" id="descripcion">
       Bienvenido a la mejor página donde podrás pagar cualquier servicio de manera profesional.
     </div>
-    
-    <div class="caja descripcion" id="descripcion">
-     todos nuestros sistema están sincronizadas a api reales 
-    </div>
-    <div class="caja descripcion" id="descripcion">
-      contamos con soporte para cualquier duda o apoyo 
-    </div>
-    <div class="caja descripcion" id="descripcion">
-      todos los datos son entregados a cada uno y si hace mal uso no nos hacemos responsable 
-    </div>
-    <div class="caja descripcion" id="descripcion">
-      el sistema cuenta con un seguimiento de lo que hace si haces algo malo te suspendemos la cuenta 
-    </div>
+    <div class="caja descripcion">todos nuestros sistema están sincronizadas a api reales</div>
+    <div class="caja descripcion">contamos con soporte para cualquier duda o apoyo</div>
+    <div class="caja descripcion">todos los datos son entregados a cada uno y si hace mal uso no nos hacemos responsable</div>
+    <div class="caja descripcion">el sistema cuenta con un seguimiento de lo que hace si haces algo malo te suspendemos la cuenta</div>
     <footer>
         <p>Desarrollado por <strong>KEVINTECHTUTORIALS </strong></p>
         <p>todo los derechos reservados ©️</p>
     </footer>
   </div>
-
   <script>
     function irA(url) {
       window.location.href = url;
     }
-
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
       const mensaje = document.getElementById('mensaje');
       const descripcion = document.getElementById('descripcion');
-
       sidebar.classList.toggle('mostrar');
-
-      // Ocultar mensaje y descripción si se muestra el menú
       if (sidebar.classList.contains('mostrar')) {
         mensaje.classList.add('ocultar');
         descripcion.classList.add('ocultar');
@@ -202,7 +169,11 @@
         descripcion.classList.remove('ocultar');
       }
     }
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(reg => console.log('✔️ Service Worker registrado'))
+        .catch(err => console.error('❌ Error al registrar el SW:', err));
+    }
   </script>
-
 </body>
 </html>
