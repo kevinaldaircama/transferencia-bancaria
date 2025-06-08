@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Depósitos</title>
+  <style>
+    body { font-family: sans-serif; background: #f4f4f4; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+    th { background: #222; color: white; }
+    button { margin-right: 5px; }
+  </style>
+</head>
+<body>
+  <h2>Panel de Administración</h2>
+  <table id="tabla">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Fecha</th>
+        <th>Hora</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyB8trNcvfkXBo6eMfQc85O5J1R-s8sF-rQ",
+    authDomain: "sistem-86419.firebaseapp.com",
+    projectId: "sistem-86419",
+    storageBucket: "sistem-86419.appspot.com",
+    messagingSenderId: "370404958161",
+    appId: "1:370404958161:web:4502f01d9a5b71961d0af0",
+    measurementId: "G-PLNZV8YC4F"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  async function cargarDepositos() {
+    const snapshot = await db.collection("depositos").get();
+    const tbody = document.querySelector("#tabla tbody");
+    tbody.innerHTML = "";
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${data.nombre}</td>
+        <td>${data.fecha}</td>
+        <td>${data.hora}</td>
+        <td>
+          <button onclick='ver("${doc.id}")'>Ver</button>
+          <button onclick='aceptar("${doc.id}")'>Aceptar</button>
+          <button onclick='rechazar("${doc.id}")'>Rechazar</button>
+        </td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  async function ver(id) {
+    const doc = await db.collection("depositos").doc(id).get();
+    if (doc.exists) {
+      const data = doc.data();
+      alert(`Nombre: ${data.nombre}
+Código: ${data.codigo}
+Imagen: ${data.imagen}`);
+    }
+  }
+
+  async function aceptar(id) {
+    await db.collection("depositos").doc(id).update({ estado: "aceptado" });
+    alert("Pago aceptado");
+    cargarDepositos();
+  }
+
+  async function rechazar(id) {
+    const motivo = prompt("Motivo del rechazo:");
+    if (motivo) {
+      await db.collection("depositos").doc(id).update({ estado: "rechazado", motivo });
+      alert("Pago rechazado");
+      cargarDepositos();
+    }
+  }
+
+  cargarDepositos();
+</script>
+</body>
+</html>
