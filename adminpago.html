@@ -17,6 +17,7 @@
     <thead>
       <tr>
         <th>Nombre</th>
+        <th>WhatsApp</th>
         <th>Fecha</th>
         <th>Hora</th>
         <th>Acciones</th>
@@ -50,25 +51,15 @@
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${data.nombre}</td>
+        <td>${data.whatsapp || 'N/A'}</td>
         <td>${data.fecha}</td>
         <td>${data.hora}</td>
         <td>
-          <button onclick='ver("${doc.id}")'>Ver</button>
           <button onclick='aceptar("${doc.id}")'>Aceptar</button>
           <button onclick='rechazar("${doc.id}")'>Rechazar</button>
         </td>`;
       tbody.appendChild(tr);
     });
-  }
-
-  async function ver(id) {
-    const doc = await db.collection("depositos").doc(id).get();
-    if (doc.exists) {
-      const data = doc.data();
-      alert(`Nombre: ${data.nombre}
-Código: ${data.codigo}
-Imagen: ${data.imagen}`);
-    }
   }
 
   async function aceptar(id) {
@@ -80,8 +71,8 @@ Imagen: ${data.imagen}`);
   async function rechazar(id) {
     const motivo = prompt("Motivo del rechazo:");
     if (motivo) {
-      await db.collection("depositos").doc(id).update({ estado: "rechazado", motivo });
-      alert("Pago rechazado");
+      await db.collection("depositos").doc(id).delete();
+      alert("Depósito rechazado y eliminado.");
       cargarDepositos();
     }
   }
