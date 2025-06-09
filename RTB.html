@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Restablecer Contraseña</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .mensaje {
+      margin-top: 15px;
+      color: green;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Restablecer Contraseña</h2>
+  <input type="email" id="email" placeholder="Ingresa tu correo" required />
+  <button onclick="enviarCorreo()">Enviar enlace</button>
+  <p id="estado" class="mensaje"></p>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB8trNcvfkXBo6eMfQc85O5J1R-s8sF-rQ",
+    authDomain: "sistem-86419.firebaseapp.com",
+    projectId: "sistem-86419",
+    storageBucket: "sistem-86419.appspot.com",
+    messagingSenderId: "370404958161",
+    appId: "1:370404958161:web:4502f01d9a5b71961d0af0",
+    measurementId: "G-PLNZV8YC4F"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  window.enviarCorreo = async () => {
+    const email = document.getElementById('email').value;
+    const estado = document.getElementById('estado');
+    estado.textContent = "";
+    estado.classList.remove("error");
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      estado.textContent = "📧 Se ha enviado el enlace para restablecer tu contraseña.";
+    } catch (error) {
+      estado.textContent = "⚠️ Error: " + error.message;
+      estado.classList.add("error");
+    }
+  };
+</script>
+
+</body>
+</html>
