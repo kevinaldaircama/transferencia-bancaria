@@ -1,15 +1,12 @@
+<!-- deposito.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Depósito</title>
   <style>
-    body {
-      margin: 0;
-      font-family: sans-serif;
-      background-color: #111;
-    }
+    body { margin: 0; font-family: sans-serif; background-color: #111; }
     .card {
       max-width: 500px;
       margin: 20px auto;
@@ -25,9 +22,7 @@
       display: block;
       margin: 0 auto;
     }
-    .bank-info,
-    .amount,
-    .instructions {
+    .bank-info, .amount, .instructions {
       text-align: center;
       margin-top: 10px;
     }
@@ -44,18 +39,13 @@
       font-size: 14px;
       color: #333;
     }
-    input,
-    button {
+    input, button {
       display: block;
       width: 100%;
       margin-top: 10px;
       padding: 10px;
       font-size: 14px;
       border-radius: 6px;
-    }
-    input[type="file"] {
-      background: white;
-      border: 1px solid #ccc;
     }
     button {
       background-color: #3ad29f;
@@ -71,10 +61,7 @@
     }
     #modal {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0, 0, 0, 0.8);
       display: none;
       justify-content: center;
@@ -88,113 +75,109 @@
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="qr">
-      <img src="qr-code.png" alt="QR" />
-    </div>
-    <div class="bank-info">
-      <p>Banco: <strong>DALE</strong></p>
-      <p>Nombre: Larry Mayer Pacaya Soria</p>
-      <p>Nro cuenta: 9220030000255967493</p>
-      <p>CCI: 9220030000255967493</p>
-    </div>
-    <div class="amount">200 PEN</div>
-    <div class="instructions">
-      <strong>Instrucciones:</strong>
-      Escanea el QR o súbelo desde tu galería. Envía una captura y tu código de seguridad.
-    </div>
-    <input type="text" id="nombre" placeholder="Tu nombre" />
-    <input type="text" id="codigo" placeholder="Código de seguridad" />
-    <input type="file" id="comprobante" accept="image/*" />
-    <button onclick="enviar()">Confirmar Depósito</button>
-    <div class="footer">Al confirmar, aceptas nuestros términos.</div>
+
+<div class="card">
+  <div class="qr">
+    <img src="yape.png" alt="QR">
   </div>
+  <div class="bank-info">
+    <p>Banco: <strong>yape</strong></p>
+    <p>Nombre: luz veronica Serna</p>
+    <p>Nro: 934075884</p>
+    <p></p>
+  </div>
+  <div class="amount">30 PEN</div>
+   <div class="instructions">
+    <strong>⚠️ Instrucciones:</strong>
+    1. Ingresa a la app de tu entidad financiera.<br>
+    2. Elige la opción “Transferir por Código QR o Número telefónico”.<br>
+    3. Escanea este código QR o súbelo desde tu galería.<br>
+    4. Antes de confirmar el pago, verifica que el banco beneficiario sea ❗<b>yape</b>❗. Si el nombre del banco es diferente, ¡NO CONFIRMES LA TRANSFERENCIA!<br>
+    5. Escriba bien su datos correspondientes y espera a que el moderador verifique tu pago.
+  </div>
+  <input type="text" id="nombre" placeholder="Tu nombre">
+  <input type="text" id="codigo" placeholder="Código de seguridad">
+  <input type="text" id="whatsapp" placeholder="Tu número de WhatsApp">
+  <button onclick="enviar()">Confirmar Depósito</button>
+  <div class="footer">
+    Al confirmar, aceptas nuestros términos.
+  </div>
+</div>
 
-  <div id="modal"></div>
+<div id="modal"></div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyB8trNcvfkXBo6eMfQc85O5J1R-s8sF-rQ",
-      authDomain: "sistem-86419.firebaseapp.com",
-      projectId: "sistem-86419",
-      storageBucket: "sistem-86419.appspot.com",
-      messagingSenderId: "370404958161",
-      appId: "1:370404958161:web:4502f01d9a5b71961d0af0",
-      measurementId: "G-PLNZV8YC4F"
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyB8trNcvfkXBo6eMfQc85O5J1R-s8sF-rQ",
+    authDomain: "sistem-86419.firebaseapp.com",
+    projectId: "sistem-86419",
+    storageBucket: "sistem-86419.appspot.com",
+    messagingSenderId: "370404958161",
+    appId: "1:370404958161:web:4502f01d9a5b71961d0af0",
+    measurementId: "G-PLNZV8YC4F"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  const modal = document.getElementById('modal');
+
+  function mostrarModal(mensaje, duracion = 1000) {
+    modal.textContent = mensaje;
+    modal.style.display = "flex";
+    setTimeout(() => {
+      modal.style.display = "none";
+    }, duracion);
+  }
+
+  async function enviar() {
+    const nombre = document.getElementById('nombre').value.trim();
+    const codigo = document.getElementById('codigo').value.trim();
+    const whatsapp = document.getElementById('whatsapp').value.trim();
+
+    if (!nombre || !codigo || !whatsapp) {
+      mostrarModal("Todos los campos son obligatorios.");
+      return;
+    }
+
+    const fecha = new Date();
+    const data = {
+      nombre,
+      codigo,
+      whatsapp,
+      estado: 'pendiente',
+      fecha: fecha.toLocaleDateString(),
+      hora: fecha.toLocaleTimeString(),
+      motivo: ''
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const storage = firebase.storage();
+    const docRef = await db.collection('depositos').add(data);
+    localStorage.setItem('depositoId', docRef.id);
 
-    const modal = document.getElementById("modal");
+    mostrarModal("✅ Felicitaciones, tu pago está en proceso. se le notificara por Whatsapp...");
+  }
 
-    function mostrarModal(mensaje) {
-      modal.textContent = mensaje;
-      modal.style.display = "flex";
-    }
+  async function verificarEstado() {
+    const id = localStorage.getItem('depositoId');
+    if (!id) return;
 
-    function ocultarModal() {
-      modal.style.display = "none";
-    }
+    const doc = await db.collection('depositos').doc(id).get();
+    if (!doc.exists) return;
 
-    async function enviar() {
-      const nombre = document.getElementById("nombre").value.trim();
-      const codigo = document.getElementById("codigo").value.trim();
-      const archivo = document.getElementById("comprobante").files[0];
-
-      if (!nombre || !codigo || !archivo) {
-        mostrarModal("Todos los campos son obligatorios.");
-        setTimeout(ocultarModal, 1000); // 1 segundo
-        return;
-      }
-
-      mostrarModal("Subiendo comprobante...");
-
-      const fecha = new Date();
-      const ref = storage.ref().child(`comprobantes/${fecha.getTime()}_${archivo.name}`);
-      await ref.put(archivo);
-      const url = await ref.getDownloadURL();
-
-      const data = {
-        nombre,
-        codigo,
-        imagen: url,
-        estado: "pendiente",
-        fecha: fecha.toLocaleDateString(),
-        hora: fecha.toLocaleTimeString(),
-        motivo: ""
-      };
-
-      const docRef = await db.collection("depositos").add(data);
-
-      localStorage.setItem("depositoId", docRef.id);
-
-      // Mensaje permanece visible (no se oculta automáticamente)
+    const data = doc.data();
+    if (data.estado === 'pendiente') {
       mostrarModal("✅ Felicitaciones, tu pago está en proceso. Espere por favor...");
+    } else if (data.estado === 'aceptado') {
+      mostrarModal("✅ Tu pago fue aceptado. Haz clic en continuar.");
+    } else if (data.estado === 'rechazado') {
+      mostrarModal(`❌ Tu pago fue rechazado. Motivo: ${data.motivo}`);
     }
+  }
 
-    async function verificarEstado() {
-      const id = localStorage.getItem("depositoId");
-      if (!id) return;
+  window.onload = verificarEstado;
+</script>
 
-      const doc = await db.collection("depositos").doc(id).get();
-      if (!doc.exists) return;
-
-      const data = doc.data();
-      if (data.estado === "pendiente") {
-        mostrarModal("✅ Felicitaciones, tu pago está en proceso. Espere por favor...");
-      } else if (data.estado === "aceptado") {
-        mostrarModal("✅ Tu pago fue aceptado. Haz clic en continuar.");
-      } else if (data.estado === "rechazado") {
-        mostrarModal(`❌ Tu pago fue rechazado. Motivo: ${data.motivo}`);
-      }
-    }
-
-    window.onload = verificarEstado;
-  </script>
 </body>
 </html>
