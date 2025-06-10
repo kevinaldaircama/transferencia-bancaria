@@ -5,14 +5,25 @@
   <title>Admin Depósitos</title>
   <style>
     body { font-family: sans-serif; background: #f4f4f4; padding: 20px; }
-    table { width: 100%; border-collapse: collapse; }
+    table { width: 100%; border-collapse: collapse; display: none; }
     th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
     th { background: #222; color: white; }
     button { margin-right: 5px; }
+    .mensaje-error {
+      color: red;
+      font-weight: bold;
+      font-size: 18px;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
+
   <h2>Panel de Administración</h2>
+  <div class="mensaje-error" id="mensajeError" style="display:none;">
+    Acceso denegado. Solo el administrador puede ver esta página.
+  </div>
+
   <table id="tabla">
     <thead>
       <tr>
@@ -26,58 +37,72 @@
     <tbody></tbody>
   </table>
 
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyB8trNcvfkXBo6eMfQc85O5J1R-s8sF-rQ",
-    authDomain: "sistem-86419.firebaseapp.com",
-    projectId: "sistem-86419",
-    storageBucket: "sistem-86419.appspot.com",
-    messagingSenderId: "370404958161",
-    appId: "1:370404958161:web:4502f01d9a5b71961d0af0",
-    measurementId: "G-PLNZV8YC4F"
-  };
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyB8trNcvfkXBo6eMfQc85O5J1R-s8sF-rQ",
+      authDomain: "sistem-86419.firebaseapp.com",
+      projectId: "sistem-86419",
+      storageBucket: "sistem-86419.appspot.com",
+      messagingSenderId: "370404958161",
+      appId: "1:370404958161:web:4502f01d9a5b71961d0af0",
+      measurementId: "G-PLNZV8YC4F"
+    };
 
-  async function cargarDepositos() {
-    const snapshot = await db.collection("depositos").get();
-    const tbody = document.querySelector("#tabla tbody");
-    tbody.innerHTML = "";
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${data.nombre}</td>
-        <td>${data.whatsapp || 'N/A'}</td>
-        <td>${data.fecha}</td>
-        <td>${data.hora}</td>
-        <td>
-          <button onclick='aceptar("${doc.id}")'>Aceptar</button>
-          <button onclick='rechazar("${doc.id}")'>Rechazar</button>
-        </td>`;
-      tbody.appendChild(tr);
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const adminEmail = "admin@tucorreo.com"; // ← Cambia esto por el correo del admin autorizado
+
+    auth.onAuthStateChanged(user => {
+      if (user && user.email === adminEmail) {
+        document.getElementById("tabla").style.display = "table";
+        cargarDepositos();
+      } else {
+        document.getElementById("mensajeError").style.display = "block";
+      }
     });
-  }
 
-  async function aceptar(id) {
-    await db.collection("depositos").doc(id).update({ estado: "aceptado" });
-    alert("Pago aceptado");
-    cargarDepositos();
-  }
+    async function cargarDepositos() {
+      const snapshot = await db.collection("depositos").get();
+      const tbody = document.querySelector("#tabla tbody");
+      tbody.innerHTML = "";
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${data.nombre}</td>
+          <td>${data.whatsapp || 'N/A'}</td>
+          <td>${data.fecha}</td>
+          <td>${data.hora}</td>
+          <td>
+            <button onclick='aceptar("${doc.id}")'>Aceptar</button>
+            <button onclick='rechazar("${doc.id}")'>Rechazar</button>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+    }
 
-  async function rechazar(id) {
-    const motivo = prompt("Motivo del rechazo:");
-    if (motivo) {
-      await db.collection("depositos").doc(id).delete();
-      alert("Depósito rechazado y eliminado.");
+    async function aceptar(id) {
+      await db.collection("depositos").doc(id).update({ estado: "aceptado" });
+      alert("Pago aceptado");
       cargarDepositos();
     }
-  }
 
-  cargarDepositos();
-</script>
+    async function rechazar(id) {
+      const motivo = prompt("Motivo del rechazo:");
+      if (motivo) {
+        await db.collection("depositos").doc(id).delete();
+        alert("Depósito rechazado y eliminado.");
+        cargarDepositos();
+      }
+    }
+  </script>
+
 </body>
 </html>
