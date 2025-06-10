@@ -18,6 +18,7 @@
 
     .contenedor {
       padding: 30px 20px 10px;
+      display: none; /* Oculto por defecto */
     }
 
     .titulo {
@@ -64,17 +65,30 @@
       color: #ccc;
       border-top: 1px solid #444;
     }
+
+    .mensaje-error {
+      text-align: center;
+      padding: 20px;
+      font-size: 18px;
+      color: #ff6666;
+    }
   </style>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 </head>
 <body>
 
-  <div class="contenedor">
-    <div class="titulo">panel admin</div>
+  <div class="contenedor" id="menuAdmin">
+    <div class="titulo">Panel Admin</div>
     <div class="botones">
-      <button class="boton" onclick="irA('admin.html')">solicitud de usuario </button>
-      <button class="boton" onclick="irA('adminpago.html')">verificar pago</button>
- 
+      <button class="boton" onclick="irA('admin.html')">Solicitud de usuario</button>
+      <button class="boton" onclick="irA('adminpago.html')">Verificar pago</button>
     </div>
+  </div>
+
+  <div class="mensaje-error" id="mensajeError" style="display:none;">
+    Acceso denegado. Solo el administrador puede acceder a este panel.
   </div>
 
   <div class="footer">
@@ -82,6 +96,30 @@
   </div>
 
   <script>
+    // Configura Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyB8trNcvfkXBo6eMfQc85O5J1R-s8sF-rQ",
+    authDomain: "sistem-86419.firebaseapp.com",
+    projectId: "sistem-86419",
+    storageBucket: "sistem-86419.appspot.com",
+    messagingSenderId: "370404958161",
+    appId: "1:370404958161:web:4502f01d9a5b71961d0af0",
+    measurementId: "G-PLNZV8YC4F"
+  };
+
+    firebase.initializeApp(firebaseConfig);
+
+    // Correo del admin autorizado
+    const adminEmail = "admin@tucorreo.com"; // ← CAMBIA esto por tu correo admin
+
+    firebase.auth().onAuthStateChanged(user => {
+      if (user && user.email === adminEmail) {
+        document.getElementById('menuAdmin').style.display = 'block';
+      } else {
+        document.getElementById('mensajeError').style.display = 'block';
+      }
+    });
+
     function irA(url) {
       window.location.href = url;
     }
