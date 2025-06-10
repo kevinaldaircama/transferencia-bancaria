@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Turbo Mines - Depósito</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #111216;
+      color: white;
+    }
+
+    .container {
+      padding: 20px;
+      max-width: 500px;
+      margin: auto;
+    }
+
+    .deposit-box {
+      background: #1c1e22;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #292b2f;
+      padding: 10px 15px;
+      border-radius: 12px 12px 0 0;
+    }
+
+    .header span {
+      font-weight: bold;
+      color: white;
+      display: flex;
+      align-items: center;
+    }
+
+    .header span::before {
+      content: "🎁";
+      margin-right: 8px;
+    }
+
+    .back-link {
+      color: #4baaff;
+      cursor: pointer;
+    }
+
+    .content {
+      padding: 20px 15px;
+      background: #1c1e22;
+      border-radius: 0 0 12px 12px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: none;
+      border-radius: 8px;
+      background: #2e3036;
+      color: white;
+      font-size: 16px;
+    }
+
+    .confirm-button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(to right, #1ac65e, #21d071);
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .footer-text {
+      font-size: 12px;
+      text-align: center;
+      margin-top: 20px;
+      color: #aaa;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.8);
+    }
+
+    .modal-content {
+      background-color: #1c1e22;
+      margin: 15% auto;
+      padding: 20px;
+      border-radius: 12px;
+      width: 80%;
+      max-width: 400px;
+      text-align: center;
+      color: white;
+    }
+
+    .modal-content p {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .modal-button {
+      padding: 12px 20px;
+      background: #21d071;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="deposit-box">
+      <div class="header">
+        <span>Bonus Code</span>
+        <div class="back-link" onclick="history.back()">Regresar</div>
+      </div>
+
+      <div class="content">
+        <input type="text" id="codigoInput" placeholder="Introduce el código para recargar tu cuenta">
+        <button class="confirm-button" onclick="verificarCodigo()">Confirmar depósito</button>
+      </div>
+    </div>
+
+    <div class="footer-text">
+      Al hacer clic en el botón "Recargar", acepta los Términos del Acuerdo de uso del sitio
+    </div>
+  </div>
+
+<!-- Agrega este bloque dentro del <body> de tu archivo HTML existente -->
+
+<!-- Modal Verificando -->
+<div id="modalVerificando" class="modal">
+  <div class="modal-content">
+    <p>⏳ Verificando código... espere un momento</p>
+  </div>
+</div>
+
+<!-- Modal Éxito -->
+<div id="modalExito" class="modal">
+  <div class="modal-content">
+    <p>✅ ¡Código válido! Tu depósito ha sido confirmado.</p>
+    <button class="modal-button" onclick="window.location.href='registrarvip'">Continuar</button>
+  </div>
+</div>
+
+<!-- Modal Error -->
+<div id="modalError" class="modal">
+  <div class="modal-content">
+    <p>❌ Código incorrecto. Intenta nuevamente.</p>
+    <button class="modal-button" onclick="cerrarModal('modalError')">Cerrar</button>
+  </div>
+</div>
+
+<!-- Script -->
+<script>
+  function verificarCodigo() {
+    const input = document.getElementById("codigoInput").value.trim();
+
+    // Mostrar modal "verificando..."
+    document.getElementById("modalVerificando").style.display = "block";
+
+    setTimeout(() => {
+      // Ocultar modal de verificación
+      document.getElementById("modalVerificando").style.display = "none";
+
+      // Verificar código
+      if (input === "kevintechtutorials") {
+        document.getElementById("modalExito").style.display = "block";
+      } else {
+        document.getElementById("modalError").style.display = "block";
+      }
+    }, 2000); // 2 segundos
+  }
+
+  function cerrarModal(id) {
+    document.getElementById(id).style.display = "none";
+  }
+
+  // Cierra cualquier modal si se hace clic fuera de su contenido
+  window.onclick = function(event) {
+    if (event.target.classList.contains('modal')) {
+      event.target.style.display = "none";
+    }
+  }
+</script>
+
+</body>
+</html>
