@@ -110,7 +110,7 @@
     firebase.initializeApp(firebaseConfig);
 
     // Correo del admin autorizado
-    const adminEmail = "admin@tucorreo.com"; // ← CAMBIA esto por tu correo admin
+    const adminEmail = "kevinaldaircamachoserna8.18@gmail.com"; // ← CAMBIA esto por tu correo admin
 
     firebase.auth().onAuthStateChanged(user => {
       if (user && user.email === adminEmail) {
