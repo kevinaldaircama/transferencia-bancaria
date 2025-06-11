@@ -1,99 +1,79 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Iniciar Sesión</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inicio - Mi App</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f2f2f2;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-    form {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      margin: 10px;
-      width: 300px;
-    }
-    input, button {
-      width: 100%;
-      margin: 10px 0;
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background-color: #007bff;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-    }
+    /* Reset y base */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #111; color: #eee; }
 
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 999;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      align-items: center; justify-content: center;
-    }
-    .modal-content {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      text-align: center;
-      width: 80%;
-      max-width: 400px;
-    }
-    .modal button {
-      margin-top: 20px;
-    }
+    /* Menú hamburguesa */
+    .menu-toggle { position: fixed; top: 10px; left: 10px; z-index: 2000; }
+    .hamburger { font-size: 28px; background: none; border: none; color: #eee; cursor: pointer; }
+    .sidebar { position: fixed; top: 0; left: -250px; width: 220px; height: 100%; background: #222; padding: 20px; box-shadow: 4px 0 10px rgba(0,0,0,0.5); transition: left 0.3s ease; z-index: 1500; }
+    .sidebar.mostrar { left: 0; }
+    .boton { width: 100%; padding: 12px; margin: 8px 0; background: #007bff; border: none; border-radius: 8px; color: #fff; cursor: pointer; font-size: 16px; }
+    .boton:hover { background: #0056b3; }
+
+    /* Contenido principal */
+    .contenedor { padding: 80px 20px 40px; max-width: 900px; margin: auto; text-align: center; }
+    .caja { background: #222; margin-bottom: 20px; padding: 20px; border-radius: 10px; }
+
+    footer { text-align: center; padding: 20px; background: #1a1a1a; color: #999; font-size: 14px; }
+
+    /* Modal */
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 3000; }
+    .modal.ocultar { display: none; }
+    .modal-content { background: #fff; color: #222; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); animation: fadeIn 0.4s ease; text-align: center; }
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    .modal-content h2 { margin-bottom: 20px; color: #007bff; }
+    .modal-content button { background: #007bff; color: #fff; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; transition: background 0.3s; font-size: 16px; }
+    .modal-content button:hover { background: #0056b3; }
   </style>
-
-  <!-- ✅ reCAPTCHA -->
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
 
-  <h2>Iniciar Sesión</h2>
-  <form id="loginForm">
-    <input type="email" id="email" placeholder="Correo electrónico" required />
-    <input type="password" id="password" placeholder="Contraseña" required />
-    
-    <!-- 🧠 CAPTCHA -->
-    <div class="g-recaptcha" data-sitekey="6LelTk8rAAAAAM2svsIw-flrlvqhBZiNIuKgiqHw"></div>
+  <!-- Menú hamburguesa -->
+  <div class="menu-toggle"><button class="hamburger" onclick="toggleSidebar()">☰</button></div>
 
-    <button type="submit">Entrar</button>
-  </form>
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+          <button class="boton" onclick="irA('index.html')">inicio</button>
+    <button class="boton" onclick="irA('perfil.html')">Perfil</button>
+    <button class="boton" onclick="irA('sistema.html')">Sistema</button>
+    <button class="boton" onclick="irA('fake.html')">Apps Fake</button>
+    <button class="boton" onclick="irA('https://t.me/kevintechtutorialssoporte')">Soporte</button>
+ 
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="contenedor">
+    <div class="caja">Bienvenido a la mejor plataforma para pagar servicios profesionalmente.</div>
+    <div class="caja">Sistemas sincronizados con APIs reales.</div>
+    <div class="caja">Soporte disponible para cualquier duda.</div>
+    <div class="caja">Responsabilidad por el uso de datos recae en el usuario.</div>
+    <div class="caja">Monitoreo de actividad y suspensión por uso incorrecto.</div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>Desarrollado por <strong>KEVINTECHTUTORIALS</strong></p>
+    <p>Todos los derechos reservados ©️</p>
+  </footer>
 
   <!-- Modal -->
-  <div class="modal" id="estadoModal">
-    <div class="modal-content">
-      <p id="modalMensaje"></p>
-      <button id="continuarBtn">Continuar</button>
+  <div id="modal" class="modal ocultar">
+    <div class="modal-content" id="modal-content">
+      <!-- Aquí se crea el contenido dinámicamente -->
     </div>
   </div>
 
-  <!-- Firebase -->
+  <!-- Firebase (versión modular) -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getAuth,
-      signInWithEmailAndPassword
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import {
-      getFirestore,
-      doc,
-      getDoc
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB8trNcvfkXBo6eMfQc85O5J1R-s8sF-rQ",
@@ -107,59 +87,40 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db = getFirestore(app);
 
-    const modal = document.getElementById("estadoModal");
-    const mensaje = document.getElementById("modalMensaje");
-    const continuarBtn = document.getElementById("continuarBtn");
+    const modal = document.getElementById("modal");
+    const modalContent = document.getElementById("modal-content");
 
-    const mostrarModal = (texto, redireccion) => {
-      mensaje.textContent = texto;
-      modal.style.display = "flex";
-      continuarBtn.onclick = () => window.location.href = redireccion;
-    };
-
-    document.getElementById("loginForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      // Validar CAPTCHA
-      const captchaResponse = grecaptcha.getResponse();
-      if (!captchaResponse) {
-        alert("Por favor, completa el reCAPTCHA.");
-        return;
-      }
-
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-
-      try {
-        const result = await signInWithEmailAndPassword(auth, email, password);
-        const uid = result.user.uid;
-        const docRef = doc(db, "usuarios", uid);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          const estado = docSnap.data().estado;
-          switch (estado) {
-            case "aprobado":
-              mostrarModal("Tu cuenta fue aprobada.", "menu.html");
-              break;
-            case "rechazado":
-              mostrarModal("Tu cuenta fue rechazada.", "rechazado.html");
-              break;
-            case "eliminado":
-              mostrarModal("Tu cuenta fue eliminada.", "eliminado.html");
-              break;
-            default:
-              mostrarModal("Tu cuenta está en revisión.", "revision.html");
-          }
-        } else {
-          alert("No se encontró información de usuario.");
-        }
-      } catch (error) {
-        alert("Error: " + error.message);
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        modal.classList.remove("ocultar");
+        modalContent.innerHTML = `
+          <h2>Inicio de sesión exitoso</h2>
+          <button id="btnAceptar">Aceptar</button>
+        `;
+        document.getElementById("btnAceptar").addEventListener("click", () => {
+          modal.classList.add("ocultar");
+        });
+      } else {
+        modal.classList.remove("ocultar");
+        modalContent.innerHTML = `
+          <h2>no puedes acceder yá que no cuentas con una suscripción</h2>
+          <button id="btnIniciar">comprar ahora</button>
+        `;
+        document.getElementById("btnIniciar").addEventListener("click", () => {
+          window.location.href = 'login.html';
+        });
       }
     });
+
+    window.toggleSidebar = () => document.getElementById("sidebar").classList.toggle("mostrar");
+    window.irA = url => { 
+      if (url === 'index.html') {
+        signOut(auth).then(() => window.location.href = 'login.html');
+      } else {
+        window.location.href = url;
+      }
+    };
   </script>
 
 </body>
