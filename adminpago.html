@@ -57,7 +57,7 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    const adminEmail = "admin@tucorreo.com"; // ← Cambia esto por el correo del admin autorizado
+    const adminEmail = "kevinaldaircamachoserna8.18@gmail.com"; // ← Cambia esto por el correo del admin autorizado
 
     auth.onAuthStateChanged(user => {
       if (user && user.email === adminEmail) {
