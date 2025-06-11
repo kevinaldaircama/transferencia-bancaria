@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Historial de transacciones</title>
+  <script type="module">
+    // Importar Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB8trNcvfkXBo6eMfQc85O5J1R-s8sF-rQ",
+      authDomain: "sistem-86419.firebaseapp.com",
+      projectId: "sistem-86419",
+      storageBucket: "sistem-86419.firebasestorage.app",
+      messagingSenderId: "370404958161",
+      appId: "1:370404958161:web:4502f01d9a5b71961d0af0",
+      measurementId: "G-PLNZV8YC4F"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const email = user.email;
+        const depositosRef = collection(db, "depositos");
+        const q = query(depositosRef, where("email", "==", email));
+
+        try {
+          const querySnapshot = await getDocs(q);
+          const lista = document.getElementById("lista-transacciones");
+          lista.innerHTML = "";
+
+          if (querySnapshot.empty) {
+            lista.innerHTML = "<p>No hay transacciones registradas.</p>";
+          }
+
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const estadoTexto = data.estado === "aceptado" ? "Depósito aceptado" :
+                                data.estado === "rechazado" ? "Depósito rechazado" :
+                                "En proceso";
+            const colorEstado = data.estado === "aceptado" ? "green" :
+                                data.estado === "rechazado" ? "red" :
+                                "orange";
+            const icono = data.metodo.toLowerCase() === "yape" ? "yape" : "banco";
+            const fecha = data.fecha?.toDate?.().toLocaleDateString() || "Sin fecha";
+
+            const tarjeta = document.createElement("div");
+            tarjeta.classList.add("transaction-card");
+            tarjeta.innerHTML = `
+              <div class="icon tipo ${icono}"></div>
+              <div class="info">
+                <p class="titulo">${data.metodo}</p>
+                <p class="estado" style="color:${colorEstado}">${estadoTexto}</p>
+              </div>
+              <div class="detalle">
+                <p class="fecha">${fecha}</p>
+                <p class="monto">S/. ${data.monto} ${data.estado === "rechazado" ? "<span class='rechazado'>✖</span>" : data.estado === "aceptado" ? "✔️" : "⏳"}</p>
+              </div>
+            `;
+            lista.appendChild(tarjeta);
+          });
+        } catch (error) {
+          console.error("Error al obtener transacciones:", error);
+        }
+      } else {
+        alert("Debes iniciar sesión para ver tu historial.");
+        window.location.href = "login.html";
+      }
+    });
+  </script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background-color: #0f111a;
+      color: white;
+    }
+    .container {
+      padding: 16px;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    .tab {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: none;
+      background-color: #2a2e3d;
+      color: white;
+      cursor: pointer;
+    }
+    .tab.active {
+      background-color: #007bff;
+    }
+    .transaction-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .transaction-card {
+      background-color: #1e2130;
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .icon.tipo {
+      width: 40px;
+      height: 40px;
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+    .icon.banco {
+      background-image: url('https://img.icons8.com/ios-filled/50/bank.png');
+    }
+    .icon.yape {
+      background-image: url('https://seeklogo.com/images/Y/yape-logo-22986E8E0E-seeklogo.com.png');
+      background-size: 100%;
+    }
+    .info .titulo {
+      font-weight: bold;
+      margin: 0;
+    }
+    .info .estado {
+      font-size: 14px;
+      margin: 0;
+    }
+    .detalle {
+      text-align: right;
+    }
+    .fecha {
+      font-size: 14px;
+      color: #ccc;
+      margin: 0;
+    }
+    .monto {
+      font-weight: bold;
+      font-size: 16px;
+      margin: 0;
+    }
+    .rechazado {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>Historial de transacciones</h2>
+    </div>
+    <div class="tabs">
+      <button class="tab active">Todas</button>
+      <button class="tab">Depósitos</button>
+      <button class="tab">Retiros</button>
+    </div>
+    <div id="lista-transacciones" class="transaction-list">
+      <p>Cargando transacciones...</p>
+    </div>
+  </div>
+</body>
+</html>
