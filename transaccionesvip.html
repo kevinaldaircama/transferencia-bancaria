@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Historial de transacciones</title>
+  <style>
+      body {
+  margin: 0;
+  font-family: sans-serif;
+  background-color: #0f111a;
+  color: white;
+}
+
+.container {
+  padding: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.back-btn {
+  background: none;
+  color: white;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.tab {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: none;
+  background-color: #2a2e3d;
+  color: white;
+  cursor: pointer;
+}
+
+.tab.active {
+  background-color: #007bff;
+}
+
+.transaction-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.transaction-card {
+  background-color: #1e2130;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.icon.tipo {
+  width: 40px;
+  height: 40px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.icon.banco {
+  background-image: url('YAPE.svg');
+}
+
+.icon.yape {
+  background-image: url('https://seeklogo.com/images/Y/yape-logo-22986E8E0E-seeklogo.com.png');
+  background-size: 100%;
+}
+
+.info .titulo {
+  font-weight: bold;
+  margin: 0;
+}
+
+.info .estado {
+  color: #00ff2d;
+  font-size: 14px;
+  margin: 0;
+}
+
+.detalle {
+  text-align: right;
+}
+
+.fecha {
+  font-size: 14px;
+  color: #ccc;
+  margin: 0;
+}
+
+.monto {
+  font-weight: bold;
+  font-size: 16px;
+  margin: 0;
+}
+
+.rechazado {
+  color: red;
+  font-weight: bold;
+}
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      
+      <h2>Historial de transacciones</h2>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active">Todas</button>
+      <button class="tab">Depósitos</button>
+      
+    </div>
+
+    <div class="transaction-list">
+      <!-- Repite este bloque por cada transacción -->
+      <div class="transaction-card">
+        <div class="icon tipo banco"></div>
+        <div class="info">
+          <p class="titulo">pago por yape</p>
+          <p class="estado">Depósito aceptado</p>
+        </div>
+        <div class="detalle">
+  
+          <p class="monto">S/. 30 <span class="rechazado"></span></p>
+        </div>
+      </div>
+
+      
+    </div>
+  </div>
+
+</body>
+</html>
