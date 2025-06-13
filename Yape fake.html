@@ -7,7 +7,27 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+  <script>
+    // ⚠️ Reemplaza estos valores con los de tu proyecto Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyB8trNcvfkXBo6eMfQc85O5J1R-s8sF-rQ",
+      authDomain: "sistem-86419.firebaseapp.com",
+      projectId: "sistem-86419",
+      storageBucket: "sistem-86419.firebasestorage.app",
+      messagingSenderId: "370404958161",
+      appId: "1:370404958161:web:4502f01d9a5b71961d0af0",
+      measurementId: "G-PLNZV8YC4F"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
+
   <style>
+    /* Tu CSS existente aquí (sin cambios) */
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
@@ -123,7 +143,7 @@
       border-radius: 15px;
       margin-top: 20px;
     }
-    #modalCompartir {
+    #modalCompartir, #modalSesion {
       display: none;
       position: fixed;
       inset: 0;
@@ -165,7 +185,6 @@
       <option value="Agora">Agora</option>
     </select>
     <div class="g-recaptcha" data-sitekey="6LelTk8rAAAAAM2svsIw-flrlvqhBZiNIuKgiqHw"></div>
-
     <button onclick="validarYGenerar()">Generar</button>
     <div class="mensaje" id="mensaje"></div>
   </div>
@@ -206,6 +225,16 @@
     <button onclick="descargarPDF()">Descargar PDF</button>
     <button onclick="compartir()">Compartir</button><br>
     <button onclick="cerrarModal()" style="background-color: lightgray;">Cancelar</button>
+  </div>
+</div>
+
+<!-- Modal de sesión -->
+<div id="modalSesion" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 20; justify-content: center; align-items: center;">
+  <div style="background: white; padding: 20px; border-radius: 10px; text-align: center; max-width: 300px;">
+    <h3 id="mensajeSesion">Verificando sesión...</h3>
+    <button id="botonIniciarSesion" onclick="location.href=' depósito.html'" style="margin-top: 10px; display: none; background-color: #ffc107; border: none; border-radius: 8px; padding: 10px 20px; cursor: pointer;">
+      comprar ahora
+    </button>
   </div>
 </div>
 
@@ -300,6 +329,27 @@
     }
     cerrarModal();
   }
+
+  // Verifica el estado de sesión al cargar
+  window.onload = () => {
+    const modalSesion = document.getElementById('modalSesion');
+    const mensajeSesion = document.getElementById('mensajeSesion');
+    const botonIniciar = document.getElementById('botonIniciarSesion');
+
+    firebase.auth().onAuthStateChanged((user) => {
+      modalSesion.style.display = "flex";
+      if (user) {
+        mensajeSesion.innerText = "Inicio de sesión exitoso ✅";
+        botonIniciar.style.display = "none";
+        setTimeout(() => {
+          modalSesion.style.display = "none";
+        }, 2000);
+      } else {
+        mensajeSesion.innerText = "no puedes acceder yá que no cuentas con una suscripción.";
+        botonIniciar.style.display = "inline-block";
+      }
+    });
+  };
 </script>
 </body>
-</html>
+    </html>
