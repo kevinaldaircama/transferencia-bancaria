@@ -164,7 +164,6 @@
       <option value="Plin">Plin</option>
       <option value="Agora">Agora</option>
     </select>
-    <!-- reCAPTCHA -->
     <div class="g-recaptcha" data-sitekey="6LelTk8rAAAAAM2svsIw-flrlvqhBZiNIuKgiqHw"></div>
 
     <button onclick="validarYGenerar()">Generar</button>
@@ -172,29 +171,31 @@
   </div>
 
   <div id="comprobante" style="display: none;">
-    <div class="logo">
-      <img src="yapelog.png" alt="Yape">
-      <div class="cerrar" onclick="cerrarComprobante()">×</div>
-    </div>
-    <div class="card" id="comprobanteCard">
-      <h2>¡Yapeaste! <span class="share" onclick="mostrarModal()">COMPARTIR</span></h2>
-      <div class="monto" id="verMonto">S/0</div>
-      <div class="nombre" id="verNombre">Nombre</div>
-      <div class="datos" id="verFechaHora">📅 fecha | 🕐 hora</div>
-      <div style="border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; padding: 10px 0; margin: 20px 0;">
-        <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; color: #000;">
-          <div>CÓDIGO DE SEGURIDAD</div>
-          <div id="verCodigo">000</div>
+    <div style="padding: 15px; background-color: #650D89;">
+      <div class="logo">
+        <img src="yapelog.png" alt="Yape">
+        <div class="cerrar" onclick="cerrarComprobante()">×</div>
+      </div>
+      <div class="card" id="comprobanteCard">
+        <h2>¡Yapeaste! <span class="share" onclick="mostrarModal()">COMPARTIR</span></h2>
+        <div class="monto" id="verMonto">S/0</div>
+        <div class="nombre" id="verNombre">Nombre</div>
+        <div class="datos" id="verFechaHora">📅 fecha | 🕐 hora</div>
+        <div style="border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; padding: 10px 0; margin: 20px 0;">
+          <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; color: #000;">
+            <div>CÓDIGO DE SEGURIDAD</div>
+            <div id="verCodigo">000</div>
+          </div>
+        </div>
+        <div class="transaccion-title">Datos de la transacción</div>
+        <div class="info">
+          <p>Nro. de celular <span id="verNumero">*** ***000</span></p>
+          <p>Destino <span id="verDestino">Yape</span></p>
+          <p>Nro. de operación <span id="operacionId">00000000</span></p>
         </div>
       </div>
-      <div class="transaccion-title">Datos de la transacción</div>
-      <div class="info">
-        <p>Nro. de celular <span id="verNumero">*** ***000</span></p>
-        <p>Destino <span id="verDestino">Yape</span></p>
-        <p>Nro. de operación <span id="operacionId">00000000</span></p>
-      </div>
+      <img class="footer-img" src="yape.jpg" alt="Promoción">
     </div>
-    <img class="footer-img" src="yape.jpg" alt="Promoción">
   </div>
 </div>
 
