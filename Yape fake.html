@@ -307,7 +307,10 @@
     const comprobante = document.getElementById('comprobante');
     comprobante.style.backgroundColor = '#650D89';
 
-    const canvas = await html2canvas(comprobante, { scale: 2 });
+    const canvas = await html2canvas(comprobante, {
+  scale: 2,
+  backgroundColor: "#650D89"
+});
     const imgData = canvas.toDataURL('image/png');
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF('p', 'mm', 'a4');
