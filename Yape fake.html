@@ -7,6 +7,7 @@
   <!-- Librerías necesarias -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
   <style>
     body {
@@ -174,7 +175,6 @@
 <body>
 
 <div class="container">
-  <!-- Mensaje inicial -->
   <div class="mensaje" id="mensajeBienvenida">
     ¡Bienvenido! Genera tu comprobante de Yape fake fácilmente.
   </div>
@@ -184,7 +184,6 @@
     <input type="text" id="numero" placeholder="Número de celular" required>
     <input type="text" id="nombre" placeholder="Nombre" required>
     <input type="number" id="monto" placeholder="Monto (S/.)" required>
-
     <select id="destino" required>
       <option value="">Selecciona destino</option>
       <option value="Yape">Yape</option>
@@ -192,30 +191,30 @@
       <option value="Agora">Agora</option>
     </select>
 
+    <!-- reCAPTCHA -->
+    <div class="g-recaptcha" data-sitekey="6LelTk8rAAAAAM2svsIw-flrlvqhBZiNIuKgiqHw"></div>
+
     <button onclick="generarComprobante()">Generar</button>
     <div class="mensaje" id="mensaje"></div>
   </div>
 
-  <!-- Comprobante -->
+  <!-- Comprobante generado -->
   <div id="comprobante" style="display: none;">
     <div class="logo">
       <img src="yapelog.png" alt="Yape">
       <div class="cerrar" onclick="cerrarComprobante()">×</div>
     </div>
-
     <div class="card" id="comprobanteCard">
       <h2>¡Yapeaste! <span class="share" onclick="mostrarModal()">COMPARTIR</span></h2>
       <div class="monto" id="verMonto">S/0</div>
       <div class="nombre" id="verNombre">Nombre</div>
-      <div class="datos" id="verFechaHora">📅 fecha | 🕐 hora</div>
-
+      <div class="datos" id="verFechaHora"> fecha |  hora</div>
       <div style="border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; padding: 10px 0; margin: 20px 0;">
         <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; color: #000;">
           <div>CÓDIGO DE SEGURIDAD</div>
           <div id="verCodigo">000</div>
         </div>
       </div>
-
       <div class="transaccion-title">Datos de la transacción</div>
       <div class="info">
         <p>Nro. de celular <span id="verNumero">*** ***000</span></p>
@@ -249,6 +248,18 @@
       return;
     }
 
+    // Validar reCAPTCHA
+    if (typeof grecaptcha === 'undefined') {
+      alert("No se pudo cargar reCAPTCHA. Intenta recargar la página.");
+      return;
+    }
+
+    const captchaResponse = grecaptcha.getResponse();
+    if (!captchaResponse) {
+      alert("Por favor, verifica que no eres un robot.");
+      return;
+    }
+
     document.getElementById('mensaje').innerText = "Generando datos...";
     setTimeout(() => {
       const now = new Date();
@@ -275,6 +286,7 @@
     document.getElementById('comprobante').style.display = "none";
     document.getElementById('formulario').style.display = "block";
     document.getElementById('mensajeBienvenida').style.display = "block";
+    grecaptcha.reset(); // Reiniciar captcha
   }
 
   function mostrarModal() {
@@ -303,7 +315,7 @@
 
   async function compartir() {
     try {
-      const imageUrl = "https://i.imgur.com/2SG2kXr.png"; // Cambia a tu imagen real si lo deseas
+      const imageUrl = "https://i.imgur.com/2SG2kXr.png";
       const response = await fetch(imageUrl);
       const blob = await response.blob();
       const file = new File([blob], "comprobante.png", { type: blob.type });
