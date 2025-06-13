@@ -4,150 +4,14 @@
   <meta charset="UTF-8">
   <title>Comprobante Yape Fake</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Librerías necesarias -->
+
+  <!-- Librerías -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
   <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #650D89;
-      color: #000;
-    }
-    .container {
-      max-width: 400px;
-      margin: auto;
-      padding: 15px;
-    }
-    input, select, button {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-      border: none;
-      font-size: 16px;
-    }
-    button {
-      background-color: #ffc107;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .mensaje {
-      color: white;
-      text-align: center;
-      font-size: 16px;
-      font-weight: bold;
-      margin-bottom: 15px;
-    }
-    .logo {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .logo img {
-      height: 40px;
-    }
-    .cerrar {
-      width: 35px;
-      height: 35px;
-      background-color: rgba(255,255,255,0.2);
-      border-radius: 50%;
-      color: white;
-      font-size: 20px;
-      text-align: center;
-      line-height: 35px;
-      cursor: pointer;
-    }
-    .card {
-      background: white;
-      border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-    }
-    .card h2 {
-      color: #650D89;
-      font-size: 18px;
-      margin-bottom: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .monto {
-      font-size: 30px;
-      margin: 5px 0;
-      font-weight: bold;
-    }
-    .nombre {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 10px;
-    }
-    .datos {
-      font-size: 14px;
-      color: #333;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    .transaccion-title {
-      font-size: 13px;
-      color: gray;
-      font-weight: bold;
-      margin-bottom: 8px;
-      margin-top: 5px;
-    }
-    .info {
-      font-size: 13px;
-      color: gray;
-      border-top: 1px solid #eee;
-      padding-top: 10px;
-    }
-    .info p {
-      margin: 5px 0;
-    }
-    .info p span {
-      float: right;
-      font-weight: bold;
-      color: #000;
-    }
-    .share {
-      color: #00bfa5;
-      font-size: 13px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .footer-img {
-      width: 100%;
-      border-radius: 15px;
-      margin-top: 20px;
-    }
-    #modalCompartir {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      z-index: 10;
-      justify-content: center;
-      align-items: center;
-    }
-    #modalContenido {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      text-align: center;
-    }
-    #modalContenido h3 {
-      margin-bottom: 20px;
-    }
-    #modalContenido button {
-      margin: 10px 5px 0;
-      width: auto;
-      padding: 10px 20px;
-    }
+    /* ... Tu CSS original va aquí, sin cambios ... */
   </style>
 </head>
 <body>
@@ -161,6 +25,7 @@
     <input type="text" id="numero" placeholder="Número de celular" required>
     <input type="text" id="nombre" placeholder="Nombre" required>
     <input type="number" id="monto" placeholder="Monto (S/.)" required>
+
     <select id="destino" required>
       <option value="">Selecciona destino</option>
       <option value="Yape">Yape</option>
@@ -168,10 +33,10 @@
       <option value="Agora">Agora</option>
     </select>
 
-    <!-- Google reCAPTCHA -->
-    <div class="g-recaptcha" data-sitekey="6LelTk8rAAAAAM2svsIw-flrlvqhBZiNIuKgiqHw" data-callback="captchaValido"></div>
+    <!-- reCAPTCHA -->
+    <div class="g-recaptcha" data-sitekey="6LelTk8rAAAAAM2svsIw-flrlvqhBZiNIuKgiqHw"></div>
 
-    <button id="btnGenerar" onclick="generarComprobante()" disabled>Generar</button>
+    <button onclick="verificarCaptcha()">Generar</button>
     <div class="mensaje" id="mensaje"></div>
   </div>
 
@@ -185,7 +50,8 @@
       <h2>¡Yapeaste! <span class="share" onclick="mostrarModal()">COMPARTIR</span></h2>
       <div class="monto" id="verMonto">S/0</div>
       <div class="nombre" id="verNombre">Nombre</div>
-      <div class="datos" id="verFechaHora">📅 fecha | 🕐 hora</div>
+      <div class="datos" id="verFechaHora"> fecha |  hora</div>
+
       <div style="border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; padding: 10px 0; margin: 20px 0;">
         <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; color: #000;">
           <div>CÓDIGO DE SEGURIDAD</div>
@@ -204,7 +70,7 @@
   </div>
 </div>
 
-<!-- Modal Compartir -->
+<!-- Modal -->
 <div id="modalCompartir">
   <div id="modalContenido">
     <h3>¿Dónde deseas compartir?</h3>
@@ -215,8 +81,13 @@
 </div>
 
 <script>
-  function captchaValido() {
-    document.getElementById("btnGenerar").disabled = false;
+  function verificarCaptcha() {
+    const response = grecaptcha.getResponse();
+    if (!response) {
+      alert("Por favor, completa el reCAPTCHA.");
+      return;
+    }
+    generarComprobante();
   }
 
   function generarComprobante() {
@@ -240,7 +111,7 @@
 
       document.getElementById('verMonto').innerText = `S/${parseFloat(monto).toFixed(2)}`;
       document.getElementById('verNombre').innerText = nombre;
-      document.getElementById('verFechaHora').innerText = ` ${fecha} |  ${hora}`;
+      document.getElementById('verFechaHora').innerText = `${fecha} | ${hora}`;
       document.getElementById('verCodigo').innerText = codigo;
       document.getElementById('verNumero').innerText = `*** ***${numero.slice(-3)}`;
       document.getElementById('operacionId').innerText = operacion;
@@ -268,41 +139,53 @@
 
   async function descargarPDF() {
     const comprobante = document.getElementById('comprobante');
-    const canvas = await html2canvas(comprobante, { scale: 2 });
+    const canvas = await html2canvas(comprobante, {
+      scale: 2,
+      scrollY: -window.scrollY,
+      useCORS: true,
+      windowWidth: document.body.scrollWidth,
+      windowHeight: document.body.scrollHeight
+    });
     const imgData = canvas.toDataURL('image/png');
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF('p', 'mm', 'a4');
     const width = 210;
     const height = (canvas.height * width) / canvas.width;
-
     pdf.addImage(imgData, 'PNG', 0, 0, width, height);
     pdf.save('comprobante.pdf');
     cerrarModal();
   }
 
   async function compartir() {
-    try {
-      const comprobante = document.getElementById('comprobante');
-      const canvas = await html2canvas(comprobante, { scale: 2 });
-      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-      const file = new File([blob], "comprobante.png", { type: blob.type });
+    const comprobante = document.getElementById('comprobante');
+    const canvas = await html2canvas(comprobante, {
+      scale: 2,
+      scrollY: -window.scrollY,
+      useCORS: true,
+      windowWidth: document.body.scrollWidth,
+      windowHeight: document.body.scrollHeight
+    });
 
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    const file = new File([blob], "comprobante.png", { type: "image/png" });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
         await navigator.share({
-          title: "Comprobante",
+          title: "Comprobante Yape",
           text: "Aquí está tu comprobante generado.",
-          files: [file],
+          files: [file]
         });
-      } else {
-        alert("Tu navegador no soporta esta función.");
+      } catch (error) {
+        alert("No se pudo compartir.");
       }
-    } catch (error) {
-      alert("No se pudo compartir.");
-      console.error(error);
+    } else {
+      alert("Tu navegador no soporta compartir archivos.");
     }
+
     cerrarModal();
   }
 </script>
 
 </body>
-</html>
+      </html>
