@@ -15,6 +15,10 @@ const urlsToCache = [
   '/cuentastreaming.html'
   '/bonus.html'
   '/bloqueo.html'
+  '/desbloqueo.html'
+  '/diamantes.html'
+  '/fake.html'
+  '/liberación.html'
 ];
 
 self.addEventListener('install', event => {
