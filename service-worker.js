@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kevintech-cache-v1';
+const CACHE_NAME = 'kevintech-cache-v2';
 const urlsToCache = [
   '/',
   '/index.html',
