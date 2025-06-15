@@ -175,23 +175,10 @@
       }
     
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/service-worker.js').then(registration => {
-    registration.onupdatefound = () => {
-      const newWorker = registration.installing;
-      newWorker.onstatechange = () => {
-        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-          // Nueva versión disponible
-          if (confirm("Hay una nueva versión disponible. ¿Deseas actualizar?")) {
-            window.location.reload();
-          }
-        }
-      };
-    };
-  }).catch(err => {
-    console.error("Error registrando Service Worker:", err);
-  });
-}
-
+    navigator.serviceWorker.register('service-worker.js')
+      .then(reg => console.log('✔️ Service Worker registrado'))
+      .catch(err => console.error('❌ Error al registrar el SW:', err));
+    }
   </script>
 </body>
 </html>
