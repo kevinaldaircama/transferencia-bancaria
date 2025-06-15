@@ -8,6 +8,9 @@ const urlsToCache = [
   '/Interbank pago.html'
   '/RTB.html'
   '/Yape fake.html'
+  '/bcp pago.html'
+  '/bienvenido.html'
+  '/billetera.html'
 ];
 
 self.addEventListener('install', event => {
