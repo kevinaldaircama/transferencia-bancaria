@@ -27,6 +27,7 @@ const urlsToCache = [
   '/recarga.html'
   '/registrarvip.html'
   '/registro.html'
+  '/sistema.html'
 ];
 
 self.addEventListener('install', event => {
