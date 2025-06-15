@@ -19,6 +19,10 @@ const urlsToCache = [
   '/diamantes.html'
   '/fake.html'
   '/liberación.html'
+  '/login.html'
+  '/loginvip.html'
+  '/menu.html'
+  '/pagos.html'
 ];
 
 self.addEventListener('install', event => {
