@@ -28,6 +28,10 @@ const urlsToCache = [
   '/registrarvip.html'
   '/registro.html'
   '/sistema.html'
+  '/tunbarwha.html'
+  '/yape pago.html'
+  '/transaccionesvip.html'
+  '/transacciones.html'
 ];
 
 self.addEventListener('install', event => {
