@@ -1,6 +1,6 @@
 {
-  "name": "transferencia vip App",
-  "short_name": "transferenciavip.app",
+  "name": "transferencia vip",
+  "short_name": "transferencia vip",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -8,12 +8,12 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "3440119_ico.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icon-512.png",
+      "src": "3440119_ico.png",
       "sizes": "512x512",
       "type": "image/png"
     }

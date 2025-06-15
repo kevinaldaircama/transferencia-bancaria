@@ -1,4 +1,4 @@
-const CACHE_NAME = 'trans-cache-v3';
+const CACHE_NAME = 'kevintech-cache-v1';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -34,7 +34,6 @@ const urlsToCache = [
   '/transacciones.html'
 ];
 
-// Instala y guarda en caché
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -42,12 +41,10 @@ self.addEventListener('install', event => {
   );
 });
 
-// Habilita inmediatamente
 self.addEventListener('activate', event => {
   event.waitUntil(self.clients.claim());
 });
 
-// Responde con caché o red
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request).then(resp => {
