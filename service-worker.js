@@ -36,44 +36,22 @@ const urlsToCache = [
 
 // Instala y guarda en caché
 self.addEventListener('install', event => {
-  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(URLS_TO_CACHE);
-    })
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(urlsToCache))
   );
 });
 
-// Activa y limpia cachés antiguas
+// Habilita inmediatamente
 self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys.map(key => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      )
-    )
-  );
-  self.clients.claim();
+  event.waitUntil(self.clients.claim());
 });
 
-// Manejo de solicitudes
+// Responde con caché o red
 self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(event.request).then(cachedResponse => {
-      const fetchPromise = fetch(event.request)
-        .then(networkResponse => {
-          return caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, networkResponse.clone());
-            return networkResponse;
-          });
-        })
-        .catch(() => cachedResponse);
-
-      return cachedResponse || fetchPromise;
+    caches.match(event.request).then(resp => {
+      return resp || fetch(event.request);
     })
   );
 });
