@@ -5,6 +5,8 @@ const urlsToCache = [
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png'
+  '/Interbank pago.html'
+  '/RTB.html'
 ];
 
 self.addEventListener('install', event => {
