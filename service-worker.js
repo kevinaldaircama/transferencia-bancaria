@@ -11,6 +11,7 @@ const urlsToCache = [
   '/bcp pago.html'
   '/bienvenido.html'
   '/billetera.html'
+  '/depósito.html'
 ];
 
 self.addEventListener('install', event => {
