@@ -23,6 +23,10 @@ const urlsToCache = [
   '/loginvip.html'
   '/menu.html'
   '/pagos.html'
+  '/perfil.html'
+  '/recarga.html'
+  '/registrarvip.html'
+  '/registro.html'
 ];
 
 self.addEventListener('install', event => {
