@@ -7,6 +7,7 @@ const urlsToCache = [
   '/icon-512.png'
   '/Interbank pago.html'
   '/RTB.html'
+  '/Yape fake.html'
 ];
 
 self.addEventListener('install', event => {
