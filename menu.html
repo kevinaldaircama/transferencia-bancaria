@@ -9,11 +9,9 @@
   <meta name="theme-color" content="#121212" />
   <link rel="icon" type="image/png" href="3440119_ico.png">
   <style>
-    /* Reset y base */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Segoe UI', sans-serif; background: #111; color: #eee; }
 
-    /* Menú hamburguesa */
     .menu-toggle { position: fixed; top: 10px; left: 10px; z-index: 2000; }
     .hamburger { font-size: 28px; background: none; border: none; color: #eee; cursor: pointer; }
     .sidebar { position: fixed; top: 0; left: -250px; width: 220px; height: 100%; background: #222; padding: 20px; box-shadow: 4px 0 10px rgba(0,0,0,0.5); transition: left 0.3s ease; z-index: 1500; }
@@ -21,13 +19,11 @@
     .boton { width: 100%; padding: 12px; margin: 8px 0; background: #007bff; border: none; border-radius: 8px; color: #fff; cursor: pointer; font-size: 16px; }
     .boton:hover { background: #0056b3; }
 
-    /* Contenido principal */
     .contenedor { padding: 80px 20px 40px; max-width: 900px; margin: auto; text-align: center; }
     .caja { background: #222; margin-bottom: 20px; padding: 20px; border-radius: 10px; }
 
     footer { text-align: center; padding: 20px; background: #1a1a1a; color: #999; font-size: 14px; }
 
-    /* Modal */
     .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 3000; }
     .modal.ocultar { display: none; }
     .modal-content { background: #fff; color: #222; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); animation: fadeIn 0.4s ease; text-align: center; }
@@ -44,13 +40,13 @@
 
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
-          <button class="boton" onclick="irA('menu.html')">inicio</button>
+    <button class="boton" onclick="irA('menu.html')">inicio</button>
     <button class="boton" onclick="irA('perfil.html')">Perfil</button>
     <button class="boton" onclick="irA('sistema.html')">Sistema</button>
     <button class="boton" onclick="irA('fake.html')">Apps Fake</button>
     <button class="boton" onclick="irA('transaccionesvip.html')">transacciones</button>
     <button class="boton" onclick="irA('https://t.me/kevintechtutorialssoporte')">Soporte</button>
- <button class="boton" onclick="irA('https://t.me/+6mszkWUWpNE1NGEx')">canal de soporte</button>
+    <button class="boton" onclick="irA('https://t.me/+6mszkWUWpNE1NGEx')">canal de soporte</button>
   </div>
 
   <!-- Contenido principal -->
@@ -109,8 +105,8 @@
       } else {
         modal.classList.remove("ocultar");
         modalContent.innerHTML = `
-          <h2>no puedes acceder yá que no cuentas con una suscripción</h2>
-          <button id="btnIniciar">comprar ahora</button>
+          <h2>No puedes acceder ya que no cuentas con una suscripción</h2>
+          <button id="btnIniciar">Comprar ahora</button>
         `;
         document.getElementById("btnIniciar").addEventListener("click", () => {
           window.location.href = 'depósito.html';
@@ -127,19 +123,21 @@
       }
     };
   </script>
+
+  <!-- Chat de Tawk.to integrado -->
   <!--Start of Tawk.to Script-->
-<script type="text/javascript">
-var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-(function(){
-var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-s1.async=true;
-s1.src='https://embed.tawk.to/684e55b59a4b03190ad926ae/1itovtkdo';
-s1.charset='UTF-8';
-s1.setAttribute('crossorigin','*');
-s0.parentNode.insertBefore(s1,s0);
-})();
-</script>
-<!--End of Tawk.to Script-->
+  <script type="text/javascript">
+    var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+    (function () {
+      var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+      s1.async = true;
+      s1.src = 'https://embed.tawk.to/684e55b59a4b03190ad926ae/1itovtkdo';
+      s1.charset = 'UTF-8';
+      s1.setAttribute('crossorigin', '*');
+      s0.parentNode.insertBefore(s1, s0);
+    })();
+  </script>
+  <!--End of Tawk.to Script-->
 
 </body>
 </html>
