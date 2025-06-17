@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Suscripción VIP</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #1e1e2f;
+      color: white;
+      margin: 0;
+      padding: 0;
+    }
+
+    .topbar {
+      background-color: #2c2c3c;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .btn-cursos {
+      background: #8b5cf6;
+      border: none;
+      padding: 8px 16px;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .usuario {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .section-title {
+      background: #8b5cf6;
+      padding: 10px 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 15px;
+    }
+
+    .card {
+      background: #2c2c3c;
+      border-radius: 10px;
+      text-decoration: none;
+      color: white;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+
+    .card img {
+      width: 100%;
+      height: auto;
+    }
+
+    .card-content {
+      padding: 10px 15px;
+    }
+
+    .completado {
+      color: #4ade80;
+      font-weight: bold;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0; top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: white;
+      color: black;
+      padding: 2rem;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 400px;
+      width: 80%;
+    }
+
+    .modal-content button {
+      background: #8b5cf6;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      margin-top: 1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo">M</div>
+    <div class="topbar-actions">
+      <button class="btn-cursos">Cursos</button>
+      <div class="usuario">
+        <span>Usuario Premium</span>
+        <div class="rol">Estudiante ▼</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <h2 class="section-title">Suscripción VIP Instagram</h2>
+    <div class="card-grid">
+      <!-- Tarjeta de ejemplo -->
+      <a href="https://www.ejemplo.com" target="_blank" class="card">
+        <img src="https://via.placeholder.com/300x160" alt="Curso 1">
+        <div class="card-content">
+          <h3>AAAA - Descargar Sistema de Gestión de Cuentas de Streaming</h3>
+          <span class="completado">✅ Completado</span>
+        </div>
+      </a>
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-content" id="modal-content">
+      <!-- El contenido se llena con JS -->
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+
+  <script>
+    // Tu configuración de Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyB8trNcvfkXBo6eMfQc85O5J1R-s8sF-rQ",
+      authDomain: "sistem-86419.firebaseapp.com",
+      projectId: "sistem-86419",
+      storageBucket: "sistem-86419.firebasestorage.app",
+      messagingSenderId: "370404958161",
+      appId: "1:370404958161:web:4502f01d9a5b71961d0af0",
+      measurementId: "G-PLNZV8YC4F"
+    };
+
+    // Inicializa Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // Verifica el estado del usuario
+    window.addEventListener('DOMContentLoaded', () => {
+      auth.onAuthStateChanged(user => {
+        const modal = document.getElementById('modal');
+        const content = document.getElementById('modal-content');
+
+        if (user) {
+          content.innerHTML = `
+            <h2>✅ Inicio de sesión exitoso</h2>
+            <button onclick="document.getElementById('modal').style.display='none'">Continuar</button>
+          `;
+        } else {
+          content.innerHTML = `
+            <h2>⚠️ Debes iniciar sesión antes de continuar</h2>
+            <button onclick="location.href='login.html'">Ir a Login</button>
+          `;
+        }
+
+        modal.style.display = 'flex';
+      });
+    });
+  </script>
+</body>
+</html>
