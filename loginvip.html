@@ -6,167 +6,119 @@
   <title>Iniciar Sesión</title>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#121212" />
-  <link rel="icon" type="image/png" href="3440119_ico.png">
+  <link rel="icon" type="image/png" href="3440119_ico.png" />
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f2f2f2;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-    form {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      margin: 10px;
-      width: 300px;
-    }
-    input, button {
-      width: 100%;
-      margin: 10px 0;
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background-color: #007bff;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-    }
+  body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
 
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 999;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      align-items: center; justify-content: center;
-    }
-    .modal-content {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      text-align: center;
-      width: 80%;
-      max-width: 400px;
-    }
-    .modal button {
-      margin-top: 20px;
-    }
-  </style>
+.container {
+  background: #ffffff;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+}
 
-  <!-- ✅ reCAPTCHA -->
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+form input {
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.modal {
+  display: none;
+  visibility: hidden;
+  opacity: 0;
+  position: fixed;
+  z-index: 999;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+}
+
+.modal.show {
+  display: flex;
+  visibility: visible;
+  opacity: 1;
+}
+
+.modal-content button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #28a745;
+  font-weight: bold;
+}
+</style>
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
 
-  <h2>Iniciar Sesión</h2>
-  <form id="loginForm">
-    <input type="email" id="email" placeholder="Correo electrónico" required />
-    <input type="password" id="password" placeholder="Contraseña" required />
-    
-    <!-- 🧠 CAPTCHA -->
-    <div class="g-recaptcha" data-sitekey="6LelTk8rAAAAAM2svsIw-flrlvqhBZiNIuKgiqHw"></div>
+  <div class="container">
+    <h2>Iniciar Sesión</h2>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Correo electrónico" required />
+      <input type="password" id="password" placeholder="Contraseña" required />
 
-    <button type="submit">Entrar</button>
-  </form>
+      <div class="g-recaptcha" data-sitekey="6LelTk8rAAAAAM2svsIw-flrlvqhBZiNIuKgiqHw"></div>
+
+      <button type="submit">Entrar</button>
+    </form>
+  </div>
 
   <!-- Modal -->
   <div class="modal" id="estadoModal">
     <div class="modal-content">
       <p id="modalMensaje"></p>
-      <button id="continuarBtn">Continuar</button>
+      <button id="continuarBtn">verificar cuenta</button>
     </div>
   </div>
 
-  <!-- Firebase -->
-  <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getAuth,
-      signInWithEmailAndPassword
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import {
-      getFirestore,
-      doc,
-      getDoc
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyB8trNcvfkXBo6eMfQc85O5J1R-s8sF-rQ",
-      authDomain: "sistem-86419.firebaseapp.com",
-      projectId: "sistem-86419",
-      storageBucket: "sistem-86419.firebasestorage.app",
-      messagingSenderId: "370404958161",
-      appId: "1:370404958161:web:4502f01d9a5b71961d0af0",
-      measurementId: "G-PLNZV8YC4F"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    const modal = document.getElementById("estadoModal");
-    const mensaje = document.getElementById("modalMensaje");
-    const continuarBtn = document.getElementById("continuarBtn");
-
-    const mostrarModal = (texto, redireccion) => {
-      mensaje.textContent = texto;
-      modal.style.display = "flex";
-      continuarBtn.onclick = () => window.location.href = redireccion;
-    };
-
-    document.getElementById("loginForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      // Validar CAPTCHA
-      const captchaResponse = grecaptcha.getResponse();
-      if (!captchaResponse) {
-        alert("Por favor, completa el reCAPTCHA.");
-        return;
-      }
-
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-
-      try {
-        const result = await signInWithEmailAndPassword(auth, email, password);
-        const uid = result.user.uid;
-        const docRef = doc(db, "usuarios", uid);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          const estado = docSnap.data().estado;
-          switch (estado) {
-            case "aprobado":
-              mostrarModal("Tu cuenta fue aprobada.", "menu.html");
-              break;
-            case "rechazado":
-              mostrarModal("Tu cuenta fue rechazada.", "rechazado.html");
-              break;
-            case "eliminado":
-              mostrarModal("Tu cuenta fue eliminada.", "eliminado.html");
-              break;
-            default:
-              mostrarModal("Tu cuenta está en revisión.", "revision.html");
-          }
-        } else {
-          alert("No se encontró información de usuario.");
-        }
-      } catch (error) {
-        alert("Error: " + error.message);
-      }
-    });
-    
-    
-  
-  </script>
-
+  <script type="module" src="loginvip.js"></script>
 </body>
 </html>
