@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tutorial</title>
   <style>
     body {
@@ -10,13 +11,21 @@
       background-color: #2c2f48;
       color: white;
     }
+
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       background-color: #1e2035;
       padding: 15px 20px;
+      flex-wrap: wrap;
     }
+
+    .header h2 {
+      margin: 0;
+      font-size: 1.5em;
+    }
+
     .header button {
       background-color: #8c5de1;
       color: white;
@@ -25,14 +34,14 @@
       border-radius: 8px;
       font-weight: bold;
       cursor: pointer;
+      margin-top: 10px;
     }
-    .header img {
-      width: 40px;
-    }
+
     .container {
       padding: 20px;
       text-align: center;
     }
+
     .video-card {
       background-color: #383c57;
       border-radius: 12px;
@@ -40,28 +49,54 @@
       max-width: 600px;
       margin: 0 auto;
     }
+
     .video-card video {
       width: 100%;
+      height: auto;
       border-radius: 8px;
     }
+
     .description {
       margin-top: 20px;
       font-weight: bold;
       color: #ddd;
+      font-size: 1rem;
     }
+
     .success-msg {
       background-color: #4caf50;
       padding: 10px;
       border-radius: 8px;
       margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .header button {
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      .description {
+        font-size: 0.95rem;
+      }
+
+      .container {
+        padding: 10px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="header">
-    
     <h2>TUTORIAL</h2>
     <button onclick="window.location.href='curso.html'">Regresar</button>
+  </div>
 
   <div class="container" id="content" style="display: none;">
     <div class="success-msg">Inicio de sesión exitoso</div>
@@ -76,7 +111,6 @@
     </div>
   </div>
 
-  <!-- Script externo -->
   <script type="module" src="video.js"></script>
 </body>
-</html>
+    </html>
