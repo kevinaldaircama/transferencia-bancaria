@@ -13,6 +13,8 @@
     input, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
     button { background: #4caf50; color: white; border: none; cursor: pointer; font-size: 16px; }
     button:hover { background: #43a047; }
+    .secondary { background: #2196f3; }
+    .secondary:hover { background: #1976d2; }
     .success { color: green; text-align: center; }
     .error { color: red; text-align: center; }
   </style>
@@ -23,6 +25,7 @@
     <input type="text" id="uidDestino" placeholder="UID del destinatario" required>
     <input type="number" id="monto" placeholder="Cantidad de créditos a enviar" required>
     <button onclick="enviarCreditos()">Enviar</button>
+    <button class="secondary" onclick="recargarCreditos()">Recargar 10 créditos de prueba</button>
     <div id="mensaje"></div>
   </div>  <script>
     const firebaseConfig = {
@@ -52,23 +55,25 @@
 
       auth.onAuthStateChanged(user => {
         if (user) {
-          const uidOrigen = user.uid;
-          const refOrigen = db.ref(`usuarios/${uidOrigen}/comisionesTotales`);
           const refDestino = db.ref(`usuarios/${uidDestino}/comisionesTotales`);
+          refDestino.transaction(actual => (actual || 0) + monto);
+          mensaje.innerText = `Se enviaron ${monto.toFixed(2)} créditos correctamente.`;
+          mensaje.className = 'success';
+        } else {
+          mensaje.innerText = 'Debes iniciar sesión';
+          mensaje.className = 'error';
+        }
+      });
+    }
 
-          refOrigen.once('value').then(snap => {
-            const saldoOrigen = parseFloat(snap.val() || 0);
-
-            if (saldoOrigen >= monto) {
-              refOrigen.set(saldoOrigen - monto);
-              refDestino.transaction(actual => (actual || 0) + monto);
-              mensaje.innerText = `Se enviaron ${monto.toFixed(2)} créditos correctamente.`;
-              mensaje.className = 'success';
-            } else {
-              mensaje.innerText = 'Saldo insuficiente';
-              mensaje.className = 'error';
-            }
-          });
+    function recargarCreditos() {
+      const mensaje = document.getElementById('mensaje');
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          const uid = user.uid;
+          db.ref(`usuarios/${uid}/comisionesTotales`).transaction(actual => (actual || 0) + 10);
+          mensaje.innerText = 'Se han recargado 10 créditos de prueba.';
+          mensaje.className = 'success';
         } else {
           mensaje.innerText = 'Debes iniciar sesión';
           mensaje.className = 'error';
