@@ -44,7 +44,7 @@
       border-radius: 5px;
       cursor: pointer;
     }
-    .stats {
+    .stats, .comisiones {
       display: flex;
       justify-content: space-between;
       margin-bottom: 20px;
@@ -60,16 +60,7 @@
     .blue { background: #3f51b5; }
     .green { background: #4caf50; }
     .yellow { background: #fdd835; color: #333; }
-    .purple { background: #ab47bc; }.comisiones {
-  display: flex;
-  justify-content: space-between;
-}
-.comisiones .card {
-  flex: 1;
-  margin: 5px;
-}
-
-.filters {
+    .purple { background: #ab47bc; }.filters {
   margin: 20px 0;
   display: flex;
   gap: 10px;
@@ -164,12 +155,11 @@ th, td {
     const firebaseConfig = {
       apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
       authDomain: "sistema-27b31.firebaseapp.com",
+      databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com",
       projectId: "sistema-27b31",
       storageBucket: "sistema-27b31.appspot.com",
       messagingSenderId: "32031316083",
-      appId: "1:32031316083:web:32cef8736c5a77fbb9f206",
-      measurementId: "G-JSXX8PF8BC",
-      databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com"
+      appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
     };
 
     firebase.initializeApp(firebaseConfig);
@@ -183,18 +173,26 @@ th, td {
       alert('¡Enlace copiado!');
     }
 
+    function generarCodigo(uid) {
+      return uid.substring(0, 2) + Math.floor(Math.random() * 100) + uid.substring(uid.length - 2);
+    }
+
     auth.onAuthStateChanged(user => {
       if (user) {
         const uid = user.uid;
+
         db.ref(`usuarios/${uid}/referidoId`).once('value').then(snapshot => {
           let refId = snapshot.val();
+
           if (!refId) {
             refId = generarCodigo(uid);
             db.ref(`usuarios/${uid}/referidoId`).set(refId);
           }
+
           const referralLink = `https://transferenciavip.netlify.app/referido/${refId}`;
           document.getElementById('referralLink').value = referralLink;
 
+          // Cargar referidos
           db.ref(`referidos/${refId}`).once('value', snap => {
             const data = snap.val();
             const tbody = document.getElementById('referidosTable');
@@ -227,11 +225,9 @@ th, td {
             document.getElementById('referidosActivos').innerText = activos;
           });
         });
+      } else {
+        window.location.href = "login.html";
       }
     });
-
-    function generarCodigo(uid) {
-      return uid.substring(0, 2) + Math.floor(Math.random() * 100) + uid.substring(uid.length - 2);
-    }
   </script></body>
-          </html>
+</html>
