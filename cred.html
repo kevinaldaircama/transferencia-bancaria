@@ -25,7 +25,7 @@
     <input type="text" id="uidDestino" placeholder="UID del destinatario" required>
     <input type="number" id="monto" placeholder="Cantidad de créditos a enviar" required>
     <button onclick="enviarCreditos()">Enviar</button>
-    <button class="secondary" onclick="recargarCreditos()">Recargar 10 créditos de prueba</button>
+    <button class="secondary" onclick="recargarCreditos()">Recargar créditos personalizados</button>
     <div id="mensaje"></div>
   </div>  <script>
     const firebaseConfig = {
@@ -53,32 +53,53 @@
         return;
       }
 
-      auth.onAuthStateChanged(user => {
-        if (user) {
-          const refDestino = db.ref(`usuarios/${uidDestino}/comisionesTotales`);
-          refDestino.transaction(actual => (actual || 0) + monto);
+      const user = auth.currentUser;
+      if (!user) {
+        mensaje.innerText = 'Debes iniciar sesión';
+        mensaje.className = 'error';
+        return;
+      }
+
+      const refDestino = db.ref(`usuarios/${uidDestino}/comisionesTotales`);
+      refDestino.transaction(actual => (actual || 0) + monto)
+        .then(() => {
           mensaje.innerText = `Se enviaron ${monto.toFixed(2)} créditos correctamente.`;
           mensaje.className = 'success';
-        } else {
-          mensaje.innerText = 'Debes iniciar sesión';
+        })
+        .catch(error => {
+          mensaje.innerText = 'Error al enviar créditos: ' + error.message;
           mensaje.className = 'error';
-        }
-      });
+        });
     }
 
     function recargarCreditos() {
+      const monto = parseFloat(document.getElementById('monto').value);
       const mensaje = document.getElementById('mensaje');
-      auth.onAuthStateChanged(user => {
-        if (user) {
-          const uid = user.uid;
-          db.ref(`usuarios/${uid}/comisionesTotales`).transaction(actual => (actual || 0) + 10);
-          mensaje.innerText = 'Se han recargado 10 créditos de prueba.';
+      mensaje.innerText = '';
+
+      if (isNaN(monto) || monto <= 0) {
+        mensaje.innerText = 'Ingresa un monto válido';
+        mensaje.className = 'error';
+        return;
+      }
+
+      const user = auth.currentUser;
+      if (!user) {
+        mensaje.innerText = 'Debes iniciar sesión';
+        mensaje.className = 'error';
+        return;
+      }
+
+      const uid = user.uid;
+      db.ref(`usuarios/${uid}/comisionesTotales`).transaction(actual => (actual || 0) + monto)
+        .then(() => {
+          mensaje.innerText = `Se han recargado ${monto.toFixed(2)} créditos correctamente.`;
           mensaje.className = 'success';
-        } else {
-          mensaje.innerText = 'Debes iniciar sesión';
+        })
+        .catch(error => {
+          mensaje.innerText = 'Error al recargar créditos: ' + error.message;
           mensaje.className = 'error';
-        }
-      });
+        });
     }
   </script></body>
-</html>
+  </html>
