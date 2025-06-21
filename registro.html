@@ -12,8 +12,13 @@
   <meta name="theme-color" content="#121212" />
   <link rel="icon" type="image/png" href="3440119_ico.png">
   <link rel="stylesheet" href="style.css" />
+
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <!-- Google Recaptcha -->
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
@@ -34,14 +39,25 @@
       apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
       authDomain: "sistema-27b31.firebaseapp.com",
       projectId: "sistema-27b31",
-      storageBucket: "sistema-27b31.firebasestorage.app",
+      storageBucket: "sistema-27b31.appspot.com",
       messagingSenderId: "32031316083",
       appId: "1:32031316083:web:32cef8736c5a77fbb9f206",
-      measurementId: "G-JSXX8PF8BC"
+      measurementId: "G-JSXX8PF8BC",
+      databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com"
     };
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
+    const db = firebase.database();
+
+    // Obtener ID de referido de la URL
+    function obtenerIdReferido() {
+      const path = window.location.pathname;
+      const partes = path.split('/');
+      return partes[partes.length - 1]; // último segmento de la URL
+    }
+
+    const idReferido = obtenerIdReferido();
 
     document.getElementById('registerForm').addEventListener('submit', (e) => {
       e.preventDefault();
@@ -58,7 +74,22 @@
       auth.createUserWithEmailAndPassword(email, password)
         .then(userCredential => {
           const user = userCredential.user;
-          return user.sendEmailVerification();
+          const userId = user.uid;
+
+          // Guardar en base de datos
+          const fecha = new Date().toISOString().split('T')[0];
+          const data = {
+            correo: email,
+            fecha: fecha,
+            estado: 'activo',
+            saldo: '0.00',
+            recargas: 0,
+            comision: '0.00',
+            ultima: '-'
+          };
+
+          return db.ref(`referidos/${idReferido}/${userId}`).set(data)
+            .then(() => user.sendEmailVerification());
         })
         .then(() => {
           alert('Correo de verificación enviado. Revisa tu bandeja de entrada.');
