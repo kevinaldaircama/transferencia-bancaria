@@ -7,50 +7,23 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f0f0f0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .container {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 400px;
-    }
-    input, button {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background: #28a745;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #218838;
-    }
-    .mensaje {
-      margin-top: 15px;
-      font-weight: bold;
-    }
+    body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 30px; }
+    .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h2 { text-align: center; color: #333; }
+    input, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
+    button { background: #4caf50; color: white; border: none; cursor: pointer; font-size: 16px; }
+    button:hover { background: #43a047; }
+    .success { color: green; text-align: center; }
+    .error { color: red; text-align: center; }
   </style>
 </head>
-<body>  <div class="container">
+<body>
+  <div class="container">
     <h2>Enviar Créditos</h2>
-    <input type="email" id="correoDestino" placeholder="Correo del destinatario" required>
-    <input type="number" id="cantidad" placeholder="Cantidad de créditos" required>
+    <input type="text" id="uidDestino" placeholder="UID del destinatario" required>
+    <input type="number" id="monto" placeholder="Cantidad de créditos a enviar" required>
     <button onclick="enviarCreditos()">Enviar</button>
-    <div class="mensaje" id="mensaje"></div>
+    <div id="mensaje"></div>
   </div>  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
@@ -61,56 +34,45 @@
       messagingSenderId: "32031316083",
       appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
     };
-
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
     const db = firebase.database();
+    const auth = firebase.auth();
 
     function enviarCreditos() {
-      const correoDestino = document.getElementById('correoDestino').value;
-      const cantidad = parseFloat(document.getElementById('cantidad').value);
+      const uidDestino = document.getElementById('uidDestino').value.trim();
+      const monto = parseFloat(document.getElementById('monto').value);
       const mensaje = document.getElementById('mensaje');
+      mensaje.innerText = '';
 
-      if (!correoDestino || isNaN(cantidad) || cantidad <= 0) {
-        mensaje.innerText = 'Completa todos los campos correctamente.';
+      if (!uidDestino || isNaN(monto) || monto <= 0) {
+        mensaje.innerText = 'Datos inválidos';
+        mensaje.className = 'error';
         return;
       }
 
       auth.onAuthStateChanged(user => {
-        if (!user) {
-          mensaje.innerText = 'Debes iniciar sesión primero.';
-          return;
+        if (user) {
+          const uidOrigen = user.uid;
+          const refOrigen = db.ref(`usuarios/${uidOrigen}/comisionesTotales`);
+          const refDestino = db.ref(`usuarios/${uidDestino}/comisionesTotales`);
+
+          refOrigen.once('value').then(snap => {
+            const saldoOrigen = parseFloat(snap.val() || 0);
+
+            if (saldoOrigen >= monto) {
+              refOrigen.set(saldoOrigen - monto);
+              refDestino.transaction(actual => (actual || 0) + monto);
+              mensaje.innerText = `Se enviaron ${monto.toFixed(2)} créditos correctamente.`;
+              mensaje.className = 'success';
+            } else {
+              mensaje.innerText = 'Saldo insuficiente';
+              mensaje.className = 'error';
+            }
+          });
+        } else {
+          mensaje.innerText = 'Debes iniciar sesión';
+          mensaje.className = 'error';
         }
-
-        const remitenteUID = user.uid;
-
-        // Buscar UID del destinatario
-        db.ref('usuarios').orderByChild('correo').equalTo(correoDestino).once('value', snapshot => {
-          if (snapshot.exists()) {
-            const destUID = Object.keys(snapshot.val())[0];
-
-            // Verificar saldo del remitente
-            db.ref(`usuarios/${remitenteUID}/comisionesTotales`).once('value').then(remSnap => {
-              const saldoActual = parseFloat(remSnap.val() || 0);
-              if (saldoActual < cantidad) {
-                mensaje.innerText = 'No tienes suficientes créditos.';
-                return;
-              }
-
-              // Actualizar saldos
-              const updates = {};
-              updates[`usuarios/${remitenteUID}/comisionesTotales`] = saldoActual - cantidad;
-              updates[`usuarios/${destUID}/comisionesTotales`] = firebase.database.ServerValue.increment(cantidad);
-
-              db.ref().update(updates).then(() => {
-                mensaje.innerText = `✅ Créditos enviados correctamente a ${correoDestino}`;
-              });
-            });
-
-          } else {
-            mensaje.innerText = '❌ No se encontró el correo del destinatario.';
-          }
-        });
       });
     }
   </script></body>
