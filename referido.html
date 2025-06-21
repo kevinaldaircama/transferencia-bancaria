@@ -1,102 +1,191 @@
-<!DOCTYPE html>
-<html lang="es">
+<!-- Panel de Referidos Actualizado con Modal y Créditos --><!DOCTYPE html><html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Registro</title>
-  <meta name="monetag" content="15fdd43a0ca6adc9b85bc663c4ff6974">
-  <script src="https://fpyf8.com/88/tag.min.js" data-zone="152195" async data-cfasync="false"></script>
-  <script>(function(d,z,s){s.src='https://'+d+'/400/'+z;try{(document.body||document.documentElement).appendChild(s)}catch(e){}})('vemtoutcheeg.com',9448841,document.createElement('script'))</script>
-  <script>(function(d,z,s){s.src='https://'+d+'/400/'+z;try{(document.body||document.documentElement).appendChild(s)}catch(e){}})('vemtoutcheeg.com',9448910,document.createElement('script'))</script>
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#121212" />
-  <link rel="icon" type="image/png" href="3440119_ico.png">
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Panel de Referidos</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f4f6fa; margin: 0; padding: 0; }
+    .container { max-width: 960px; margin: 30px auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .ref-link, .filters { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .ref-link input, .filters input, .filters select { flex: 1; margin-right: 10px; padding: 10px; border-radius: 5px; border: 1px solid #ccc; }
+    .ref-link button, .filters button { padding: 10px 15px; background: #5c6bc0; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    .stats, .comisiones { display: flex; justify-content: space-between; margin-bottom: 20px; }
+    .card { flex: 1; margin: 5px; padding: 20px; border-radius: 10px; color: white; text-align: center; }
+    .blue { background: #3f51b5; }
+    .green { background: #4caf50; }
+    .yellow { background: #fdd835; color: #333; }
+    .purple { background: #ab47bc; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background-color: #fff; }
+    th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; }
+    .no-data { text-align: center; padding: 40px; color: #888; }
+    #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
+    .modal-content { background: #fff; padding: 30px; border-radius: 10px; text-align: center; }
+    .modal-content button { margin: 10px; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+    .modal-content .yes { background: #4caf50; color: white; }
+    .modal-content .no { background: #f44336; color: white; }
+  </style>
 </head>
 <body>
-
-  <div class="container">
-    <h2>Registro</h2>
-    <form id="registerForm">
-      <input type="email" id="regEmail" placeholder="Correo electrónico" required />
-      <input type="password" id="regPass" placeholder="Contraseña" required />
-      <div class="g-recaptcha" data-sitekey="6LelTk8rAAAAAM2svsIw-flrlvqhBZiNIuKgiqHw"></div>
-      <button type="submit">Registrarse</button>
-    </form>
-    <p>¿Ya tienes cuenta? <a href="login.html">Inicia sesión aquí</a></p>
+<div class="container">
+  <h2>Panel de Referidos</h2>
+  <div class="ref-link">
+    <input type="text" id="referralLink" readonly>
+    <button onclick="copiarEnlace()">Copiar</button>
+  </div>  <div class="stats">
+    <div class="card blue">
+      <h3>Total Referidos</h3>
+      <p id="totalReferidos">0</p>
+    </div>
+    <div class="card green">
+      <h3>Referidos Activos</h3>
+      <p id="referidosActivos">0</p>
+    </div>
+  </div>  <div class="comisiones">
+    <div class="card yellow">
+      <h3>Comisiones Totales</h3>
+      <p id="comisionesTotales">0.00 créditos</p>
+    </div>
+    <div class="card purple">
+      <h3>Comisiones Pendientes</h3>
+      <p id="comisionesPendientes">0.00</p>
+      <button onclick="mostrarModal()">Cobrar Comisiones</button>
+    </div>
+  </div>  <div class="filters">
+    <input type="text" placeholder="Buscar por nombre de usuario...">
+    <select>
+      <option>Más recientes</option>
+      <option>Más antiguos</option>
+    </select>
+    <button id="saldoTotal">Mi saldo actual: 🪙 0</button>
+    <button>Mis Recargas</button>
+  </div>  <table>
+    <thead>
+      <tr>
+        <th>Correo</th>
+        <th>Fecha Registro</th>
+        <th>Estado Usuario</th>
+        <th>Saldo Recargado</th>
+        <th>Recargas</th>
+        <th>Comisión</th>
+        <th>Última Recarga</th>
+      </tr>
+    </thead>
+    <tbody id="referidosTable">
+      <tr>
+        <td colspan="7" class="no-data">No se encontraron referidos<br><small>Comparte tu código para empezar a ganar</small></td>
+      </tr>
+    </tbody>
+  </table>
+</div><div id="modal">
+  <div class="modal-content">
+    <p>¿Deseas cobrar tus comisiones?</p>
+    <button class="yes" onclick="cobrarComisiones()">Sí</button>
+    <button class="no" onclick="cerrarModal()">No</button>
   </div>
+</div><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script><script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
+    authDomain: "sistema-27b31.firebaseapp.com",
+    databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com",
+    projectId: "sistema-27b31",
+    storageBucket: "sistema-27b31.appspot.com",
+    messagingSenderId: "32031316083",
+    appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.database();
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
-      authDomain: "sistema-27b31.firebaseapp.com",
-      projectId: "sistema-27b31",
-      storageBucket: "sistema-27b31.appspot.com",
-      messagingSenderId: "32031316083",
-      appId: "1:32031316083:web:32cef8736c5a77fbb9f206",
-      measurementId: "G-JSXX8PF8BC",
-      databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com"
-    };
+  function copiarEnlace() {
+    const input = document.getElementById('referralLink');
+    input.select();
+    document.execCommand('copy');
+    alert('¡Enlace copiado!');
+  }
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
+  function mostrarModal() {
+    document.getElementById('modal').style.display = 'flex';
+  }
 
-    function obtenerIdReferido() {
-      const path = window.location.pathname;
-      const partes = path.split('/');
-      return partes[partes.length - 1];
-    }
+  function cerrarModal() {
+    document.getElementById('modal').style.display = 'none';
+  }
 
-    const idReferido = obtenerIdReferido();
+  function cobrarComisiones() {
+    const uid = auth.currentUser.uid;
+    db.ref(`usuarios/${uid}`).once('value').then(snap => {
+      const datos = snap.val() || {};
+      const pendientes = parseFloat(datos.comisionesPendientes || 0);
+      const totales = parseFloat(datos.comisionesTotales || 0);
+      if (pendientes > 0) {
+        db.ref(`usuarios/${uid}`).update({
+          comisionesPendientes: 0,
+          comisionesTotales: (totales + pendientes)
+        });
+        document.getElementById('comisionesPendientes').innerText = '0.00';
+        document.getElementById('comisionesTotales').innerText = (totales + pendientes).toFixed(2) + ' créditos';
+        document.getElementById('saldoTotal').innerText = 'Mi saldo actual: 🪙 ' + (totales + pendientes);
+      }
+      cerrarModal();
+    });
+  }
 
-    document.getElementById('registerForm').addEventListener('submit', (e) => {
-      e.preventDefault();
+  function generarCodigo(uid) {
+    return uid.substring(0, 2) + Math.floor(Math.random() * 100) + uid.substring(uid.length - 2);
+  }
 
-      const email = document.getElementById('regEmail').value;
-      const password = document.getElementById('regPass').value;
-      const recaptchaResponse = grecaptcha.getResponse();
+  auth.onAuthStateChanged(user => {
+    if (!user) return window.location.href = 'login.html';
+    const uid = user.uid;
 
-      if (!recaptchaResponse) {
-        alert('Por favor verifica que no eres un robot.');
-        return;
+    db.ref(`usuarios/${uid}/referidoId`).once('value').then(snapshot => {
+      let refId = snapshot.val();
+      if (!refId) {
+        refId = generarCodigo(uid);
+        db.ref(`usuarios/${uid}/referidoId`).set(refId);
       }
 
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(userCredential => {
-          const user = userCredential.user;
-          const userId = user.uid;
+      document.getElementById('referralLink').value = `https://transferenciavip.netlify.app/referido/${refId}`;
 
-          const fecha = new Date().toISOString().split('T')[0];
-          const data = {
-            correo: email,
-            fecha: fecha,
-            estado: 'activo',
-            saldo: '0.00',
-            recargas: 0,
-            comision: '2.00',
-            ultima: '-'
-          };
+      db.ref(`referidos/${refId}`).once('value', snap => {
+        const data = snap.val();
+        const tbody = document.getElementById('referidosTable');
+        tbody.innerHTML = '';
+        let total = 0, activos = 0;
 
-          const updates = {};
-          updates[`referidos/${idReferido}/${userId}`] = data;
-          updates[`usuarios/${idReferido}/comisionesPendientes`] = firebase.database.ServerValue.increment(2);
+        if (data) {
+          for (let key in data) {
+            const r = data[key];
+            total++;
+            if (r.estado === 'activo') activos++;
+            tbody.innerHTML += `
+              <tr>
+                <td>${r.correo}</td>
+                <td>${r.fecha}</td>
+                <td>${r.estado}</td>
+                <td>${r.saldo || '0.00'}</td>
+                <td>${r.recargas || 0}</td>
+                <td>${r.comision || '0.00'}</td>
+                <td>${r.ultima || '-'}</td>
+              </tr>`;
+          }
+        } else {
+          tbody.innerHTML = `<tr><td colspan="7" class="no-data">No se encontraron referidos<br><small>Comparte tu código para empezar a ganar</small></td></tr>`;
+        }
 
-          return db.ref().update(updates).then(() => user.sendEmailVerification());
-        })
-        .then(() => {
-          alert('Correo de verificación enviado. Revisa tu bandeja de entrada.');
-          auth.signOut();
-          window.location.href = "login.html";
-        })
-        .catch(error => {
-          alert('Error: ' + error.message);
-        });
+        document.getElementById('totalReferidos').innerText = total;
+        document.getElementById('referidosActivos').innerText = activos;
+      });
+
+      db.ref(`usuarios/${uid}`).on('value', snap => {
+        const userInfo = snap.val() || {};
+        const total = parseFloat(userInfo.comisionesTotales || 0);
+        const pendientes = parseFloat(userInfo.comisionesPendientes || 0);
+        document.getElementById('comisionesTotales').innerText = total.toFixed(2) + ' créditos';
+        document.getElementById('comisionesPendientes').innerText = pendientes.toFixed(2);
+        document.getElementById('saldoTotal').innerText = 'Mi saldo actual: 🪙 ' + (total + pendientes);
+      });
     });
-  </script>
-</body>
+  });
+</script></body>
 </html>
