@@ -11,8 +11,29 @@
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#121212" />
   <link rel="icon" type="image/png" href="3440119_ico.png">
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; }
 
+.container { max-width: 400px; margin: 60px auto; padding: 30px; background-color: #ffffff; border-radius: 10px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); text-align: center; }
+
+.container h2 { margin-bottom: 20px; color: #333; }
+
+input[type="email"], input[type="password"] { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 14px; }
+
+button[type="submit"] { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; transition: background-color 0.3s ease; }
+
+button[type="submit"]:hover { background-color: #0056b3; }
+
+p { margin-top: 20px; font-size: 14px; color: #666; }
+
+a { color: #007bff; text-decoration: none; }
+
+a:hover { text-decoration: underline; }
+
+.g-recaptcha { margin: 15px 0; display: flex; justify-content: center; }
+
+
+  </style>
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
