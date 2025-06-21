@@ -4,11 +4,75 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Iniciar sesión</title>
-<link rel="manifest" href="manifest.json" />
+  <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#121212" />
   <link rel="icon" type="image/png" href="3440119_ico.png">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      display: flex;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
+    }
 
-  <link rel="stylesheet" href="style.css" />
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+      width: 320px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px 15px;
+      margin: 8px 0 16px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+
+    button {
+      background-color: #007bff;
+      border: none;
+      color: white;
+      padding: 12px 0;
+      width: 100%;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    p {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
@@ -23,7 +87,8 @@
       <div class="g-recaptcha" data-sitekey="6LelTk8rAAAAAM2svsIw-flrlvqhBZiNIuKgiqHw"></div>
       <button type="submit">Entrar</button>
     </form>
-    <p>¿No tienes cuenta? <a href="index.html">Regístrate aquí</a></p>
+    <p>¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a></p>
+    <p><a href="reset.html">¿Olvidaste tu contraseña?</a></p>
   </div>
 
   <script>
@@ -31,7 +96,7 @@
       apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
       authDomain: "sistema-27b31.firebaseapp.com",
       projectId: "sistema-27b31",
-      storageBucket: "sistema-27b31.firebasestorage.app",
+      storageBucket: "sistema-27b31.appspot.com",
       messagingSenderId: "32031316083",
       appId: "1:32031316083:web:32cef8736c5a77fbb9f206",
       measurementId: "G-JSXX8PF8BC"
@@ -57,10 +122,9 @@
           const user = userCredential.user;
           if (user.emailVerified) {
             alert('Inicio de sesión exitoso.');
-            // Redireccionar al panel o home
-            window.location.href = "bienvenido.html";
+            window.location.href = "inicio.html"; // <-- Cambia esto a tu página principal
           } else {
-            alert('Verifica tu correo antes de iniciar sesión.');
+            alert('Debes verificar tu correo electrónico antes de continuar.');
             auth.signOut();
           }
         })
@@ -69,5 +133,6 @@
         });
     });
   </script>
+
 </body>
 </html>
