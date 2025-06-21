@@ -3,8 +3,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Panel de Referidos</title>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -43,7 +44,7 @@
       border-radius: 5px;
       cursor: pointer;
     }
-    .stats, .comisiones {
+    .stats {
       display: flex;
       justify-content: space-between;
       margin-bottom: 20px;
@@ -59,7 +60,16 @@
     .blue { background: #3f51b5; }
     .green { background: #4caf50; }
     .yellow { background: #fdd835; color: #333; }
-    .purple { background: #ab47bc; }.filters {
+    .purple { background: #ab47bc; }.comisiones {
+  display: flex;
+  justify-content: space-between;
+}
+.comisiones .card {
+  flex: 1;
+  margin: 5px;
+}
+
+.filters {
   margin: 20px 0;
   display: flex;
   gap: 10px;
@@ -161,12 +171,10 @@ th, td {
       measurementId: "G-JSXX8PF8BC",
       databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com"
     };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
 
-    const userId = 'ka16cs';
-    const baseLink = `https://transferenciavip.netlify.app/referido/${userId}`;
-    document.getElementById('referralLink').value = baseLink;
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
 
     function copiarEnlace() {
       const input = document.getElementById('referralLink');
@@ -175,42 +183,55 @@ th, td {
       alert('¡Enlace copiado!');
     }
 
-    function cargarReferidos() {
-      const ref = db.ref(`referidos/${userId}`);
-      ref.once('value', (snapshot) => {
-        const data = snapshot.val();
-        const tbody = document.getElementById('referidosTable');
-        tbody.innerHTML = '';
-        let total = 0;
-        let activos = 0;
-
-        if (data) {
-          for (let key in data) {
-            const r = data[key];
-            total++;
-            if (r.estado === 'activo') activos++;
-
-            const row = `
-              <tr>
-                <td>${r.correo}</td>
-                <td>${r.fecha}</td>
-                <td>${r.estado}</td>
-                <td>${r.saldo || '0.00'}</td>
-                <td>${r.recargas || 0}</td>
-                <td>${r.comision || '0.00'}</td>
-                <td>${r.ultima || '-'}</td>
-              </tr>`;
-            tbody.innerHTML += row;
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        const uid = user.uid;
+        db.ref(`usuarios/${uid}/referidoId`).once('value').then(snapshot => {
+          let refId = snapshot.val();
+          if (!refId) {
+            refId = generarCodigo(uid);
+            db.ref(`usuarios/${uid}/referidoId`).set(refId);
           }
-        } else {
-          tbody.innerHTML = `<tr><td colspan="7" class="no-data">No se encontraron referidos<br><small>Comparte tu código para empezar a ganar</small></td></tr>`;
-        }
+          const referralLink = `https://transferenciavip.netlify.app/referido/${refId}`;
+          document.getElementById('referralLink').value = referralLink;
 
-        document.getElementById('totalReferidos').innerText = total;
-        document.getElementById('referidosActivos').innerText = activos;
-      });
+          db.ref(`referidos/${refId}`).once('value', snap => {
+            const data = snap.val();
+            const tbody = document.getElementById('referidosTable');
+            tbody.innerHTML = '';
+            let total = 0, activos = 0;
+
+            if (data) {
+              for (let key in data) {
+                const r = data[key];
+                total++;
+                if (r.estado === 'activo') activos++;
+
+                const row = `
+                  <tr>
+                    <td>${r.correo}</td>
+                    <td>${r.fecha}</td>
+                    <td>${r.estado}</td>
+                    <td>${r.saldo || '0.00'}</td>
+                    <td>${r.recargas || 0}</td>
+                    <td>${r.comision || '0.00'}</td>
+                    <td>${r.ultima || '-'}</td>
+                  </tr>`;
+                tbody.innerHTML += row;
+              }
+            } else {
+              tbody.innerHTML = `<tr><td colspan="7" class="no-data">No se encontraron referidos<br><small>Comparte tu código para empezar a ganar</small></td></tr>`;
+            }
+
+            document.getElementById('totalReferidos').innerText = total;
+            document.getElementById('referidosActivos').innerText = activos;
+          });
+        });
+      }
+    });
+
+    function generarCodigo(uid) {
+      return uid.substring(0, 2) + Math.floor(Math.random() * 100) + uid.substring(uid.length - 2);
     }
-
-    cargarReferidos();
   </script></body>
-</html>
+          </html>
