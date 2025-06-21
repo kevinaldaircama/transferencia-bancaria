@@ -13,8 +13,8 @@
     input, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
     button { background: #4caf50; color: white; border: none; cursor: pointer; font-size: 16px; }
     button:hover { background: #43a047; }
-    .secondary { background: #2196f3; }
-    .secondary:hover { background: #1976d2; }
+    .secondary { background: #f44336; }
+    .secondary:hover { background: #d32f2f; }
     .success { color: green; text-align: center; }
     .error { color: red; text-align: center; }
   </style>
@@ -23,9 +23,9 @@
   <div class="container">
     <h2>Enviar Créditos</h2>
     <input type="text" id="uidDestino" placeholder="UID del destinatario" required>
-    <input type="number" id="monto" placeholder="Cantidad de créditos a enviar" required>
-    <button onclick="enviarCreditos()">Enviar</button>
-    <button class="secondary" onclick="recargarCreditos()">Recargar créditos personalizados</button>
+    <input type="number" id="monto" placeholder="Cantidad de créditos" required>
+    <button onclick="enviarCreditos()">Enviar créditos</button>
+    <button class="secondary" onclick="eliminarCreditos()">Eliminar créditos</button>
     <div id="mensaje"></div>
   </div>  <script>
     const firebaseConfig = {
@@ -72,13 +72,14 @@
         });
     }
 
-    function recargarCreditos() {
+    function eliminarCreditos() {
+      const uidDestino = document.getElementById('uidDestino').value.trim();
       const monto = parseFloat(document.getElementById('monto').value);
       const mensaje = document.getElementById('mensaje');
       mensaje.innerText = '';
 
-      if (isNaN(monto) || monto <= 0) {
-        mensaje.innerText = 'Ingresa un monto válido';
+      if (!uidDestino || isNaN(monto) || monto <= 0) {
+        mensaje.innerText = 'Datos inválidos';
         mensaje.className = 'error';
         return;
       }
@@ -90,16 +91,17 @@
         return;
       }
 
-      const uid = user.uid;
-      db.ref(`usuarios/${uid}/comisionesTotales`).transaction(actual => (actual || 0) + monto)
-        .then(() => {
-          mensaje.innerText = `Se han recargado ${monto.toFixed(2)} créditos correctamente.`;
-          mensaje.className = 'success';
-        })
-        .catch(error => {
-          mensaje.innerText = 'Error al recargar créditos: ' + error.message;
-          mensaje.className = 'error';
-        });
+      const refDestino = db.ref(`usuarios/${uidDestino}/comisionesTotales`);
+      refDestino.transaction(actual => {
+        const actualNum = actual || 0;
+        return actualNum >= monto ? actualNum - monto : actualNum;
+      }).then(result => {
+        mensaje.innerText = `Se eliminaron ${monto.toFixed(2)} créditos correctamente.`;
+        mensaje.className = 'success';
+      }).catch(error => {
+        mensaje.innerText = 'Error al eliminar créditos: ' + error.message;
+        mensaje.className = 'error';
+      });
     }
   </script></body>
-  </html>
+</html>
