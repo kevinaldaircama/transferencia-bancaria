@@ -1,247 +1,492 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Comprobante Yape Fake</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
-      authDomain: "sistema-27b31.firebaseapp.com",
-      databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com",
-      projectId: "sistema-27b31",
-      storageBucket: "sistema-27b31.appspot.com",
-      messagingSenderId: "32031316083",
-      appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    async function descontarCreditos(cantidad) {
-      const user = firebase.auth().currentUser;
-      if (!user) return;
-      const userRef = db.collection('usuarios').doc(user.uid);
-      const doc = await userRef.get();
-      if (doc.exists) {
-        const data = doc.data();
-        const creditosActuales = data.creditos || 0;
-        if (creditosActuales >= cantidad) {
-          await userRef.update({ creditos: creditosActuales - cantidad });
-          console.log(\`Créditos restantes: \${creditosActuales - cantidad}\`);
-        } else {
-          alert("No tienes suficientes créditos.");
-          throw new Error("Créditos insuficientes");
-        }
-      }
+ 
+<!DOCTYPE html>  
+<html lang="es">  
+<head>  
+  <meta charset="UTF-8">  
+  <title>Comprobante Yape Fake</title>  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>  
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>  
+  
+  <!-- Firebase SDKs -->  
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>  
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>  
+  
+  <script>  
+    // ⚠️ Reemplaza estos valores con los de tu proyecto Firebase  
+    const firebaseConfig = {  
+      apiKey: "AIzaSyB8trNcvfkXBo6eMfQc85O5J1R-s8sF-rQ",  
+      authDomain: "sistem-86419.firebaseapp.com",  
+      projectId: "sistem-86419",  
+      storageBucket: "sistem-86419.firebasestorage.app",  
+      messagingSenderId: "370404958161",  
+      appId: "1:370404958161:web:4502f01d9a5b71961d0af0",  
+      measurementId: "G-PLNZV8YC4F"  
+    };  
+    firebase.initializeApp(firebaseConfig);  
+  </script>  
+<link rel="manifest" href="manifest.json" />  
+  <meta name="theme-color" content="#121212" />  
+  <link rel="icon" type="image/png" href="3440119_ico.png">  
+  <style>  
+    /* Tu CSS existente aquí (sin cambios) */  
+    body {  
+      margin: 0;  
+      font-family: 'Segoe UI', sans-serif;  
+      background-color: #650D89;  
+      color: #000;  
+    }  
+    .container {  
+      max-width: 400px;  
+      margin: auto;  
+      padding: 15px;  
+    }  
+    input, select, button {  
+      width: 100%;  
+      padding: 10px;  
+      margin-bottom: 10px;  
+      border-radius: 8px;  
+      border: none;  
+      font-size: 16px;  
+    }  
+    button {  
+      background-color: #ffc107;  
+      font-weight: bold;  
+      cursor: pointer;  
+    }  
+    .mensaje {  
+      color: white;  
+      text-align: center;  
+      font-size: 16px;  
+      font-weight: bold;  
+      margin-bottom: 15px;  
+    }  
+    .logo {  
+      display: flex;  
+      justify-content: space-between;  
+      align-items: center;  
+      margin-bottom: 10px;  
+    }  
+    .logo img {  
+      height: 40px;  
+    }  
+    .cerrar {  
+      width: 35px;  
+      height: 35px;  
+      background-color: rgba(255,255,255,0.2);  
+      border-radius: 50%;  
+      color: white;  
+      font-size: 20px;  
+      text-align: center;  
+      line-height: 35px;  
+      cursor: pointer;  
+    }  
+    .card {  
+      background: white;  
+      border-radius: 15px;  
+      padding: 20px;  
+      box-shadow: 0 5px 10px rgba(0,0,0,0.1);  
+    }  
+    .card h2 {  
+      color: #650D89;  
+      font-size: 18px;  
+      margin-bottom: 10px;  
+      display: flex;  
+      justify-content: space-between;  
+      align-items: center;  
+    }  
+    .monto {  
+      font-size: 30px;  
+      margin: 5px 0;  
+      font-weight: bold;  
+    }  
+    .nombre {  
+      font-size: 16px;  
+      font-weight: 600;  
+      margin-bottom: 10px;  
+    }  
+    .datos {  
+      font-size: 14px;  
+      color: #333;  
+      display: flex;  
+      align-items: center;  
+      gap: 10px;  
+      margin-bottom: 10px;  
+    }  
+    .transaccion-title {  
+      font-size: 13px;  
+      color: gray;  
+      font-weight: bold;  
+      margin-bottom: 8px;  
+      margin-top: 5px;  
+    }  
+    .info {  
+      font-size: 13px;  
+      color: gray;  
+      border-top: 1px solid #eee;  
+      padding-top: 10px;  
+    }  
+    .info p {  
+      margin: 5px 0;  
+    }  
+    .info p span {  
+      float: right;  
+      font-weight: bold;  
+      color: #000;  
+    }  
+    .share {  
+      color: #00bfa5;  
+      font-size: 13px;  
+      font-weight: bold;  
+      cursor: pointer;  
+    }  
+    .footer-img {  
+      width: 100%;  
+      border-radius: 15px;  
+      margin-top: 20px;  
+    }  
+    #modalCompartir, #modalSesion {  
+      display: none;  
+      position: fixed;  
+      inset: 0;  
+      background: rgba(0,0,0,0.6);  
+      z-index: 10;  
+      justify-content: center;  
+      align-items: center;  
+    }  
+    #modalContenido {  
+      background: white;  
+      padding: 20px;  
+      border-radius: 10px;  
+      text-align: center;  
+    }  
+    #modalContenido h3 {  
+      margin-bottom: 20px;  
+    }  
+    #modalContenido button {  
+      margin: 10px 5px 0;  
+      width: auto;  
+      padding: 10px 20px;  
+    }  
+  </style>  
+</head>  
+<body>  
+<div class="container">  
+  <div class="mensaje" id="mensajeBienvenida">  
+    ¡Bienvenido! Genera tu comprobante de Yape fake fácilmente.  
+  </div>  
+  
+  <div id="formulario">  
+    <input type="text" id="numero" placeholder="Número de celular" required>  
+    <input type="text" id="nombre" placeholder="Nombre" required>  
+    <input type="number" id="monto" placeholder="Monto (S/.)" required>  
+    <select id="destino" required>  
+      <option value="">Selecciona destino</option>  
+      <option value="Yape">Yape</option>  
+      <option value="Plin">Plin</option>  
+      <option value="Agora">Agora</option>  
+    </select>  
+    <div class="g-recaptcha" data-sitekey="6LelTk8rAAAAAM2svsIw-flrlvqhBZiNIuKgiqHw"></div>  
+    <button onclick="validarYGenerar()">Generar</button>  
+    <div class="mensaje" id="mensaje"></div>  
+  </div>  
+  
+  <div id="comprobante" style="display: none;">  
+    <div style="padding: 15px; background-color: #650D89;">  
+      <div class="logo">  
+        <img src="yapelog.png" alt="Yape">  
+        <div class="cerrar" onclick="cerrarComprobante()">×</div>  
+      </div>  
+      <div class="card" id="comprobanteCard">  
+        <h2>¡Yapeaste! <span class="share" onclick="mostrarModal()">COMPARTIR</span></h2>  
+        <div class="monto" id="verMonto">S/0</div>  
+        <div class="nombre" id="verNombre">Nombre</div>  
+        <div class="datos" id="verFechaHora">📅 fecha | 🕐 hora</div>  
+        <div style="border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; padding: 10px 0; margin: 20px 0;">  
+          <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; color: #000;">  
+            <div>CÓDIGO DE SEGURIDAD</div>  
+            <div id="verCodigo">000</div>  
+          </div>  
+        </div>  
+        <div class="transaccion-title">Datos de la transacción</div>  
+        <div class="info">  
+          <p>Nro. de celular <span id="verNumero">*** ***000</span></p>  
+          <p>Destino <span id="verDestino">Yape</span></p>  
+          <p>Nro. de operación <span id="operacionId">00000000</span></p>  
+        </div>  
+      </div>  
+      <img class="footer-img" src="yape.jpg" alt="Promoción">  
+    </div>  
+  </div>  
+</div>  
+  
+<!-- Modal Compartir -->  
+<div id="modalCompartir">  
+  <div id="modalContenido">  
+    <h3>¿Dónde deseas compartir?</h3>  
+    <button onclick="descargarPDF()">Descargar PDF</button>  
+    <button onclick="compartir()">Compartir</button><br>  
+    <button onclick="cerrarModal()" style="background-color: lightgray;">Cancelar</button>  
+  </div>  
+</div>  
+  
+<!-- Modal de sesión -->  
+<div id="modalSesion" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 20; justify-content: center; align-items: center;">  
+  <div style="background: white; padding: 20px; border-radius: 10px; text-align: center; max-width: 300px;">  
+    <h3 id="mensajeSesion">Verificando sesión...</h3>  
+    <button id="botonIniciarSesion" onclick="location.href=' depósito.html'" style="margin-top: 10px; display: none; background-color: #ffc107; border: none; border-radius: 8px; padding: 10px 20px; cursor: pointer;">  
+      comprar ahora  
+    </button>  
+  </div>  
+</div>  
+  
+<script>  
+  function validarYGenerar() {  
+    const response = grecaptcha.getResponse();  
+    if (response.length === 0) {  
+      alert("Por favor, completa el reCAPTCHA.");  
+      return;  
+    }  
+    generarComprobante();  
+  }  
+  
+  function generarComprobante() {  
+    const numero = document.getElementById('numero').value.trim();  
+    const nombre = document.getElementById('nombre').value.trim();  
+    const monto = document.getElementById('monto').value.trim();  
+    const destino = document.getElementById('destino').value;  
+  
+    if (!numero || !nombre || !monto || !destino) {  
+      alert("Por favor, completa todos los campos.");  
+      return;  
+    }  
+  
+    document.getElementById('mensaje').innerText = "Generando datos...";  
+    setTimeout(() => {  
+      const now = new Date();  
+      const fecha = now.toLocaleDateString('es-PE', { day: 'numeric', month: 'short', year: 'numeric' });  
+      const hora = now.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });  
+      const codigo = Math.floor(100 + Math.random() * 900);  
+      const operacion = Math.floor(10000000 + Math.random() * 90000000);  
+  
+      document.getElementById('verMonto').innerText = `S/${parseFloat(monto).toFixed(2)}`;  
+      document.getElementById('verNombre').innerText = nombre;  
+      document.getElementById('verFechaHora').innerText = `${fecha} | ${hora}`;  
+      document.getElementById('verCodigo').innerText = codigo;  
+      document.getElementById('verNumero').innerText = `*** ***${numero.slice(-3)}`;  
+      document.getElementById('operacionId').innerText = operacion;  
+      document.getElementById('verDestino').innerText = destino;  
+  
+      document.getElementById('mensajeBienvenida').style.display = "none";  
+      document.getElementById('formulario').style.display = "none";  
+      document.getElementById('comprobante').style.display = "block";  
+    }, 1000);  
+  }  
+  
+  function cerrarComprobante() {  
+    document.getElementById('comprobante').style.display = "none";  
+    document.getElementById('formulario').style.display = "block";  
+    document.getElementById('mensajeBienvenida').style.display = "block";  
+  }  
+  
+  function mostrarModal() {  
+    document.getElementById('modalCompartir').style.display = "flex";  
+  }  
+  
+  function cerrarModal() {  
+    document.getElementById('modalCompartir').style.display = "none";  
+  }  
+  
+  async function descargarPDF() {  
+    const comprobante = document.getElementById('comprobante');  
+    const canvas = await html2canvas(comprobante, { scale: 2, backgroundColor: "#650D89" });  
+    const imgData = canvas.toDataURL('image/png');  
+    const { jsPDF } = window.jspdf;  
+    const pdf = new jsPDF('p', 'mm', 'a4');  
+    const width = 210;  
+    const height = (canvas.height * width) / canvas.width;  
+    pdf.addImage(imgData, 'PNG', 0, 0, width, height);  
+    pdf.save('comprobante.pdf');  
+    cerrarModal();  
+  }  
+  
+  async function compartir() {  
+    try {  
+      const comprobante = document.getElementById('comprobante');  
+      const canvas = await html2canvas(comprobante, { scale: 2, backgroundColor: "#650D89" });  
+      canvas.toBlob(async (blob) => {  
+        const file = new File([blob], "comprobante.png", { type: blob.type });  
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {  
+          await navigator.share({  
+            title: "Comprobante",  
+            text: "Aquí está tu comprobante generado.",  
+            files: [file],  
+          });  
+        } else {  
+          alert("Tu navegador no soporta esta función.");  
+        }  
+      });  
+    } catch (error) {  
+      alert("No se pudo compartir.");  
+    }  
+    cerrarModal();  
+  }  
+  
+  // Verifica el estado de sesión al cargar  
+  window.onload = () => {  
+    const modalSesion = document.getElementById('modalSesion');  
+    const mensajeSesion = document.getElementById('mensajeSesion');  
+    const botonIniciar = document.getElementById('botonIniciarSesion');  
+<script>
+  async function descontarCreditos(cantidad) {
+    const user = firebase.auth().currentUser;
+    if (!user) {
+      alert("Debes iniciar sesión.");
+      return false;
     }
 
-    function validarYGenerar() {
-      const response = grecaptcha.getResponse();
-      if (response.length === 0) {
-        alert("Por favor, completa el reCAPTCHA.");
-        return;
+    const uid = user.uid;
+    const ref = firebase.database().ref(`usuarios/${uid}/creditos`);
+
+    try {
+      const snapshot = await ref.once('value');
+      let creditos = snapshot.val();
+
+      if (creditos >= cantidad) {
+        await ref.set(creditos - cantidad);
+        return true;
+      } else {
+        alert("No tienes suficientes créditos.");
+        return false;
       }
-      generarComprobante();
+    } catch (error) {
+      console.error("Error al descontar créditos:", error);
+      alert("Error al acceder a tus créditos.");
+      return false;
+    }
+  }
+
+  function validarYGenerar() {
+    const response = grecaptcha.getResponse();
+    if (response.length === 0) {
+      alert("Por favor, completa el reCAPTCHA.");
+      return;
     }
 
-    async function generarComprobante() {
-      try {
-        await descontarCreditos(5);
-      } catch (e) {
-        return;
-      }
+    descontarCreditos(5).then(ok => {
+      if (ok) generarComprobante();
+    });
+  }
 
-      const numero = document.getElementById('numero').value.trim();
-      const nombre = document.getElementById('nombre').value.trim();
-      const monto = document.getElementById('monto').value.trim();
-      const destino = document.getElementById('destino').value;
+  function generarComprobante() {
+    const numero = document.getElementById('numero').value.trim();
+    const nombre = document.getElementById('nombre').value.trim();
+    const monto = document.getElementById('monto').value.trim();
+    const destino = document.getElementById('destino').value;
 
-      if (!numero || !nombre || !monto || !destino) {
-        alert("Por favor, completa todos los campos.");
-        return;
-      }
-
-      document.getElementById('mensaje').innerText = "Generando datos...";
-      setTimeout(() => {
-        const now = new Date();
-        const fecha = now.toLocaleDateString('es-PE', { day: 'numeric', month: 'short', year: 'numeric' });
-        const hora = now.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
-        const codigo = Math.floor(100 + Math.random() * 900);
-        const operacion = Math.floor(10000000 + Math.random() * 90000000);
-
-        document.getElementById('verMonto').innerText = \`S/\${parseFloat(monto).toFixed(2)}\`;
-        document.getElementById('verNombre').innerText = nombre;
-        document.getElementById('verFechaHora').innerText = \`\${fecha} | \${hora}\`;
-        document.getElementById('verCodigo').innerText = codigo;
-        document.getElementById('verNumero').innerText = \`*** ***\${numero.slice(-3)}\`;
-        document.getElementById('operacionId').innerText = operacion;
-        document.getElementById('verDestino').innerText = destino;
-
-        document.getElementById('mensajeBienvenida').style.display = "none";
-        document.getElementById('formulario').style.display = "none";
-        document.getElementById('comprobante').style.display = "block";
-      }, 1000);
+    if (!numero || !nombre || !monto || !destino) {
+      alert("Por favor, completa todos los campos.");
+      return;
     }
 
-    async function descargarPDF() {
-      try {
-        await descontarCreditos(2);
-      } catch (e) {
-        cerrarModal();
-        return;
-      }
+    document.getElementById('mensaje').innerText = "Generando datos...";
+    setTimeout(() => {
+      const now = new Date();
+      const fecha = now.toLocaleDateString('es-PE', { day: 'numeric', month: 'short', year: 'numeric' });
+      const hora = now.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
+      const codigo = Math.floor(100 + Math.random() * 900);
+      const operacion = Math.floor(10000000 + Math.random() * 90000000);
 
+      document.getElementById('verMonto').innerText = `S/${parseFloat(monto).toFixed(2)}`;
+      document.getElementById('verNombre').innerText = nombre;
+      document.getElementById('verFechaHora').innerText = `${fecha} | ${hora}`;
+      document.getElementById('verCodigo').innerText = codigo;
+      document.getElementById('verNumero').innerText = `*** ***${numero.slice(-3)}`;
+      document.getElementById('operacionId').innerText = operacion;
+      document.getElementById('verDestino').innerText = destino;
+
+      document.getElementById('mensajeBienvenida').style.display = "none";
+      document.getElementById('formulario').style.display = "none";
+      document.getElementById('comprobante').style.display = "block";
+    }, 1000);
+  }
+
+  function cerrarComprobante() {
+    document.getElementById('comprobante').style.display = "none";
+    document.getElementById('formulario').style.display = "block";
+    document.getElementById('mensajeBienvenida').style.display = "block";
+  }
+
+  function mostrarModal() {
+    document.getElementById('modalCompartir').style.display = "flex";
+  }
+
+  function cerrarModal() {
+    document.getElementById('modalCompartir').style.display = "none";
+  }
+
+  async function descargarPDF() {
+    const ok = await descontarCreditos(2);
+    if (!ok) return;
+
+    const comprobante = document.getElementById('comprobante');
+    const canvas = await html2canvas(comprobante, { scale: 2, backgroundColor: "#650D89" });
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const width = 210;
+    const height = (canvas.height * width) / canvas.width;
+    pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+    pdf.save('comprobante.pdf');
+    cerrarModal();
+  }
+
+  async function compartir() {
+    const ok = await descontarCreditos(3);
+    if (!ok) return;
+
+    try {
       const comprobante = document.getElementById('comprobante');
       const canvas = await html2canvas(comprobante, { scale: 2, backgroundColor: "#650D89" });
-      const imgData = canvas.toDataURL('image/png');
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const width = 210;
-      const height = (canvas.height * width) / canvas.width;
-      pdf.addImage(imgData, 'PNG', 0, 0, width, height);
-      pdf.save('comprobante.pdf');
-      cerrarModal();
-    }
-
-    async function compartir() {
-      try {
-        await descontarCreditos(3);
-      } catch (e) {
-        cerrarModal();
-        return;
-      }
-
-      try {
-        const comprobante = document.getElementById('comprobante');
-        const canvas = await html2canvas(comprobante, { scale: 2, backgroundColor: "#650D89" });
-        canvas.toBlob(async (blob) => {
-          const file = new File([blob], "comprobante.png", { type: blob.type });
-          if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            await navigator.share({
-              title: "Comprobante",
-              text: "Aquí está tu comprobante generado.",
-              files: [file],
-            });
-          } else {
-            alert("Tu navegador no soporta esta función.");
-          }
-        });
-      } catch (error) {
-        alert("No se pudo compartir.");
-      }
-      cerrarModal();
-    }
-
-    function mostrarModal() {
-      document.getElementById('modalCompartir').style.display = "flex";
-    }
-
-    function cerrarModal() {
-      document.getElementById('modalCompartir').style.display = "none";
-    }
-
-    function cerrarComprobante() {
-      document.getElementById('comprobante').style.display = "none";
-      document.getElementById('formulario').style.display = "block";
-      document.getElementById('mensajeBienvenida').style.display = "block";
-    }
-
-    window.onload = () => {
-      const modalSesion = document.getElementById('modalSesion');
-      const mensajeSesion = document.getElementById('mensajeSesion');
-      const botonIniciar = document.getElementById('botonIniciarSesion');
-
-      firebase.auth().onAuthStateChanged((user) => {
-        modalSesion.style.display = "flex";
-        if (user) {
-          mensajeSesion.innerText = "Inicio de sesión exitoso ✅";
-          botonIniciar.style.display = "none";
-          setTimeout(() => {
-            modalSesion.style.display = "none";
-          }, 2000);
+      canvas.toBlob(async (blob) => {
+        const file = new File([blob], "comprobante.png", { type: blob.type });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            title: "Comprobante",
+            text: "Aquí está tu comprobante generado.",
+            files: [file],
+          });
         } else {
-          mensajeSesion.innerText = "no puedes acceder yá que no cuentas con una suscripción.";
-          botonIniciar.style.display = "inline-block";
+          alert("Tu navegador no soporta esta función.");
         }
       });
-    };
-  </script>
-</head>
-<body>
-  <div class="container">
-  <div class="mensaje" id="mensajeBienvenida">
-    ¡Bienvenido! Genera tu comprobante de Yape fake fácilmente.
-  </div>
+    } catch (error) {
+      alert("No se pudo compartir.");
+    }
+    cerrarModal();
+  }
 
-  <div id="formulario">
-    <input type="text" id="numero" placeholder="Número de celular" required>
-    <input type="text" id="nombre" placeholder="Nombre" required>
-    <input type="number" id="monto" placeholder="Monto (S/.)" required>
-    <select id="destino" required>
-      <option value="">Selecciona destino</option>
-      <option value="Yape">Yape</option>
-      <option value="Plin">Plin</option>
-      <option value="Agora">Agora</option>
-    </select>
-    <div class="g-recaptcha" data-sitekey="6LelTk8rAAAAAM2svsIw-flrlvqhBZiNIuKgiqHw"></div>
-    <button onclick="validarYGenerar()">Generar</button>
-    <div class="mensaje" id="mensaje"></div>
-  </div>
+  // Verifica el estado de sesión al cargar
+  window.onload = () => {
+    const modalSesion = document.getElementById('modalSesion');
+    const mensajeSesion = document.getElementById('mensajeSesion');
+    const botonIniciar = document.getElementById('botonIniciarSesion');
 
-  <div id="comprobante" style="display: none;">
-    <div style="padding: 15px; background-color: #650D89;">
-      <div class="logo">
-        <img src="yapelog.png" alt="Yape">
-        <div class="cerrar" onclick="cerrarComprobante()">×</div>
-      </div>
-      <div class="card" id="comprobanteCard">
-        <h2>¡Yapeaste! <span class="share" onclick="mostrarModal()">COMPARTIR</span></h2>
-        <div class="monto" id="verMonto">S/0</div>
-        <div class="nombre" id="verNombre">Nombre</div>
-        <div class="datos" id="verFechaHora">📅 fecha | 🕐 hora</div>
-        <div style="border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; padding: 10px 0; margin: 20px 0;">
-          <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; color: #000;">
-            <div>CÓDIGO DE SEGURIDAD</div>
-            <div id="verCodigo">000</div>
-          </div>
-        </div>
-        <div class="transaccion-title">Datos de la transacción</div>
-        <div class="info">
-          <p>Nro. de celular <span id="verNumero">*** ***000</span></p>
-          <p>Destino <span id="verDestino">Yape</span></p>
-          <p>Nro. de operación <span id="operacionId">00000000</span></p>
-        </div>
-      </div>
-      <img class="footer-img" src="yape.jpg" alt="Promoción">
-    </div>
-  </div>
-</div>
-
-<!-- Modal Compartir -->
-<div id="modalCompartir">
-  <div id="modalContenido">
-    <h3>¿Dónde deseas compartir?</h3>
-    <button onclick="descargarPDF()">Descargar PDF</button>
-    <button onclick="compartir()">Compartir</button><br>
-    <button onclick="cerrarModal()" style="background-color: lightgray;">Cancelar</button>
-  </div>
-</div>
-
-<!-- Modal de sesión -->
-<div id="modalSesion" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 20; justify-content: center; align-items: center;">
-  <div style="background: white; padding: 20px; border-radius: 10px; text-align: center; max-width: 300px;">
-    <h3 id="mensajeSesion">Verificando sesión...</h3>
-    <button id="botonIniciarSesion" onclick="location.href=' depósito.html'" style="margin-top: 10px; display: none; background-color: #ffc107; border: none; border-radius: 8px; padding: 10px 20px; cursor: pointer;">
-      comprar ahora
-    </button>
-  </div>
-</div>
-</body>
-</html>
+    firebase.auth().onAuthStateChanged((user) => {
+      modalSesion.style.display = "flex";
+      if (user) {
+        mensajeSesion.innerText = "Inicio de sesión exitoso ✅";
+        botonIniciar.style.display = "none";
+        setTimeout(() => {
+          modalSesion.style.display = "none";
+        }, 2000);
+      } else {
+        mensajeSesion.innerText = "no puedes acceder yá que no cuentas con una suscripción.";
+        botonIniciar.style.display = "inline-block";
+      }
+    });
+  };
+</script>
+</body>  
+  </html>
