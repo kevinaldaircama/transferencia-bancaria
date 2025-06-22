@@ -1,7 +1,8 @@
-<!DOCTYPE html><html lang="es">
+<!DOCTYPE html>
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Enviar Créditos</title>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -22,12 +23,14 @@
 <body>
   <div class="container">
     <h2>Enviar Créditos</h2>
-    <input type="text" id="uidDestino" placeholder="UID del destinatario" required>
-    <input type="number" id="monto" placeholder="Cantidad de créditos" required>
+    <input type="text" id="uidDestino" placeholder="UID del destinatario" required />
+    <input type="number" id="monto" placeholder="Cantidad de créditos" required />
     <button onclick="enviarCreditos()">Enviar créditos</button>
     <button class="secondary" onclick="eliminarCreditos()">Eliminar créditos</button>
     <div id="mensaje"></div>
-  </div>  <script>
+  </div>
+
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
       authDomain: "sistema-27b31.firebaseapp.com",
@@ -41,67 +44,70 @@
     const db = firebase.database();
     const auth = firebase.auth();
 
-    function enviarCreditos() {
-      const uidDestino = document.getElementById('uidDestino').value.trim();
-      const monto = parseFloat(document.getElementById('monto').value);
-      const mensaje = document.getElementById('mensaje');
-      mensaje.innerText = '';
-
-      if (!uidDestino || isNaN(monto) || monto <= 0) {
-        mensaje.innerText = 'Datos inválidos';
-        mensaje.className = 'error';
-        return;
-      }
-
-      const user = auth.currentUser;
-      if (!user) {
-        mensaje.innerText = 'Debes iniciar sesión';
-        mensaje.className = 'error';
-        return;
-      }
-
-      const refDestino = db.ref(`usuarios/${uidDestino}/comisionesTotales`);
-      refDestino.transaction(actual => (actual || 0) + monto)
-        .then(() => {
-          mensaje.innerText = `Se enviaron ${monto.toFixed(2)} créditos correctamente.`;
-          mensaje.className = 'success';
-        })
-        .catch(error => {
-          mensaje.innerText = 'Error al enviar créditos: ' + error.message;
-          mensaje.className = 'error';
-        });
+    function mostrarMensaje(texto, tipo) {
+      const mensaje = document.getElementById("mensaje");
+      mensaje.innerText = texto;
+      mensaje.className = tipo;
     }
 
-    function eliminarCreditos() {
-      const uidDestino = document.getElementById('uidDestino').value.trim();
-      const monto = parseFloat(document.getElementById('monto').value);
-      const mensaje = document.getElementById('mensaje');
-      mensaje.innerText = '';
+    async function verificarUsuarioExiste(uid) {
+      const snap = await db.ref(`usuarios/${uid}`).once('value');
+      return snap.exists();
+    }
+
+    async function enviarCreditos() {
+      const uidDestino = document.getElementById("uidDestino").value.trim();
+      const monto = parseFloat(document.getElementById("monto").value);
+
+      mostrarMensaje("", "");
 
       if (!uidDestino || isNaN(monto) || monto <= 0) {
-        mensaje.innerText = 'Datos inválidos';
-        mensaje.className = 'error';
-        return;
+        return mostrarMensaje("Datos inválidos", "error");
       }
 
       const user = auth.currentUser;
-      if (!user) {
-        mensaje.innerText = 'Debes iniciar sesión';
-        mensaje.className = 'error';
-        return;
+      if (!user) return mostrarMensaje("Debes iniciar sesión", "error");
+
+      if (!(await verificarUsuarioExiste(uidDestino))) {
+        return mostrarMensaje("El UID no existe en la base de datos", "error");
       }
 
-      const refDestino = db.ref(`usuarios/${uidDestino}/comisionesTotales`);
-      refDestino.transaction(actual => {
+      const ref = db.ref(`usuarios/${uidDestino}/comisionesTotales`);
+      ref.transaction(actual => (actual || 0) + monto)
+        .then(() => mostrarMensaje(`Se enviaron ${monto.toFixed(2)} créditos correctamente.`, "success"))
+        .catch(error => mostrarMensaje("Error al enviar créditos: " + error.message, "error"));
+    }
+
+    async function eliminarCreditos() {
+      const uidDestino = document.getElementById("uidDestino").value.trim();
+      const monto = parseFloat(document.getElementById("monto").value);
+
+      mostrarMensaje("", "");
+
+      if (!uidDestino || isNaN(monto) || monto <= 0) {
+        return mostrarMensaje("Datos inválidos", "error");
+      }
+
+      const user = auth.currentUser;
+      if (!user) return mostrarMensaje("Debes iniciar sesión", "error");
+
+      if (!(await verificarUsuarioExiste(uidDestino))) {
+        return mostrarMensaje("El UID no existe en la base de datos", "error");
+      }
+
+      const ref = db.ref(`usuarios/${uidDestino}/comisionesTotales`);
+      ref.transaction(actual => {
         const actualNum = actual || 0;
         return actualNum >= monto ? actualNum - monto : actualNum;
-      }).then(result => {
-        mensaje.innerText = `Se eliminaron ${monto.toFixed(2)} créditos correctamente.`;
-        mensaje.className = 'success';
-      }).catch(error => {
-        mensaje.innerText = 'Error al eliminar créditos: ' + error.message;
-        mensaje.className = 'error';
-      });
+      })
+      .then(() => mostrarMensaje(`Se eliminaron ${monto.toFixed(2)} créditos correctamente.`, "success"))
+      .catch(error => mostrarMensaje("Error al eliminar créditos: " + error.message, "error"));
     }
-  </script></body>
+
+    // 🔐 Opcional: Autenticación automática de prueba (¡quítalo en producción!)
+    auth.signInWithEmailAndPassword("admin@demo.com", "123456")
+      .then(() => console.log("Sesión iniciada para pruebas"))
+      .catch(e => console.log("Error login: ", e.message));
+  </script>
+</body>
 </html>
