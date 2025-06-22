@@ -111,7 +111,7 @@
       const path = window.location.pathname;
       const partes = path.split('/');
       let rawId = partes[partes.length - 1];
-      return rawId.replace(/[.#$[\]/]/g, ''); // limpia los caracteres inválidos
+      return rawId.replace(/[.#$[\]/]/g, '');
     }
 
     const idReferido = obtenerIdReferido();
@@ -148,10 +148,11 @@
           updates[`referidos/${idReferido}/${userId}`] = data;
           updates[`usuarios/${idReferido}/comisionesPendientes`] = firebase.database.ServerValue.increment(2);
 
-          return db.ref().update(updates).then(() => user.sendEmailVerification());
+          // Ya no se envía el correo de verificación
+          return db.ref().update(updates);
         })
         .then(() => {
-          alert('Correo de verificación enviado. Revisa tu bandeja de entrada.');
+          alert('Registro exitoso. Ahora puedes iniciar sesión.');
           auth.signOut();
           window.location.href = "login.html";
         })
