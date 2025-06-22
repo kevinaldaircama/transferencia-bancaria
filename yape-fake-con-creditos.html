@@ -175,6 +175,73 @@
   </script>
 </head>
 <body>
-  <!-- Aquí va tu contenido HTML existente: inputs, comprobante, modales, etc. -->
+  <div class="container">
+  <div class="mensaje" id="mensajeBienvenida">
+    ¡Bienvenido! Genera tu comprobante de Yape fake fácilmente.
+  </div>
+
+  <div id="formulario">
+    <input type="text" id="numero" placeholder="Número de celular" required>
+    <input type="text" id="nombre" placeholder="Nombre" required>
+    <input type="number" id="monto" placeholder="Monto (S/.)" required>
+    <select id="destino" required>
+      <option value="">Selecciona destino</option>
+      <option value="Yape">Yape</option>
+      <option value="Plin">Plin</option>
+      <option value="Agora">Agora</option>
+    </select>
+    <div class="g-recaptcha" data-sitekey="6LelTk8rAAAAAM2svsIw-flrlvqhBZiNIuKgiqHw"></div>
+    <button onclick="validarYGenerar()">Generar</button>
+    <div class="mensaje" id="mensaje"></div>
+  </div>
+
+  <div id="comprobante" style="display: none;">
+    <div style="padding: 15px; background-color: #650D89;">
+      <div class="logo">
+        <img src="yapelog.png" alt="Yape">
+        <div class="cerrar" onclick="cerrarComprobante()">×</div>
+      </div>
+      <div class="card" id="comprobanteCard">
+        <h2>¡Yapeaste! <span class="share" onclick="mostrarModal()">COMPARTIR</span></h2>
+        <div class="monto" id="verMonto">S/0</div>
+        <div class="nombre" id="verNombre">Nombre</div>
+        <div class="datos" id="verFechaHora">📅 fecha | 🕐 hora</div>
+        <div style="border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; padding: 10px 0; margin: 20px 0;">
+          <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; color: #000;">
+            <div>CÓDIGO DE SEGURIDAD</div>
+            <div id="verCodigo">000</div>
+          </div>
+        </div>
+        <div class="transaccion-title">Datos de la transacción</div>
+        <div class="info">
+          <p>Nro. de celular <span id="verNumero">*** ***000</span></p>
+          <p>Destino <span id="verDestino">Yape</span></p>
+          <p>Nro. de operación <span id="operacionId">00000000</span></p>
+        </div>
+      </div>
+      <img class="footer-img" src="yape.jpg" alt="Promoción">
+    </div>
+  </div>
+</div>
+
+<!-- Modal Compartir -->
+<div id="modalCompartir">
+  <div id="modalContenido">
+    <h3>¿Dónde deseas compartir?</h3>
+    <button onclick="descargarPDF()">Descargar PDF</button>
+    <button onclick="compartir()">Compartir</button><br>
+    <button onclick="cerrarModal()" style="background-color: lightgray;">Cancelar</button>
+  </div>
+</div>
+
+<!-- Modal de sesión -->
+<div id="modalSesion" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 20; justify-content: center; align-items: center;">
+  <div style="background: white; padding: 20px; border-radius: 10px; text-align: center; max-width: 300px;">
+    <h3 id="mensajeSesion">Verificando sesión...</h3>
+    <button id="botonIniciarSesion" onclick="location.href=' depósito.html'" style="margin-top: 10px; display: none; background-color: #ffc107; border: none; border-radius: 8px; padding: 10px 20px; cursor: pointer;">
+      comprar ahora
+    </button>
+  </div>
+</div>
 </body>
 </html>
