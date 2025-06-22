@@ -1,113 +1,97 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Enviar Créditos</title>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Recarga de Créditos</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 30px; }
-    .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    h2 { text-align: center; color: #333; }
-    input, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
-    button { background: #4caf50; color: white; border: none; cursor: pointer; font-size: 16px; }
-    button:hover { background: #43a047; }
-    .secondary { background: #f44336; }
-    .secondary:hover { background: #d32f2f; }
-    .success { color: green; text-align: center; }
-    .error { color: red; text-align: center; }
+      .formulario-recarga {
+  background-color: #212529;
+  border: 1px solid #444;
+  border-radius: 10px;
+  max-width: 500px;
+  margin: auto;
+  padding: 2rem;
+}
+
+.formulario-recarga .form-label {
+  font-weight: bold;
+}
+
+#mensajeRecarga {
+  font-size: 1rem;
+}
   </style>
-</head>
-<body>
-  <div class="container">
-    <h2>Enviar Créditos</h2>
-    <input type="text" id="uidDestino" placeholder="UID del destinatario" required />
-    <input type="number" id="monto" placeholder="Cantidad de créditos" required />
-    <button onclick="enviarCreditos()">Enviar créditos</button>
-    <button class="secondary" onclick="eliminarCreditos()">Eliminar créditos</button>
-    <div id="mensaje"></div>
+  </head>
+<body class="bg-dark text-white">
+
+  <div class="container mt-5">
+    <div class="card formulario-recarga text-white">
+      <div class="card-body">
+        <h5 class="card-title">Formulario de Recarga de Créditos</h5>
+        <div class="mb-3">
+          <label for="uidInput" class="form-label">UID del Usuario</label>
+          <input type="text" class="form-control" id="uidInput" placeholder="Ej: A1B2C3D4E5..." required />
+        </div>
+        <div class="mb-3">
+          <label for="montoInput" class="form-label">Monto a Recargar</label>
+          <input type="number" class="form-control" id="montoInput" placeholder="Ej: 10.00" min="0.01" step="0.01" required />
+        </div>
+        <button class="btn btn-success w-100" onclick="recargarCreditos()">Recargar Créditos</button>
+        <div id="mensajeRecarga" class="mt-3 text-center"></div>
+      </div>
+    </div>
   </div>
 
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
-      authDomain: "sistema-27b31.firebaseapp.com",
-      databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com",
-      projectId: "sistema-27b31",
-      storageBucket: "sistema-27b31.appspot.com",
-      messagingSenderId: "32031316083",
-      appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const auth = firebase.auth();
+      // Configura tu Firebase aquí
+const firebaseConfig = {
+  apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
+  authDomain: "sistema-27b31.firebaseapp.com",
+  databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com",
+  projectId: "sistema-27b31",
+  storageBucket: "sistema-27b31.appspot.com",
+  messagingSenderId: "32031316083",
+  appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
+};
 
-    function mostrarMensaje(texto, tipo) {
-      const mensaje = document.getElementById("mensaje");
-      mensaje.innerText = texto;
-      mensaje.className = tipo;
-    }
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-    async function verificarUsuarioExiste(uid) {
-      const snap = await db.ref(`usuarios/${uid}`).once('value');
-      return snap.exists();
-    }
+function recargarCreditos() {
+  const uid = document.getElementById('uidInput').value.trim();
+  const monto = parseFloat(document.getElementById('montoInput').value);
+  const mensajeDiv = document.getElementById('mensajeRecarga');
 
-    async function enviarCreditos() {
-      const uidDestino = document.getElementById("uidDestino").value.trim();
-      const monto = parseFloat(document.getElementById("monto").value);
+  if (!uid || isNaN(monto) || monto <= 0) {
+    mensajeDiv.innerHTML = '<span class="text-danger">Por favor, ingresa un UID válido y un monto mayor a 0.</span>';
+    return;
+  }
 
-      mostrarMensaje("", "");
+  const saldoRef = db.ref(`usuarios/${uid}/comisionesTotales`);
 
-      if (!uidDestino || isNaN(monto) || monto <= 0) {
-        return mostrarMensaje("Datos inválidos", "error");
-      }
-
-      const user = auth.currentUser;
-      if (!user) return mostrarMensaje("Debes iniciar sesión", "error");
-
-      if (!(await verificarUsuarioExiste(uidDestino))) {
-        return mostrarMensaje("El UID no existe en la base de datos", "error");
-      }
-
-      const ref = db.ref(`usuarios/${uidDestino}/comisionesTotales`);
-      ref.transaction(actual => (actual || 0) + monto)
-        .then(() => mostrarMensaje(`Se enviaron ${monto.toFixed(2)} créditos correctamente.`, "success"))
-        .catch(error => mostrarMensaje("Error al enviar créditos: " + error.message, "error"));
-    }
-
-    async function eliminarCreditos() {
-      const uidDestino = document.getElementById("uidDestino").value.trim();
-      const monto = parseFloat(document.getElementById("monto").value);
-
-      mostrarMensaje("", "");
-
-      if (!uidDestino || isNaN(monto) || monto <= 0) {
-        return mostrarMensaje("Datos inválidos", "error");
-      }
-
-      const user = auth.currentUser;
-      if (!user) return mostrarMensaje("Debes iniciar sesión", "error");
-
-      if (!(await verificarUsuarioExiste(uidDestino))) {
-        return mostrarMensaje("El UID no existe en la base de datos", "error");
-      }
-
-      const ref = db.ref(`usuarios/${uidDestino}/comisionesTotales`);
-      ref.transaction(actual => {
-        const actualNum = actual || 0;
-        return actualNum >= monto ? actualNum - monto : actualNum;
-      })
-      .then(() => mostrarMensaje(`Se eliminaron ${monto.toFixed(2)} créditos correctamente.`, "success"))
-      .catch(error => mostrarMensaje("Error al eliminar créditos: " + error.message, "error"));
-    }
-
-    // 🔐 Opcional: Autenticación automática de prueba (¡quítalo en producción!)
-    auth.signInWithEmailAndPassword("admin@demo.com", "123456")
-      .then(() => console.log("Sesión iniciada para pruebas"))
-      .catch(e => console.log("Error login: ", e.message));
+  saldoRef.once('value')
+    .then(snapshot => {
+      const saldoActual = snapshot.val() || 0;
+      const nuevoSaldo = parseFloat(saldoActual) + monto;
+      return saldoRef.set(nuevoSaldo);
+    })
+    .then(() => {
+      mensajeDiv.innerHTML = `<span class="text-success">Recarga exitosa. Se añadieron $${monto.toFixed(2)} al usuario.</span>`;
+      document.getElementById('uidInput').value = '';
+      document.getElementById('montoInput').value = '';
+    })
+    .catch(error => {
+      console.error('Error al recargar:', error);
+      mensajeDiv.innerHTML = '<span class="text-danger">Hubo un error al realizar la recarga.</span>';
+    });
+}
   </script>
 </body>
 </html>
