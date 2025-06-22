@@ -1,208 +1,291 @@
-<!-- Panel de Referidos Actualizado + Créditos en tiempo real --><!DOCTYPE html><html lang="es">
+
+<!DOCTYPE html>
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Página de Inicio</title>
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#121212" />
-  <link rel="icon" type="image/png" href="3440119_ico.png">
+  <title>menú principal</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
     body {
-      background-color: #121212;
-      color: #f0f0f0;
-      height: 100vh;
-      overflow-x: hidden;
+      background-color: #111;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
     }
-    .menu-toggle {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 1001;
+    .dashboard-container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 1rem;
     }
-    .hamburger {
-      font-size: 32px;
-      background: none;
+    .header-section {
+      background: linear-gradient(to right, #00223e, #3a6073);
+      border-radius: 15px;
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+    .header-section img {
+      border-radius: 50%;
+      width: 80px;
+    }
+    .credit-box, .queries-box {
+      padding: 1rem;
+      border-radius: 10px;
+      margin-top: 1rem;
+    }
+    .credit-box {
+      background-color: #202d3a;
+    }
+    .queries-box {
+      background-color: #47222e;
+    }
+    .btn-credits, .btn-invite {
+      background-color: #0d6efd;
+      color: white;
       border: none;
-      color: #ffffff;
-      cursor: pointer;
-      transition: transform 0.2s ease;
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      margin: 1rem 0;
+      display: inline-block;
+      text-decoration: none;
     }
-    .hamburger:hover {
-      transform: scale(1.1);
+    .badge-status {
+      font-size: 0.9rem;
+      margin-left: 1rem;
+    }
+    .query-search {
+      background-color: #222;
+      padding: 1rem;
+      border-radius: 10px;
+      margin: 2rem 0;
+    }
+    .category-btn {
+      background-color: #007bff;
+      color: white;
+      margin: 0.4rem;
+      border: none;
+      padding: 0.5rem 0.75rem;
+      border-radius: 10px;
+      display: inline-block;
+      text-decoration: none;
+    }
+    .category-btn i {
+      margin-right: 0.5rem;
+    }
+    .filter-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .filter-tags .badge {
+      cursor: pointer;
+    }
+    .footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #aaa;
     }
     .sidebar {
       position: fixed;
       top: 0;
-      right: -260px;
+      left: -260px;
       width: 250px;
       height: 100%;
-      background-color: #1f1f1f;
-      box-shadow: -3px 0 8px rgba(0, 0, 0, 0.4);
-      padding: 30px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      transition: right 0.3s ease;
-      z-index: 1000;
-    }
-    .sidebar.mostrar {
-      right: 0;
-    }
-    .boton {
-      background: #007bff;
-      color: #fff;
-      border: none;
-      padding: 12px 15px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-      transition: background 0.3s ease;
-    }
-    .boton:hover {
-      background: #0056b3;
-    }
-    .contenedor {
-      max-width: 600px;
-      margin: 120px auto 0;
-      padding: 20px;
-      text-align: center;
-    }
-    .caja {
       background-color: #1e1e1e;
-      padding: 25px;
-      margin-bottom: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transition: left 0.3s;
+      padding: 1rem;
+      z-index: 2000;
     }
-    .mensaje {
-      font-size: 26px;
-      font-weight: bold;
-      color: #00bcd4;
+    .sidebar.active {
+      left: 0;
     }
-    .descripcion {
-      font-size: 17px;
-      color: #cccccc;
+    .sidebar .nav-link {
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0.5rem 0;
+      text-decoration: none;
     }
-    .ocultar {
-      display: none;
+    .sidebar .nav-link:hover {
+      color: #0d6efd;
     }
-    footer {
-      text-align: center;
-      padding: 20px 0;
-      background: #35424a;
-      color: #ffffff;
-    }
-    @media (max-width: 768px) {
-      .features {
-        flex-direction: column;
-      }
-      .feature {
-        flex: 1 1 100%;
-      }
-      .screenshots {
-        flex-direction: column;
-      }
-    }
-    .extra-info {
-      background: #ffffff;
-      padding: 20px;
-      margin: 20px 0;
-      border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-    .extra-info p {
-      font-size: 16px;
-    }
-    .emoji {
+    .hamburger {
       font-size: 24px;
+      cursor: pointer;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 2100;
     }
-    #creditosMenu {
-      margin-top: 10px;
-      padding: 10px;
-      background: #2c2c2c;
-      border-radius: 8px;
-      text-align: center;
-      color: #00ffcc;
-      font-weight: bold;
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 1rem;
+      cursor: pointer;
+    }
+
+    /* Tema claro */
+    body.light-mode {
+      background-color: #f5f5f5;
+      color: #111;
+    }
+    body.light-mode .sidebar {
+      background-color: #e0e0e0;
+    }
+    body.light-mode .nav-link {
+      color: #111;
+    }
+    body.light-mode .nav-link:hover {
+      color: #0d6efd;
+    }
+    body.light-mode .dashboard-container {
+      background-color: #fff;
+      color: #000;
+    }
+    body.light-mode .credit-box {
+      background-color: #dee2e6;
+    }
+    body.light-mode .queries-box {
+      background-color: #f8d7da;
     }
   </style>
 </head>
 <body>
-  <!-- Botón hamburguesa -->
-  <div class="menu-toggle">
-    <button class="hamburger" onclick="toggleSidebar()">☰</button>
-  </div>  <!-- Menú lateral -->  <div class="sidebar" id="sidebar">
-    <button class="boton" onclick="irA('prueba.html')">Perfil</button>
-    <button class="boton" onclick="irA('#')">Sistema</button>
-    <button class="boton" onclick="irA('#')">Apps Fake</button>
-    <button class="boton" onclick="irA('#')">Transferencia Bancaria</button>
-    <button class="boton" onclick="irA('#')">Soporte</button>
-    <button class="boton" onclick="irA('#')">Cerrar Sesión</button>
-    <div id="creditosMenu">Cargando créditos...</div>
-  </div>  <!-- Contenido principal -->  <div class="contenedor" id="contenido">
-    <div class="caja mensaje" id="mensaje">¡Bienvenido!</div>
-    <div class="caja descripcion" id="descripcion">
-      Bienvenido a la mejor página donde podrás pagar cualquier servicio de manera profesional.
+  <div class="hamburger text-white">
+    <i class="fas fa-bars" onclick="toggleSidebar()"></i>
+  </div>
+
+  <div class="sidebar" id="sidebar">
+    <h6 class="text-primary">BARRA DE MENU</h6>
+    <a href="https://ejemplo.com/inicio" class="nav-link"><i class="fas fa-home"></i> Inicio</a>
+    <a href="https://ejemplo.com/comprar-creditos" class="nav-link"><i class="fas fa-credit-card"></i> Comprar Créditos</a>
+    <a href="https://ejemplo.com/consultas" class="nav-link"><i class="fas fa-list"></i> Consultas <span class="badge bg-danger">NEW</span></a>
+    <a href="https://ejemplo.com/referidos" class="nav-link"><i class="fas fa-users"></i> Mis Referidos</a>
+    <hr>
+    <h6 class="text-primary">OUR FEATURES</h6>
+    <div class="toggle-switch" onclick="toggleMode()" id="modeToggle">
+      <i class="fas fa-moon text-light" id="modeIcon"></i>
+      <span id="modeText">Modo Oscuro</span>
     </div>
-    <div class="caja descripcion">Todos nuestros sistemas están sincronizados a APIs reales</div>
-    <div class="caja descripcion">Contamos con soporte para cualquier duda o apoyo</div>
-    <div class="caja descripcion">Todos los datos son entregados a cada uno y si hace mal uso no nos hacemos responsables</div>
-    <div class="caja descripcion">El sistema cuenta con un seguimiento de lo que haces. Si haces algo malo, se suspenderá tu cuenta.</div><footer>
-  <p>Desarrollado por <strong>KEVINTECHTUTORIALS</strong></p>
-  <p>Todos los derechos reservados ©️</p>
-</footer>
+    <div class="mt-3">
+       <a href="https://ejemplo.com/soporte" class="btn btn-primary w-100"><i class=""></i> acceso premium</a>
+    </div>
+    <div class="mt-2">
+      <a href="https://ejemplo.com/soporte" class="btn btn-primary w-100"><i class="fas fa-headset"></i> Soporte</a>
+    </div>
+  </div>
 
-  </div>  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
-      authDomain: "sistema-27b31.firebaseapp.com",
-      databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com",
-      projectId: "sistema-27b31",
-      storageBucket: "sistema-27b31.appspot.com",
-      messagingSenderId: "32031316083",
-      appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
+  <div class="dashboard-container">
+    <div class="header-section">
+      <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Avatar" />
+      <h3></h3>
+      <p>Plan: <span class="text-warning">FREE</span> | Tipo de Cuenta: <span class="text-info">Personal</span></p>
+      <h1>KTT</h1>
+      <h4 class="text-light">on search</h4>
+      <p>Encuentra conexiones, construye historias: tu búsqueda comienza aquí.</p>
+      <a href="https://ejemplo.com/comprar-creditos" class="btn-credits">Comprar Créditos <i class="fas fa-coins"></i></a>
+    </div>
+    <div class="row">
+  <div class="col-md-6 credit-box">
+  <h5>Saldo Total</h5>
+  <p id="saldoUsuario">$0.00 <span class="text-muted">saldo actual a la fecha</span></p>
+  <div class="progress">
+    <div class="progress-bar bg-success" style="width:100%">Saldo</div>
+  </div>
+</div>
 
-    function irA(url) {
-      window.location.href = url;
+      </div>
+      <div class="col-md-6 queries-box">
+        <h5>Consultas Realizadas</h5>
+        <p>0 <a href="https://ejemplo.com/historial" class="text-white">ver historial</a></p>
+        <div class="progress">
+          <div class="progress-bar bg-danger" style="width:90%"></div>
+        </div>
+      </div>
+    </div>
+    <div class="text-center mt-3">
+      <a href="https://ejemplo.com/invitar" class="btn-invite"><i class="fas fa-user-plus"></i> Invitar Amigos</a>
+      <p class="text-muted">Comparte tu enlace de referidos y obtén créditos por su recarga</p>
+    </div>
+    <div class="query-search">
+      <label for="consultaInput">Consultas 2025</label>
+      <input type="text" id="consultaInput" class="form-control" placeholder="Buscar por nombre o tipo de consulta" />
+      <div class="filter-tags">
+        <span class="badge bg-primary">Todos</span>
+      </div>
+    </div>
+    <div class="mt-4">
+      <h5>Categorías Populares</h5>
+      <div>
+        <a href="https://ejemplo.com/personas" class="category-btn"><i class="fas fa-user"></i>inicio</a>
+         <a href="https://ejemplo.com/personas" class="category-btn"><i class="fas fa-user"></i>internet</a>
+          <a href="https://ejemplo.com/personas" class="category-btn"><i class="fas fa-user"></i>cuentas streaming</a>
+         <a href="https://ejemplo.com/personas" class="category-btn"><i class="fas fa-user"></i>vps</a>
+      </div>
+    </div>
+    <div class="footer">
+      <p>© 2025 transferencia vip App | Desarrollado por KTT</p>
+    </div>
+  </div>
+
+  <!-- Firebase Scripts -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+  // Tu configuración de Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
+    authDomain: "sistema-27b31.firebaseapp.com",
+    databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com",
+    projectId: "sistema-27b31",
+    storageBucket: "sistema-27b31.appspot.com",
+    messagingSenderId: "32031316083",
+    appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.database();
+
+  // Escuchar usuario autenticado y obtener créditos
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      const uid = user.uid;
+      const creditosRef = db.ref(`usuarios/${uid}/comisionesTotales`);
+      creditosRef.on('value', snapshot => {
+        const creditos = snapshot.val() || 0;
+        document.getElementById('saldoUsuario').innerHTML = `$${creditos.toFixed(2)} <span class="text-muted">saldo actual a la fecha</span>`;
+      });
     }
+  });
 
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
-      const mensaje = document.getElementById('mensaje');
-      const descripcion = document.getElementById('descripcion');
-
-      sidebar.classList.toggle('mostrar');
-      if (sidebar.classList.contains('mostrar')) {
-        mensaje.classList.add('ocultar');
-        descripcion.classList.add('ocultar');
-      } else {
-        mensaje.classList.remove('ocultar');
-        descripcion.classList.remove('ocultar');
-      }
+      sidebar.classList.toggle('active');
     }
 
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        const uid = user.uid;
-        const creditosRef = db.ref(`usuarios/${uid}/comisionesTotales`);
-        creditosRef.on('value', snapshot => {
-          const creditos = snapshot.val() || 0;
-          document.getElementById('creditosMenu').innerText = `🪙 Créditos: ${creditos.toFixed(2)}`;
-        });
+    function toggleMode() {
+      const body = document.body;
+      const icon = document.getElementById('modeIcon');
+      const text = document.getElementById('modeText');
+
+      body.classList.toggle('light-mode');
+
+      if (body.classList.contains('light-mode')) {
+        icon.classList.remove('fa-moon', 'text-light');
+        icon.classList.add('fa-sun', 'text-warning');
+        text.textContent = 'Modo Claro';
       } else {
-        document.getElementById('creditosMenu').innerText = '🪙 Créditos: 0.00';
+        icon.classList.remove('fa-sun', 'text-warning');
+        icon.classList.add('fa-moon', 'text-light');
+        text.textContent = 'Modo Oscuro';
       }
-    });
-  </script></body>
-    </html>
+    }
+  </script>
+</body>
+</html>
