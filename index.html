@@ -119,14 +119,8 @@
 
       auth.signInWithEmailAndPassword(email, password)
         .then(userCredential => {
-          const user = userCredential.user;
-          if (user.emailVerified) {
-            alert('Inicio de sesión exitoso.');
-            window.location.href = "inicio.html"; // <-- Cambia esto a tu página principal
-          } else {
-            alert('Debes verificar tu correo electrónico antes de continuar.');
-            auth.signOut();
-          }
+          alert('Inicio de sesión exitoso.');
+          window.location.href = "inicio.html"; // <-- Cambia esto a tu página principal
         })
         .catch(error => {
           alert('Error: ' + error.message);
