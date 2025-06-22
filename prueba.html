@@ -1,0 +1,118 @@
+<!DOCTYPE html><html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de Cuentas Streaming</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: #fff;
+      padding: 20px;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: #1e1e1e;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    select, input, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: none;
+      font-size: 16px;
+    }
+    button {
+      background: #4caf50;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #388e3c;
+    }
+    .resultado {
+      margin-top: 20px;
+      background: #2c2c2c;
+      padding: 15px;
+      border-radius: 8px;
+      color: #00e676;
+    }
+    .error {
+      color: #ff5252;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Generador de Cuentas Streaming</h2>
+    <select id="plataforma">
+      <option value="Netflix">Netflix</option>
+      <option value="YouTube Premium">YouTube Premium</option>
+      <option value="Disney+">Disney+</option>
+      <option value="HBO Max">HBO Max</option>
+      <option value="Spotify Premium">Spotify Premium</option>
+    </select>
+    <input type="password" id="contrasena" placeholder="Tu contraseña" required>
+    <button onclick="generarCuenta()">Generar</button>
+    <div id="mensaje"></div>
+    <div class="resultado" id="resultado" style="display: none;"></div>
+  </div>  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
+      authDomain: "sistema-27b31.firebaseapp.com",
+      databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com",
+      projectId: "sistema-27b31",
+      storageBucket: "sistema-27b31.appspot.com",
+      messagingSenderId: "32031316083",
+      appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    function generarCuenta() {
+      const plataforma = document.getElementById('plataforma').value;
+      const contrasena = document.getElementById('contrasena').value;
+      const mensaje = document.getElementById('mensaje');
+      const resultado = document.getElementById('resultado');
+      mensaje.innerText = '';
+      resultado.style.display = 'none';
+
+      if (!contrasena) {
+        mensaje.innerText = 'Ingresa una contraseña';
+        mensaje.className = 'error';
+        return;
+      }
+
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          const uid = user.uid;
+          const creditosRef = db.ref(`usuarios/${uid}/comisionesTotales`);
+
+          creditosRef.once('value').then(snap => {
+            const saldo = parseFloat(snap.val() || 0);
+            if (saldo >= 5) {
+              creditosRef.set(saldo - 5);
+              resultado.innerHTML = `✅ Cuenta generada:<br>🔹 Plataforma: ${plataforma}<br>🔹 Usuario: ${user.email}<br>🔹 Contraseña: ${contrasena}`;
+              resultado.style.display = 'block';
+              mensaje.innerText = '';
+            } else {
+              mensaje.innerText = '❌ No tienes suficientes créditos (5 requeridos).';
+              mensaje.className = 'error';
+            }
+          });
+        } else {
+          mensaje.innerText = 'Debes iniciar sesión para usar esta función';
+          mensaje.className = 'error';
+        }
+      });
+    }
+  </script></body>
+</html>
