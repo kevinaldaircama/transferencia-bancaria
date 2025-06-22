@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Comprobante Yape Fake</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyB8trNcvfkXBo6eMfQc85O5J1R-s8sF-rQ",
+      authDomain: "sistem-86419.firebaseapp.com",
+      projectId: "sistem-86419",
+      storageBucket: "sistem-86419.appspot.com",
+      messagingSenderId: "370404958161",
+      appId: "1:370404958161:web:4502f01d9a5b71961d0af0",
+      measurementId: "G-PLNZV8YC4F"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    async function descontarCreditos(cantidad) {
+      const user = firebase.auth().currentUser;
+      if (!user) return;
+      const userRef = db.collection('usuarios').doc(user.uid);
+      const doc = await userRef.get();
+      if (doc.exists) {
+        const data = doc.data();
+        const creditosActuales = data.creditos || 0;
+        if (creditosActuales >= cantidad) {
+          await userRef.update({ creditos: creditosActuales - cantidad });
+          console.log(\`Créditos restantes: \${creditosActuales - cantidad}\`);
+        } else {
+          alert("No tienes suficientes créditos.");
+          throw new Error("Créditos insuficientes");
+        }
+      }
+    }
+
+    function validarYGenerar() {
+      const response = grecaptcha.getResponse();
+      if (response.length === 0) {
+        alert("Por favor, completa el reCAPTCHA.");
+        return;
+      }
+      generarComprobante();
+    }
+
+    async function generarComprobante() {
+      try {
+        await descontarCreditos(5);
+      } catch (e) {
+        return;
+      }
+
+      const numero = document.getElementById('numero').value.trim();
+      const nombre = document.getElementById('nombre').value.trim();
+      const monto = document.getElementById('monto').value.trim();
+      const destino = document.getElementById('destino').value;
+
+      if (!numero || !nombre || !monto || !destino) {
+        alert("Por favor, completa todos los campos.");
+        return;
+      }
+
+      document.getElementById('mensaje').innerText = "Generando datos...";
+      setTimeout(() => {
+        const now = new Date();
+        const fecha = now.toLocaleDateString('es-PE', { day: 'numeric', month: 'short', year: 'numeric' });
+        const hora = now.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
+        const codigo = Math.floor(100 + Math.random() * 900);
+        const operacion = Math.floor(10000000 + Math.random() * 90000000);
+
+        document.getElementById('verMonto').innerText = \`S/\${parseFloat(monto).toFixed(2)}\`;
+        document.getElementById('verNombre').innerText = nombre;
+        document.getElementById('verFechaHora').innerText = \`\${fecha} | \${hora}\`;
+        document.getElementById('verCodigo').innerText = codigo;
+        document.getElementById('verNumero').innerText = \`*** ***\${numero.slice(-3)}\`;
+        document.getElementById('operacionId').innerText = operacion;
+        document.getElementById('verDestino').innerText = destino;
+
+        document.getElementById('mensajeBienvenida').style.display = "none";
+        document.getElementById('formulario').style.display = "none";
+        document.getElementById('comprobante').style.display = "block";
+      }, 1000);
+    }
+
+    async function descargarPDF() {
+      try {
+        await descontarCreditos(2);
+      } catch (e) {
+        cerrarModal();
+        return;
+      }
+
+      const comprobante = document.getElementById('comprobante');
+      const canvas = await html2canvas(comprobante, { scale: 2, backgroundColor: "#650D89" });
+      const imgData = canvas.toDataURL('image/png');
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const width = 210;
+      const height = (canvas.height * width) / canvas.width;
+      pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+      pdf.save('comprobante.pdf');
+      cerrarModal();
+    }
+
+    async function compartir() {
+      try {
+        await descontarCreditos(3);
+      } catch (e) {
+        cerrarModal();
+        return;
+      }
+
+      try {
+        const comprobante = document.getElementById('comprobante');
+        const canvas = await html2canvas(comprobante, { scale: 2, backgroundColor: "#650D89" });
+        canvas.toBlob(async (blob) => {
+          const file = new File([blob], "comprobante.png", { type: blob.type });
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              title: "Comprobante",
+              text: "Aquí está tu comprobante generado.",
+              files: [file],
+            });
+          } else {
+            alert("Tu navegador no soporta esta función.");
+          }
+        });
+      } catch (error) {
+        alert("No se pudo compartir.");
+      }
+      cerrarModal();
+    }
+
+    function mostrarModal() {
+      document.getElementById('modalCompartir').style.display = "flex";
+    }
+
+    function cerrarModal() {
+      document.getElementById('modalCompartir').style.display = "none";
+    }
+
+    function cerrarComprobante() {
+      document.getElementById('comprobante').style.display = "none";
+      document.getElementById('formulario').style.display = "block";
+      document.getElementById('mensajeBienvenida').style.display = "block";
+    }
+
+    window.onload = () => {
+      const modalSesion = document.getElementById('modalSesion');
+      const mensajeSesion = document.getElementById('mensajeSesion');
+      const botonIniciar = document.getElementById('botonIniciarSesion');
+
+      firebase.auth().onAuthStateChanged((user) => {
+        modalSesion.style.display = "flex";
+        if (user) {
+          mensajeSesion.innerText = "Inicio de sesión exitoso ✅";
+          botonIniciar.style.display = "none";
+          setTimeout(() => {
+            modalSesion.style.display = "none";
+          }, 2000);
+        } else {
+          mensajeSesion.innerText = "no puedes acceder yá que no cuentas con una suscripción.";
+          botonIniciar.style.display = "inline-block";
+        }
+      });
+    };
+  </script>
+</head>
+<body>
+  <!-- Aquí va tu contenido HTML existente: inputs, comprobante, modales, etc. -->
+</body>
+</html>
