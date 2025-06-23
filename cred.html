@@ -16,7 +16,10 @@
       background-color: #202d3a;
       padding: 1rem;
       border-radius: 10px;
-      margin-top: 1rem;
+      margin-top: 2rem;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
     }
     .form-control, .btn {
       margin-top: 0.5rem;
@@ -25,7 +28,7 @@
 </head>
 <body>
 
-<div class="container mt-5">
+<div class="container">
   <div class="credit-box">
     <h3 class="text-center">Panel de Recarga de Créditos</h3>
     <hr>
@@ -63,19 +66,20 @@
   const auth = firebase.auth();
   const db = firebase.database();
 
-  // Mostrar saldo del usuario logueado
+  // Mostrar saldo del usuario logueado automáticamente
   auth.onAuthStateChanged(user => {
     if (user) {
       const uid = user.uid;
       const creditosRef = db.ref(`usuarios/${uid}/comisionesTotales`);
       creditosRef.on('value', snapshot => {
-        const creditos = snapshot.val() || 0;
+        const creditos = parseFloat(snapshot.val()) || 0;
         document.getElementById('saldoUsuario').innerHTML =
           `$${creditos.toFixed(2)} <span class="text-muted">saldo actual a la fecha</span>`;
       });
     }
   });
 
+  // Función para recargar créditos
   function recargarCreditos() {
     const uid = document.getElementById('inputUid').value.trim();
     const monto = parseFloat(document.getElementById('inputMonto').value);
@@ -86,14 +90,16 @@
     }
 
     const creditosRef = db.ref(`usuarios/${uid}/comisionesTotales`);
+
     creditosRef.once('value')
       .then(snapshot => {
-        const saldoActual = snapshot.val() || 0;
+        const saldoActual = parseFloat(snapshot.val()) || 0; // Conversión corregida
         const nuevoSaldo = saldoActual + monto;
         return creditosRef.set(nuevoSaldo).then(() => nuevoSaldo);
       })
       .then(nuevoSaldo => {
         alert('Recarga exitosa.');
+        // Si el UID recargado es el mismo que el logueado, actualizar visualmente
         if (auth.currentUser && auth.currentUser.uid === uid) {
           document.getElementById('saldoUsuario').innerHTML =
             `$${nuevoSaldo.toFixed(2)} <span class="text-muted">saldo actualizado</span>`;
