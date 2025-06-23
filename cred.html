@@ -52,7 +52,7 @@
     const db = firebase.database();
     const auth = firebase.auth();
 
-    const adminEmail = "kevinaldaircamachoserna51@gmail.com"; // Cambiar al correo del administrador real
+    const adminEmail = "admin@example.com"; // Cambiar al correo del administrador real
 
     function recargarCreditos() {
       const uid = document.getElementById('uidInput').value.trim();
@@ -71,12 +71,12 @@
         }
 
         if (user.email === adminEmail) {
-          // Validar si el usuario objetivo ha iniciado sesión recientemente
-          const MILISEGUNDOS_24H = 24 * 60 * 60 * 1000;
+          // Validar si el usuario objetivo ha iniciado sesión en el último minuto
+          const MILISEGUNDOS_1_MINUTO = 1 * 60 * 1000;
           db.ref(`usuarios/${uid}/lastLogin`).once('value').then(snap => {
             const lastLogin = snap.val();
-            if (!lastLogin || (Date.now() - lastLogin > MILISEGUNDOS_24H)) {
-              mensajeDiv.innerHTML = '<span class="text-danger">El usuario no ha iniciado sesión recientemente. Debe iniciar sesión para poder recargar.</span>';
+            if (!lastLogin || (Date.now() - lastLogin > MILISEGUNDOS_1_MINUTO)) {
+              mensajeDiv.innerHTML = '<span class="text-danger">El usuario no ha iniciado sesión en el último minuto. Debe iniciar sesión para poder recargar.</span>';
               return;
             }
             realizarRecarga(uid, monto, mensajeDiv);
