@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Registro</title>
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#121212" />
   <link rel="icon" type="image/png" href="3440119_ico.png">
   <style>
+    * { box-sizing: border-box; }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #a1c4fd, #c2e9fb);
       margin: 0;
       display: flex;
       height: 100vh;
@@ -20,36 +20,45 @@
 
     .container {
       background: white;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 0 12px rgba(0,0,0,0.1);
-      width: 320px;
+      padding: 40px 30px;
+      border-radius: 16px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+      width: 100%;
+      max-width: 400px;
       text-align: center;
     }
 
+    .container:hover {
+      transform: scale(1.01);
+    }
+
+    .logo {
+      width: 80px;
+      margin-bottom: 15px;
+    }
+
     h2 {
-      margin-bottom: 20px;
+      margin: 10px 0 25px;
       color: #333;
     }
 
     input[type="email"],
     input[type="password"] {
       width: 100%;
-      padding: 10px 15px;
-      margin: 8px 0 16px 0;
+      padding: 12px;
+      margin-bottom: 16px;
       border: 1px solid #ccc;
-      border-radius: 5px;
-      box-sizing: border-box;
-      font-size: 14px;
+      border-radius: 8px;
+      font-size: 15px;
     }
 
     button {
-      background-color: #007bff;
-      border: none;
-      color: white;
-      padding: 12px 0;
       width: 100%;
-      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
       font-size: 16px;
       cursor: pointer;
       transition: background-color 0.3s ease;
@@ -59,8 +68,36 @@
       background-color: #0056b3;
     }
 
-    p {
+    .google-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
+      padding: 10px;
+      width: 100%;
+      cursor: pointer;
+      transition: box-shadow 0.3s ease;
       margin-top: 15px;
+    }
+
+    .google-btn:hover {
+      box-shadow: 0 0 8px rgba(0,0,0,0.2);
+    }
+
+    .google-icon {
+      height: 20px;
+      margin-right: 10px;
+    }
+
+    .g-recaptcha {
+      margin: 10px 0 20px;
+    }
+
+    p {
+      margin-top: 20px;
       font-size: 14px;
     }
 
@@ -79,15 +116,21 @@
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
-
   <div class="container">
-    <h2>Registro</h2>
+  <h2>Registro</h2>
+    <img src="3440119_ico.png" alt="Logo" class="logo" />
     <form id="registerForm">
       <input type="email" id="regEmail" placeholder="Correo electrónico" required />
       <input type="password" id="regPass" placeholder="Contraseña" required />
       <div class="g-recaptcha" data-sitekey="6LelTk8rAAAAAM2svsIw-flrlvqhBZiNIuKgiqHw"></div>
       <button type="submit">Registrarse</button>
     </form>
+
+    <button id="googleRegisterBtn" class="google-btn">
+      <img class="google-icon" src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo">
+      Registrarse con Google
+    </button>
+
     <p>¿Ya tienes cuenta? <a href="login.html">Inicia sesión aquí</a></p>
   </div>
 
@@ -148,7 +191,6 @@
           updates[`referidos/${idReferido}/${userId}`] = data;
           updates[`usuarios/${idReferido}/comisionesPendientes`] = firebase.database.ServerValue.increment(2);
 
-          // Ya no se envía el correo de verificación
           return db.ref().update(updates);
         })
         .then(() => {
@@ -158,6 +200,44 @@
         })
         .catch(error => {
           alert('Error: ' + error.message);
+        });
+    });
+
+    // Registro con Google
+    document.getElementById('googleRegisterBtn').addEventListener('click', () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+
+      auth.signInWithPopup(provider)
+        .then(result => {
+          const user = result.user;
+          const userId = user.uid;
+          const fecha = new Date().toISOString().split('T')[0];
+
+          const data = {
+            correo: user.email,
+            nombre: user.displayName,
+            fecha: fecha,
+            estado: 'activo',
+            saldo: '0.00',
+            recargas: 0,
+            comision: '2.00',
+            ultima: '-',
+            google: true
+          };
+
+          const updates = {};
+          updates[`referidos/${idReferido}/${userId}`] = data;
+          updates[`usuarios/${idReferido}/comisionesPendientes`] = firebase.database.ServerValue.increment(2);
+
+          return db.ref().update(updates);
+        })
+        .then(() => {
+          alert('Registro con Google exitoso.');
+          window.location.href = "index.html";
+        })
+        .catch(error => {
+          console.error("Error con registro Google:", error);
+          alert("Error con Google: " + error.message);
         });
     });
   </script>
