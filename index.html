@@ -1,66 +1,117 @@
-<!DOCTYPE html><html lang="es">
+<!DOCTYPE html>
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Iniciar sesión</title>
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#121212" />
-  <link rel="icon" type="image/png" href="3440119_ico.png">
+  <link rel="icon" href="3440119_ico.png" />
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
       margin: 0;
-      display: flex;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #a1c4fd, #c2e9fb);
       height: 100vh;
+      display: flex;
       justify-content: center;
       align-items: center;
     }
+
     .container {
       background: white;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 0 12px rgba(0,0,0,0.1);
-      width: 320px;
+      padding: 40px 30px;
+      border-radius: 16px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+      width: 100%;
+      max-width: 380px;
       text-align: center;
+      transition: all 0.3s ease-in-out;
     }
+
+    .container:hover {
+      transform: scale(1.02);
+    }
+
+    .logo {
+      width: 80px;
+      margin: 0 auto 15px;
+    }
+
     h2 {
-      margin-bottom: 20px;
+      margin: 10px 0 25px;
       color: #333;
     }
+
     input[type="email"],
     input[type="password"] {
       width: 100%;
-      padding: 10px 15px;
-      margin: 8px 0 16px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      box-sizing: border-box;
-      font-size: 14px;
+      padding: 12px;
+      margin-bottom: 16px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
     }
+
     button {
-      background-color: #007bff;
-      border: none;
-      color: white;
-      padding: 12px 0;
       width: 100%;
-      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
       font-size: 16px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: background 0.3s ease;
     }
+
     button:hover {
       background-color: #0056b3;
     }
-    p {
+
+    .google-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
+      padding: 10px;
+      width: 100%;
+      cursor: pointer;
+      transition: box-shadow 0.3s ease;
       margin-top: 15px;
+    }
+
+    .google-btn:hover {
+      box-shadow: 0 0 8px rgba(0,0,0,0.2);
+    }
+
+    .google-icon {
+      height: 20px;
+      margin-right: 10px;
+    }
+
+    .g-recaptcha {
+      margin: 10px 0 20px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
       font-size: 14px;
     }
-    a {
+
+    .actions a {
       color: #007bff;
       text-decoration: none;
     }
-    a:hover {
+
+    .actions a:hover {
       text-decoration: underline;
     }
   </style>
@@ -71,6 +122,7 @@
 </head>
 <body>
   <div class="container">
+    <img src="logo.png" alt="Logo" class="logo" />
     <h2>Iniciar sesión</h2>
     <form id="loginForm">
       <input type="email" id="loginEmail" placeholder="Correo electrónico" required />
@@ -78,9 +130,19 @@
       <div class="g-recaptcha" data-sitekey="6LelTk8rAAAAAM2svsIw-flrlvqhBZiNIuKgiqHw"></div>
       <button type="submit">Entrar</button>
     </form>
-    <p>¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a></p>
-    <p><a href="reset.html">¿Olvidaste tu contraseña?</a></p>
-  </div>  <script>
+
+    <button id="googleLoginBtn" class="google-btn">
+      <img class="google-icon" src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo">
+      Iniciar sesión con Google
+    </button>
+
+    <div class="actions">
+      <a href="registro.html">Regístrate</a>
+      <a href="reset.html">¿Olvidaste tu contraseña?</a>
+    </div>
+  </div>
+
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
       authDomain: "sistema-27b31.firebaseapp.com",
@@ -95,9 +157,9 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
+    // Inicio con correo y contraseña
     document.getElementById('loginForm').addEventListener('submit', (e) => {
       e.preventDefault();
-
       const email = document.getElementById('loginEmail').value;
       const password = document.getElementById('loginPass').value;
       const recaptchaResponse = grecaptcha.getResponse();
@@ -110,19 +172,39 @@
       auth.signInWithEmailAndPassword(email, password)
         .then(userCredential => {
           const user = userCredential.user;
-
-          // Guardar timestamp del último login en Firebase
           db.ref('usuarios/' + user.uid).update({
             lastLogin: Date.now()
           });
-
           alert('Inicio de sesión exitoso.');
           window.location.href = "inicio.html";
         })
         .catch(error => {
           console.error("Error al iniciar sesión:", error);
-          alert('Error en el inicio de sesión: ' + error.message);
+          alert('Error: ' + error.message);
         });
     });
-  </script></body>
+
+    // Inicio con Google
+    document.getElementById('googleLoginBtn').addEventListener('click', () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+
+      auth.signInWithPopup(provider)
+        .then((result) => {
+          const user = result.user;
+          db.ref('usuarios/' + user.uid).update({
+            email: user.email,
+            nombre: user.displayName,
+            google: true,
+            lastLogin: Date.now()
+          });
+          alert('Inicio de sesión con Google exitoso.');
+          window.location.href = "inicio.html";
+        })
+        .catch((error) => {
+          console.error("Error con Google Sign-In:", error);
+          alert("Error con Google Sign-In: " + error.message);
+        });
+    });
+  </script>
+</body>
 </html>
