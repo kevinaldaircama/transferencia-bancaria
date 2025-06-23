@@ -127,8 +127,12 @@
     });
 
     alert('Inicio de sesión exitoso.');
-    window.location.href = "menu.html"; // Cambia si usas otra ruta
+    window.location.href = "menu.html"; // Redirige correctamente
   })
+  .catch(error => {
+    console.error('Error al iniciar sesión:', error);
+    alert('Error: ' + error.message);
+  });
   </script>  
   
 </body>  
