@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="es">
+<!DOCTYPE html><html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -65,13 +64,11 @@
       text-decoration: underline;
     }
   </style>
-
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
-
 <body>
   <div class="container">
     <h2>Iniciar sesión</h2>
@@ -83,9 +80,7 @@
     </form>
     <p>¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a></p>
     <p><a href="reset.html">¿Olvidaste tu contraseña?</a></p>
-  </div>
-
-  <script>
+  </div>  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
       authDomain: "sistema-27b31.firebaseapp.com",
@@ -116,20 +111,18 @@
         .then(userCredential => {
           const user = userCredential.user;
 
-          // Guardar el timestamp de último login
-          return db.ref('usuarios/' + user.uid).update({
+          // Guardar timestamp del último login en Firebase
+          db.ref('usuarios/' + user.uid).update({
             lastLogin: Date.now()
           });
-        })
-        .then(() => {
+
           alert('Inicio de sesión exitoso.');
-          window.location.href = "menu.html"; // Cambiar si tu archivo tiene otro nombre o ruta
+          window.location.href = "menu.html";
         })
         .catch(error => {
-          console.error(error);
-          alert('Error al iniciar sesión: ' + error.message);
+          console.error("Error al iniciar sesión:", error);
+          alert('Error en el inicio de sesión: ' + error.message);
         });
     });
-  </script>
-</body>
+  </script></body>
 </html>
