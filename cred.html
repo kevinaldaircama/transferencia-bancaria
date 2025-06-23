@@ -1,83 +1,110 @@
-<!DOCTYPE html><html lang="es"><head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Recarga de Créditos</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Panel de Recarga de Créditos</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <style>
-    .formulario-recarga {
-      background-color: #212529;
-      border: 1px solid #444;
+    body {
+      background-color: #111;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .credit-box {
+      background-color: #202d3a;
+      padding: 1rem;
       border-radius: 10px;
-      max-width: 500px;
-      margin: auto;
-      padding: 2rem;
+      margin-top: 1rem;
     }
-    .formulario-recarga .form-label {
-      font-weight: bold;
-    }
-    #mensajeRecarga {
-      font-size: 1rem;
+    .form-control, .btn {
+      margin-top: 0.5rem;
     }
   </style>
 </head>
-<body 
-  <!-- Agrega esto dentro del <body> donde quieras mostrar el panel de recarga, por ejemplo debajo del saldo --><div class="col-md-6 credit-box mt-4">
-  <h5>Recargar Créditos Manualmente</h5>
-  <div class="mb-2">
-    <label for="uidInput">UID del Usuario:</label>
-    <input type="text" id="uidInput" class="form-control" placeholder="Ej: abc123xyz">
-  </div>
-  <div class="mb-2">
-    <label for="montoInput">Monto a Recargar:</label>
-    <input type="number" id="montoInput" class="form-control" placeholder="Ej: 5.00">
-  </div>
-  <button class="btn btn-success w-100" onclick="recargarCreditos()">Recargar</button>
-</div><!-- Dentro del <script> debajo de la configuración de Firebase --><script>
-  // ... firebase.initializeApp y demás config ...
+<body>
 
+<div class="container mt-5">
+  <div class="credit-box">
+    <h3 class="text-center">Panel de Recarga de Créditos</h3>
+    <hr>
+    <h5>Saldo Total</h5>
+    <p id="saldoUsuario">$0.00 <span class="text-muted">saldo actual a la fecha</span></p>
+    <div class="progress mb-3">
+      <div class="progress-bar bg-success" style="width:100%">Saldo</div>
+    </div>
+
+    <h5>Recargar Créditos</h5>
+    <input type="text" id="inputUid" class="form-control" placeholder="Ingrese UID del usuario">
+    <input type="number" id="inputMonto" class="form-control" placeholder="Monto a recargar">
+    <button class="btn btn-success w-100" onclick="recargarCreditos()">Recargar</button>
+  </div>
+</div>
+
+<!-- Firebase Scripts -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+  // Configuración Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
+    authDomain: "sistema-27b31.firebaseapp.com",
+    databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com",
+    projectId: "sistema-27b31",
+    storageBucket: "sistema-27b31.appspot.com",
+    messagingSenderId: "32031316083",
+    appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.database();
+
+  // Mostrar saldo del usuario logueado
   auth.onAuthStateChanged(user => {
     if (user) {
       const uid = user.uid;
       const creditosRef = db.ref(`usuarios/${uid}/comisionesTotales`);
       creditosRef.on('value', snapshot => {
         const creditos = snapshot.val() || 0;
-        document.getElementById('saldoUsuario').innerHTML = `$${creditos.toFixed(2)} <span class="text-muted">saldo actual a la fecha</span>`;
+        document.getElementById('saldoUsuario').innerHTML =
+          `$${creditos.toFixed(2)} <span class="text-muted">saldo actual a la fecha</span>`;
       });
     }
   });
 
   function recargarCreditos() {
-    const uid = document.getElementById('uidInput').value.trim();
-    const monto = parseFloat(document.getElementById('montoInput').value);
+    const uid = document.getElementById('inputUid').value.trim();
+    const monto = parseFloat(document.getElementById('inputMonto').value);
 
     if (!uid || isNaN(monto) || monto <= 0) {
-      alert("Por favor ingresa un UID válido y un monto mayor a 0.");
+      alert('Ingrese un UID válido y un monto mayor a 0.');
       return;
     }
 
     const creditosRef = db.ref(`usuarios/${uid}/comisionesTotales`);
-
     creditosRef.once('value')
       .then(snapshot => {
         const saldoActual = snapshot.val() || 0;
         const nuevoSaldo = saldoActual + monto;
-
-        return creditosRef.set(nuevoSaldo);
+        return creditosRef.set(nuevoSaldo).then(() => nuevoSaldo);
       })
-      .then(() => {
-        alert("Recarga exitosa.");
-
-        const user = auth.currentUser;
-        if (user && user.uid === uid) {
-          document.getElementById('saldoUsuario').innerHTML = 
-            `$${(parseFloat(document.getElementById('saldoUsuario').textContent.replace('$', '')) + monto).toFixed(2)} <span class="text-muted">saldo actual a la fecha</span>`;
+      .then(nuevoSaldo => {
+        alert('Recarga exitosa.');
+        if (auth.currentUser && auth.currentUser.uid === uid) {
+          document.getElementById('saldoUsuario').innerHTML =
+            `$${nuevoSaldo.toFixed(2)} <span class="text-muted">saldo actualizado</span>`;
         }
       })
       .catch(error => {
-        console.error("Error al recargar créditos:", error);
-        alert("Hubo un error al recargar. Verifica el UID.");
+        console.error('Error al recargar:', error);
+        alert('Error al procesar la recarga.');
       });
   }
 </script>
-  </script></body>
+
+</body>
 </html>
