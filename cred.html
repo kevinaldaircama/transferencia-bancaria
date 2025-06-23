@@ -24,6 +24,10 @@
     .form-control, .btn {
       margin-top: 0.5rem;
     }
+    #uidUsuario {
+      font-size: 0.85rem;
+      color: #aaa;
+    }
   </style>
 </head>
 <body>
@@ -34,6 +38,7 @@
     <hr>
     <h5>Saldo Total</h5>
     <p id="saldoUsuario">$0.00 <span class="text-muted">saldo actual a la fecha</span></p>
+    <p id="uidUsuario">UID: cargando...</p>
     <div class="progress mb-3">
       <div class="progress-bar bg-success" style="width:100%">Saldo</div>
     </div>
@@ -66,16 +71,19 @@
   const auth = firebase.auth();
   const db = firebase.database();
 
-  // Mostrar saldo del usuario logueado automáticamente
+  // Mostrar saldo del usuario logueado automáticamente + su UID
   auth.onAuthStateChanged(user => {
     if (user) {
       const uid = user.uid;
+      document.getElementById('uidUsuario').innerText = `UID: ${uid}`;
       const creditosRef = db.ref(`usuarios/${uid}/comisionesTotales`);
       creditosRef.on('value', snapshot => {
         const creditos = parseFloat(snapshot.val()) || 0;
         document.getElementById('saldoUsuario').innerHTML =
           `$${creditos.toFixed(2)} <span class="text-muted">saldo actual a la fecha</span>`;
       });
+    } else {
+      document.getElementById('uidUsuario').innerText = 'UID: no autenticado';
     }
   });
 
@@ -93,13 +101,12 @@
 
     creditosRef.once('value')
       .then(snapshot => {
-        const saldoActual = parseFloat(snapshot.val()) || 0; // Conversión corregida
+        const saldoActual = parseFloat(snapshot.val()) || 0;
         const nuevoSaldo = saldoActual + monto;
         return creditosRef.set(nuevoSaldo).then(() => nuevoSaldo);
       })
       .then(nuevoSaldo => {
         alert('Recarga exitosa.');
-        // Si el UID recargado es el mismo que el logueado, actualizar visualmente
         if (auth.currentUser && auth.currentUser.uid === uid) {
           document.getElementById('saldoUsuario').innerHTML =
             `$${nuevoSaldo.toFixed(2)} <span class="text-muted">saldo actualizado</span>`;
