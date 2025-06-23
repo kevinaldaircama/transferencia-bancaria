@@ -20,6 +20,7 @@
       max-width: 500px;
       margin-left: auto;
       margin-right: auto;
+      display: none;
     }
     .form-control, .btn {
       margin-top: 0.5rem;
@@ -28,12 +29,19 @@
       font-size: 0.85rem;
       color: #aaa;
     }
+    .no-access {
+      text-align: center;
+      color: red;
+      margin-top: 3rem;
+      font-weight: bold;
+      display: none;
+    }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <div class="credit-box">
+  <div class="credit-box" id="adminPanel">
     <h3 class="text-center">Panel de Recarga de Créditos</h3>
     <hr>
     <h5>Saldo Total</h5>
@@ -48,6 +56,8 @@
     <input type="number" id="inputMonto" class="form-control" placeholder="Monto a recargar">
     <button class="btn btn-success w-100" onclick="recargarCreditos()">Recargar</button>
   </div>
+
+  <div id="noAccessMsg" class="no-access">Acceso denegado: solo administradores autorizados pueden usar este panel.</div>
 </div>
 
 <!-- Firebase Scripts -->
@@ -71,23 +81,44 @@
   const auth = firebase.auth();
   const db = firebase.database();
 
-  // Mostrar saldo del usuario logueado automáticamente + su UID
+  // Lista de correos permitidos (administradores)
+  const admins = [
+    "admin1@gmail.com",
+    "kevinaldaircamachoserna51@gmail.com"
+  ];
+
+  // Verifica si el usuario autenticado es un administrador
   auth.onAuthStateChanged(user => {
     if (user) {
+      const email = user.email;
       const uid = user.uid;
+
+      // Mostrar UID del usuario actual
       document.getElementById('uidUsuario').innerText = `UID: ${uid}`;
-      const creditosRef = db.ref(`usuarios/${uid}/comisionesTotales`);
-      creditosRef.on('value', snapshot => {
-        const creditos = parseFloat(snapshot.val()) || 0;
-        document.getElementById('saldoUsuario').innerHTML =
-          `$${creditos.toFixed(2)} <span class="text-muted">saldo actual a la fecha</span>`;
-      });
+
+      if (admins.includes(email)) {
+        // Mostrar el panel solo si es administrador
+        document.getElementById('adminPanel').style.display = 'block';
+
+        // Mostrar saldo propio
+        const creditosRef = db.ref(`usuarios/${uid}/comisionesTotales`);
+        creditosRef.on('value', snapshot => {
+          const creditos = parseFloat(snapshot.val()) || 0;
+          document.getElementById('saldoUsuario').innerHTML =
+            `$${creditos.toFixed(2)} <span class="text-muted">saldo actual a la fecha</span>`;
+        });
+
+      } else {
+        // Si no es admin, mostrar mensaje de acceso denegado
+        document.getElementById('noAccessMsg').style.display = 'block';
+      }
     } else {
-      document.getElementById('uidUsuario').innerText = 'UID: no autenticado';
+      document.getElementById('noAccessMsg').innerText = "No has iniciado sesión.";
+      document.getElementById('noAccessMsg').style.display = 'block';
     }
   });
 
-  // Función para recargar créditos
+  // Función de recarga
   function recargarCreditos() {
     const uid = document.getElementById('inputUid').value.trim();
     const monto = parseFloat(document.getElementById('inputMonto').value);
