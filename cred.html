@@ -1,5 +1,4 @@
-<!DOCTYPE html><html lang="es">
-<head>
+<!DOCTYPE html><html lang="es"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Recarga de Créditos</title>
@@ -12,17 +11,17 @@
       max-width: 500px;
       margin: auto;
       padding: 2rem;
-    }.formulario-recarga .form-label {
-  font-weight: bold;
-}
-
-#mensajeRecarga {
-  font-size: 1rem;
-}
-
+    }
+    .formulario-recarga .form-label {
+      font-weight: bold;
+    }
+    #mensajeRecarga {
+      font-size: 1rem;
+    }
   </style>
 </head>
-<body class="bg-dark text-white">  <div class="container mt-5">
+<body class="bg-dark text-white">
+  <div class="container mt-5">
     <div class="card formulario-recarga text-white">
       <div class="card-body">
         <h5 class="card-title">Formulario de Recarga de Créditos</h5>
@@ -53,7 +52,7 @@
     const db = firebase.database();
     const auth = firebase.auth();
 
-    const adminEmail = "kevinaldaircamachoserna51@gmail.com"; // Cambiar al correo del administrador real
+    const adminEmail = "admin@example.com"; // Cambiar al correo del administrador real
 
     function recargarCreditos() {
       const uid = document.getElementById('uidInput').value.trim();
@@ -72,10 +71,18 @@
         }
 
         if (user.email === adminEmail) {
-          // Admin puede recargar a cualquier UID
-          realizarRecarga(uid, monto, mensajeDiv);
+          // Validar si el usuario objetivo ha iniciado sesión recientemente
+          const MILISEGUNDOS_24H = 24 * 60 * 60 * 1000;
+          db.ref(`usuarios/${uid}/lastLogin`).once('value').then(snap => {
+            const lastLogin = snap.val();
+            if (!lastLogin || (Date.now() - lastLogin > MILISEGUNDOS_24H)) {
+              mensajeDiv.innerHTML = '<span class="text-danger">El usuario no ha iniciado sesión recientemente. Debe iniciar sesión para poder recargar.</span>';
+              return;
+            }
+            realizarRecarga(uid, monto, mensajeDiv);
+          });
         } else if (user.uid === uid) {
-          // Usuario normal solo puede recargar su propio UID
+          // Usuario normal puede recargar su propio UID
           realizarRecarga(uid, monto, mensajeDiv);
         } else {
           mensajeDiv.innerHTML = '<span class="text-danger">No tienes permisos para recargar a otro usuario.</span>';
@@ -85,7 +92,6 @@
 
     function realizarRecarga(uid, monto, mensajeDiv) {
       const saldoRef = db.ref(`usuarios/${uid}/comisionesTotales`);
-
       saldoRef.once('value')
         .then(snapshot => {
           const saldoActual = parseFloat(snapshot.val() || 0);
