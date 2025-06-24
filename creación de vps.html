@@ -111,13 +111,15 @@
     import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
-      apiKey: "TU_API_KEY",
-      authDomain: "TU_DOMINIO.firebaseapp.com",
-      projectId: "TU_PROJECT_ID",
-      storageBucket: "TU_BUCKET.appspot.com",
-      messagingSenderId: "XXXXXXX",
-      appId: "APP_ID"
+      apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
+      authDomain: "sistema-27b31.firebaseapp.com",
+      projectId: "sistema-27b31",
+      storageBucket: "sistema-27b31.appspot.com",
+      messagingSenderId: "32031316083",
+      appId: "1:32031316083:web:32cef8736c5a77fbb9f206",
+      measurementId: "G-JSXX8PF8BC"
     };
+
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -126,7 +128,7 @@
 
     onAuthStateChanged(auth, user => {
       if (!user) {
-        window.location.href = "index.hlml";
+        window.location.href = "index.html";
       } else {
         currentUser = user;
       }
