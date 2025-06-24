@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Generador de VPS</title>
+  <style>
+    body { font-family: sans-serif; background: #f1f1f1; padding: 2rem; }
+    label, select, input { display: block; margin-top: 10px; }
+    input, select { padding: 8px; width: 300px; }
+    button { margin-top: 15px; padding: 10px 20px; background: #2196F3; color: white; border: none; cursor: pointer; }
+    #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; }
+    #modalContent { background: white; padding: 20px; max-width: 600px; border-radius: 10px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+
+  <h2>Generador de VPS</h2>
+  <label>Localización:</label>
+  <select id="location">
+    <option value="us">Estados Unidos</option>
+    <option value="pe">Perú</option>
+    <option value="random">Aleatorio</option>
+  </select>
+
+  <label>Usuario:</label>
+  <input type="text" id="username">
+
+  <label>Contraseña:</label>
+  <input type="text" id="password">
+
+  <label>Días de duración (máx 30):</label>
+  <input type="number" id="days" max="30">
+
+  <label>Límite de conexión (máx 500):</label>
+  <input type="number" id="limit" max="500">
+
+  <button onclick="generarVPS()">Generar VPS</button>
+
+  <div id="modal">
+    <div id="modalContent"></div>
+  </div>
+
+  <!-- Firebase App (modular) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "TU_API_KEY",
+      authDomain: "TU_DOMINIO.firebaseapp.com",
+      projectId: "TU_PROJECT_ID",
+      storageBucket: "TU_BUCKET.appspot.com",
+      messagingSenderId: "XXXXXXX",
+      appId: "APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser;
+
+    onAuthStateChanged(auth, user => {
+      if (user) currentUser = user;
+      else alert("Inicia sesión primero.");
+    });
+
+    async function generarVPS() {
+      const loc = document.getElementById("location").value;
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const days = Math.min(parseInt(document.getElementById("days").value), 30);
+      const limit = Math.min(parseInt(document.getElementById("limit").value), 500);
+
+      if (!username || !password || isNaN(days) || isNaN(limit)) {
+        alert("Completa todos los campos correctamente.");
+        return;
+      }
+
+      const creditosNecesarios = loc === "us" ? 3 : loc === "pe" ? 9 : 6;
+
+      const userRef = doc(db, "users", currentUser.uid);
+      const userSnap = await getDoc(userRef);
+      const creditosActuales = userSnap.data().creditos;
+
+      if (creditosActuales < creditosNecesarios) {
+        alert("No tienes suficientes créditos.");
+        return;
+      }
+
+      await updateDoc(userRef, {
+        creditos: creditosActuales - creditosNecesarios
+      });
+
+      let modalText = "";
+      const today = new Date();
+      const expiracion = new Date(today.getTime() + days * 24 * 60 * 60 * 1000);
+      const fechaExp = expiracion.toLocaleDateString("es-PE");
+
+      if (loc === "us") {
+        modalText = `
+Felicidades tu vps fue creado con éxito.
+
+Datos de la vps
+---------------------------------------------------------------------------------
+IP de Servidor: 137.184.106.106
+Usuario: ${username}
+Contraseña: ${password}
+Días de Duración: ${days}
+Fecha de Expiración: ${fechaExp}
+Límite de Conexión: ${limit}
+---------------------------------------------------------------------------------
+SSH: 22
+DROPBEAR: 80 90
+SSL: 443
+SQUID: 3128
+Bad VPN: 7300
+Python: 100
+---------------------------------------------------------------------------------
+PAYLOAD WEBSOCKET: GET / HTTP/1.1[crlf]Host: 137.184.106.106[crlf]Upgrade: websocket[crlf][crlf]
+        `;
+      } else if (loc === "pe") {
+        modalText = `
+🔐VPS LIBRE REGALO🎉🎁
+
+👽IP del Servidor: 
+kevin.golbert-vps.fun
+👥Usuario:   regalo
+🗝️Contraseña:   regalo
+🏷️Dias de Duracion: 30 días 
+
+-------------------- payload--------------------
+GET / HTTP/1.1[crlf]Host: kevin.golbert-vps.site[crlf]Connection: Keep-Alive[crlf]User-Agent: [ua][crlf]Upgrade: websocket[crlf][crlf]
+
+🗓️Fecha de Expiracion: 30 días 
+🔒Limite de Conexion: 100
+🌐 COMPATIBLE
+🎮 Juegos online
+🍿 Netflix
+🎞️ Frecuencia de llamadas
+(WhatsApp, meet, zoom, etc)
+🕹️ Full redes sociales
+🏷️ Descargas
+✍️ Mucho más...
+💯Créditos : @servidoresvidaltecnet5 
+        `;
+      } else {
+        modalText = `
+◈─────⪧ IMPORTANT ⪦──────◈
+◈⪧ 🚫ㅤ NO SPAM
+◈⪧ ⚠️ㅤ NO DDOS
+◈⪧ 🎭ㅤ NO Hacking
+◈⪧ ⛔ ️ㅤ NO Carding
+◈⪧ 🙅‍♂️ㅤ NO Torrent
+====================================
+   🐉ㅤ DRAGON VPS MANAGERㅤ 🐉
+====================================
+◈⪧ Host / IP   :⪧  176.100.39.110
+◈⪧ Username    :⪧  ${username}
+◈⪧ Password    :⪧  ${password}
+◈⪧ Login Limit :⪧  ${limit}
+◈⪧ Expire Date :⪧  ${fechaExp}
+◈──────⪧ PORTS ⪦ ───────◈
+◈ SSH      ⌁  22
+◈ SSL      ⌁  443
+◈ Squid    ⌁  8080
+◈ DropBear ⌁  80
+◈ BadVPN   ⌁  7300
+◈───⪧ONLINE USER COUNT⪦────◈
+http://176.100.39.110:8888/server/online
+
+dns.blackoftcloud.site
+
+e9a5667783ecd4d69156672394468fce23b7cf33138b06d08a7807ae14d7841a
+◈─────────────────────────────────◈
+©️ 🐉  DRAGON VPS
+        `;
+      }
+
+      const modal = document.getElementById("modal");
+      document.getElementById("modalContent").innerText = modalText;
+      modal.style.display = "flex";
+
+      modal.onclick = () => modal.style.display = "none";
+    }
+  </script>
+</body>
+</html>
