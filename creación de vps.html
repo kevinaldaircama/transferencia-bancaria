@@ -136,14 +136,13 @@ button:hover {
   <h2 class="text-center">Generador de VPS</h2>
   <form id="vpsForm" class="mt-4">
 
-    <div class="mb-3">
-      <label for="location" class="form-label">Localización</label>
-      <select id="location" class="form-select" required>
-        <option value="Estados Unidos">Estados Unidos</option>
-        <option value="Perú">Perú</option>
-        <option value="Aleatorio">Aleatorio</option>
-      </select>
-    </div>
+    <!-- Selector de localización (solo Perú) -->
+<div class="form-group">
+  <label for="location">Localización:</label>
+  <select id="location" class="form-control">
+    <option value="Perú">Perú</option>
+  </select>
+</div>
 
     <div class="mb-3">
       <label for="user" class="form-label">Usuario</label>
@@ -177,97 +176,102 @@ button:hover {
     </div>
   </div>
 </div>
-
 <script>
-  // Firebase config
-  const firebaseConfig = {
-    apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
-      authDomain: "sistema-27b31.firebaseapp.com",
-      projectId: "sistema-27b31",
-      storageBucket: "sistema-27b31.appspot.com",
-      messagingSenderId: "32031316083",
-      appId: "1:32031316083:web:32cef8736c5a77fbb9f206",
-      measurementId: "G-JSXX8PF8BC"
-    };
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-
-  // Redirige si no hay sesión
-  auth.onAuthStateChanged(user => {
+document.addEventListener("DOMContentLoaded", function () {
+  firebase.auth().onAuthStateChanged(function(user) {
     if (!user) {
       window.location.href = "login.html";
     }
   });
 
-  const form = document.getElementById("vpsForm");
-  const modal = new bootstrap.Modal(document.getElementById("modalMensaje"));
-  const modalContent = document.getElementById("modalContent");
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
+  document.getElementById("generateVps").addEventListener("click", function () {
     const location = document.getElementById("location").value;
-    const username = document.getElementById("user").value.trim();
-    const password = document.getElementById("pass").value.trim();
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
     const days = parseInt(document.getElementById("days").value);
     const limit = parseInt(document.getElementById("limit").value);
 
+    if (!username || !password || isNaN(days) || isNaN(limit)) {
+      return Swal.fire("Error", "Por favor completa todos los campos", "error");
+    }
+
     if (days > 30 || limit > 500) {
-      alert("Días o límite excedido");
-      return;
+      return Swal.fire("Error", "Máximo 30 días y 500 de límite", "error");
     }
 
-    const user = auth.currentUser;
-    const uid = user.uid;
+    Swal.fire({
+      title: "Procesando datos...",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
 
-    const docRef = db.collection("usuarios").doc(uid);
-    const doc = await docRef.get();
-    const creditos = doc.exists ? doc.data().creditos || 0 : 0;
+    setTimeout(() => {
+      Swal.fire({
+        title: "Procesando créditos...",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+      });
 
-    if (creditos < 6) {
-      alert("No tienes suficientes créditos.");
-      return;
-    }
+      setTimeout(() => {
+        const user = firebase.auth().currentUser;
+        const uid = user.uid;
 
-    modal.show();
-    modalContent.innerText = "Procesando datos...";
-    await new Promise(r => setTimeout(r, 3000));
+        const userRef = firebase.firestore().collection("usuarios").doc(uid);
+        userRef.get().then((doc) => {
+          const data = doc.data();
+          const creditos = data.creditos || 0;
 
-    modalContent.innerText = "Procesando créditos...";
-    await new Promise(r => setTimeout(r, 2000));
+          if (creditos < 6) {
+            return Swal.fire("Error", "No tienes créditos suficientes", "error");
+          }
 
-    const fechaHoy = new Date();
-    const fechaExp = new Date();
-    fechaExp.setDate(fechaExp.getDate() + days);
-    const fechaExpStr = fechaExp.toLocaleDateString("es-PE");
+          // Descuenta los créditos
+          userRef.update({
+            creditos: firebase.firestore.FieldValue.increment(-6)
+          });
 
-    // Descontar créditos
-    await docRef.update({ creditos: creditos - 6 });
+          // Cálculo de fechas
+          const hoy = new Date();
+          const expiracion = new Date(hoy);
+          expiracion.setDate(hoy.getDate() + days);
 
-    // Mostrar datos finales
-    modalContent.innerHTML = `
-      <h5 class="text-success">¡Felicidades! Tu VPS fue creado con éxito</h5>
-      <hr>
-      <p><strong>IP de Servidor:</strong> 137.184.106.106</p>
-      <p><strong>Usuario:</strong> ${username}</p>
-      <p><strong>Contraseña:</strong> ${password}</p>
-      <p><strong>Días de Duración:</strong> ${days}</p>
-      <p><strong>Fecha de Expiración:</strong> ${fechaExpStr}</p>
-      <p><strong>Límite de Conexión:</strong> ${limit}</p>
-      <hr>
-      <p><strong>SSH:</strong> 22 | <strong>DROPBEAR:</strong> 80, 90 | <strong>SSL:</strong> 443 | <strong>SQUID:</strong> 3128</p>
-      <p><strong>Bad VPN:</strong> 7300 | <strong>Python:</strong> 100</p>
-      <hr>
-      <strong>PAYLOAD WEBSOCKET:</strong><br>
-      <code>
-        GET / HTTP/1.1<br>
-        Host: 137.184.106.106<br>
-        Upgrade: websocket<br><br>
-      </code>
-    `;
+          const formato = (fecha) => {
+            return `${String(fecha.getDate()).padStart(2, "0")}/${String(fecha.getMonth() + 1).padStart(2, "0")}/${fecha.getFullYear()}`;
+          };
+
+          // Muestra mensaje final
+          Swal.fire({
+            icon: "success",
+            title: "¡Felicidades! Tu VPS fue creado con éxito",
+            html: `
+              <h5>Datos de la VPS</h5>
+              <code>
+                IP de Servidor: 137.184.106.106<br>
+                Usuario: ${username}<br>
+                Contraseña: ${password}<br>
+                Días de Duración: ${days}<br>
+                Fecha de Expiración: ${formato(expiracion)}<br>
+                Límite de Conexión: ${limit}<br><br>
+                SSH: 22<br>
+                DROPBEAR: 80 90<br>
+                SSL: 443<br>
+                SQUID: 3128<br>
+                Bad VPN: 7300<br>
+                Python: 100<br><br>
+                PAYLOAD WEBSOCKET:<br>
+                GET / HTTP/1.1[crlf]<br>
+                Host: 137.184.106.106[crlf]<br>
+                Upgrade: websocket[crlf][crlf]
+              </code>
+            `,
+            confirmButtonText: "Cerrar"
+          });
+
+        });
+      }, 2000);
+    }, 3000);
   });
+});
 </script>
-
 </body>
-          </html>
+</html>
