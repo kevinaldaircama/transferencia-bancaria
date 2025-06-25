@@ -3,99 +3,110 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Generador de VPS</title>
+  <title>Crear VPS</title>
   <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f4f6f9;
-    margin: 0;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+    }
+    label {
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
 
-  h1 {
-    color: #333;
-    margin-bottom: 20px;
-  }
-
-  form {
-    background: #fff;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
-  }
-
-  label {
-    display: block;
-    margin-top: 15px;
-    font-weight: bold;
-    color: #555;
-  }
-
-  input, select {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-sizing: border-box;
-  }
-
-  button {
-    margin-top: 20px;
-    width: 100%;
-    background-color: #28a745;
-    color: white;
-    padding: 12px;
-    border: none;
-    border-radius: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-
-  button:hover {
-    background-color: #218838;
-  }
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.5);
+    }
+    .modal-content {
+      background-color: #fff;
+      margin: 15% auto;
+      padding: 30px;
+      border: 1px solid #888;
+      border-radius: 10px;
+      max-width: 400px;
+      text-align: center;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close:hover {
+      color: black;
+    }
   </style>
 </head>
 <body>
-  <h1>Generar VPS</h1>
+  <div class="container">
+    <h2>Crear VPS</h2>
+    <form id="vpsForm">
+      <label>Usuario</label>
+      <input type="text" id="usuario" required placeholder="Ej: admin123" />
 
-  <form id="vpsForm">
-    <label>Ubicación:</label>
-    <select id="location" required>
-      <option value="USA">USA</option>
-      <option value="EU">Europa</option>
-      <option value="peru">peru</option>
-    </select>
-    <br><br>
+      <label>Contraseña</label>
+      <input type="text" id="contraseña" required placeholder="Ej: pass123" />
 
-    <label>Nombre de usuario:</label>
-    <input type="text" id="username" required /><br><br>
+      <button type="submit">Generar VPS</button>
+    </form>
+  </div>
 
-    <label>Contraseña:</label>
-    <input type="password" id="password" required /><br><br>
+  <!-- Modal -->
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarModal()">&times;</span>
+      <p id="modalMensaje"></p>
+    </div>
+  </div>
 
-    <label>Días de duración (máx. 30):</label>
-    <input type="number" id="days" max="30" required /><br><br>
-
-    <label>Límite de conexiones (máx. 500):</label>
-    <input type="number" id="limit" max="500" required /><br><br>
-
-    <button type="submit">Generar VPS</button>
-  </form>
-
-  <!-- Firebase y lógica -->
+  <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import Swal from 'https://cdn.jsdelivr.net/npm/sweetalert2@11/+esm';
+    import { getFirestore, doc, getDoc, updateDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
@@ -106,78 +117,79 @@
       appId: "1:32031316083:web:32cef8736c5a77fbb9f206",
       measurementId: "G-JSXX8PF8BC"
     };
-
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    const form = document.getElementById("vpsForm");
+
     onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-      }
-    });
+      if (user) {
+        const uid = user.uid;
 
-    document.getElementById("vpsForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
 
-      const location = document.getElementById("location").value;
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const days = parseInt(document.getElementById("days").value);
-      const limit = parseInt(document.getElementById("limit").value);
+          try {
+            const userRef = doc(db, "usuarios", uid);
+            const userSnap = await getDoc(userRef);
 
-      if (!username || !password || isNaN(days) || isNaN(limit)) {
-        return Swal.fire("Error", "Completa todos los campos correctamente", "error");
-      }
+            if (!userSnap.exists()) {
+              mostrarModal("❌ Usuario no encontrado.");
+              return;
+            }
 
-      if (days > 30 || limit > 500) {
-        return Swal.fire("Error", "Máximo 30 días y 500 conexiones", "error");
-      }
+            const creditos = userSnap.data().creditos;
+            if (creditos < 3) {
+              mostrarModal("⚠️ No tienes suficientes créditos.");
+              return;
+            }
 
-      Swal.fire({ title: "Procesando datos...", allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            const usuario = document.getElementById("usuario").value;
+            const contraseña = document.getElementById("contraseña").value;
 
-      try {
-        const user = auth.currentUser;
-        if (!user) {
-          Swal.close();
-          return Swal.fire("Error", "No se ha iniciado sesión", "error");
-        }
+            await addDoc(collection(db, "vpsGenerados"), {
+              uid,
+              usuario,
+              contraseña,
+              creado: serverTimestamp()
+            });
 
-        const userRef = doc(db, "usuarios", user.uid);
-        const userSnap = await getDoc(userRef);
+            await updateDoc(userRef, {
+              creditos: creditos - 3
+            });
 
-        if (!userSnap.exists()) {
-          Swal.close();
-          return Swal.fire("Error", "No se encontró el usuario", "error");
-        }
-
-        const userData = userSnap.data();
-        const creditos = userData.creditos || 0;
-
-        if (creditos < 6) {
-          Swal.close();
-          return Swal.fire("Error", "No tienes créditos suficientes (mínimo 6)", "error");
-        }
-
-        // Simula el proceso de creación
-        await updateDoc(userRef, {
-          creditos: increment(-6)
+            mostrarModal("✅ VPS creado exitosamente. Se descontaron 3 créditos.");
+            form.reset();
+          } catch (error) {
+            console.error("Error al crear el VPS:", error);
+            mostrarModal("❌ Ocurrió un error al crear el VPS");
+          }
         });
 
-        Swal.fire("VPS creado", `
-          ✅ Ubicación: ${location}  
-          👤 Usuario: ${username}  
-          🔐 Contraseña: ${password}  
-          📅 Días: ${days}  
-          🔢 Límite: ${limit}
-        `, "success");
-
-      } catch (error) {
-        console.error(error);
-        Swal.close();
-        Swal.fire("Error", "Ocurrió un error al crear el VPS", "error");
+      } else {
+        mostrarModal("⚠️ Debes iniciar sesión para crear un VPS.");
       }
     });
+
+    // Función para mostrar modal
+    function mostrarModal(mensaje) {
+      document.getElementById("modalMensaje").innerText = mensaje;
+      document.getElementById("myModal").style.display = "block";
+    }
+
+    // Cerrar modal
+    function cerrarModal() {
+      document.getElementById("myModal").style.display = "none";
+    }
+
+    // Cierra modal si el usuario hace clic fuera
+    window.onclick = function(event) {
+      const modal = document.getElementById("myModal");
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    }
   </script>
 </body>
-</html>
+    </html>
