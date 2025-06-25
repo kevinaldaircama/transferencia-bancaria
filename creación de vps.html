@@ -1,145 +1,187 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generador VPS</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: #f1f2f6;
-    }
-    .container {
-      max-width: 500px;
-      margin: 40px auto;
-      padding: 20px;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    h1 {
-      text-align: center;
-      color: #2f3542;
-    }
-    label {
-      font-weight: bold;
-      margin-top: 10px;
-    }
-    input, select, button {
-      width: 100%;
-      margin-top: 5px;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #ced6e0;
-      font-size: 16px;
-    }
-    button {
-      background-color: #0984e3;
-      color: white;
-      border: none;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-    button:hover {
-      background-color: #74b9ff;
-    }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Generador de VPS</title>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
+<style>
+  /* Fuente moderna */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
-    /* Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 9999;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-content {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      max-width: 600px;
-      width: 90%;
-      position: relative;
-      animation: fadeIn 0.3s ease;
-      max-height: 80vh;
-      overflow-y: auto;
-      white-space: pre-wrap;
-    }
-    .close {
-      position: absolute;
-      right: 15px;
-      top: 10px;
-      font-size: 28px;
-      cursor: pointer;
-      color: #e74c3c;
-    }
+:root {
+  --bg-color: #f7f9fc;
+  --primary: #0059ff;
+  --primary-dark: #003ecb;
+  --secondary: #ffffff;
+  --text-color: #2c3e50;
+  --border-color: #dfe6e9;
+  --success: #27ae60;
+  --danger: #e74c3c;
+  --shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  --radius: 12px;
+}
 
-    @keyframes fadeIn {
-      from {opacity: 0; transform: scale(0.9);}
-      to {opacity: 1; transform: scale(1);}
-    }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    .spinner {
-      border: 6px solid #f3f3f3;
-      border-top: 6px solid #3498db;
-      border-radius: 50%;
-      width: 50px; height: 50px;
-      animation: spin 1s linear infinite;
-      margin: 20px auto;
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  padding: 30px 15px;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+  background: var(--secondary);
+  padding: 30px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+}
+
+h2 {
+  text-align: center;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 25px;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 5px;
+  display: block;
+}
+
+input, select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  margin-bottom: 20px;
+  transition: border 0.3s ease;
+}
+
+input:focus, select:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 89, 255, 0.15);
+}
+
+button {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background-color: var(--primary-dark);
+}
+
+/* Modal mejorado */
+.modal-content {
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  background-color: #fff;
+  color: var(--text-color);
+  border: none;
+}
+
+.modal-body h5 {
+  font-weight: 700;
+  color: var(--success);
+  margin-bottom: 15px;
+}
+
+.modal-body code {
+  background: #f1f1f1;
+  padding: 10px;
+  display: block;
+  border-radius: 8px;
+  font-family: monospace;
+  white-space: pre-line;
+}
+
+/* Responsive */
+@media screen and (max-width: 600px) {
+  .container {
+    padding: 20px;
+  }
+
+  input, select, button {
+    font-size: 0.95rem;
+  }
     }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-  </style>
+</style>
 </head>
-<body>
-  <div class="container">
-    <h1>Generador de VPS</h1>
-    <form id="vpsForm">
-      <label for="ubicacion">Ubicación:</label>
-      <select id="ubicacion" required>
-        <option value="">Seleccionar</option>
-        <option value="estados-unidos">Estados Unidos</option>
-        <option value="peru">Perú</option>
-        <option value="aleatorio">Aleatorio</option>
+<body class="bg-light">
+
+<div class="container mt-5">
+  <h2 class="text-center">Generador de VPS</h2>
+  <form id="vpsForm" class="mt-4">
+
+    <div class="mb-3">
+      <label for="location" class="form-label">Localización</label>
+      <select id="location" class="form-select" required>
+        <option value="Estados Unidos">Estados Unidos</option>
+        <option value="Perú">Perú</option>
+        <option value="Aleatorio">Aleatorio</option>
       </select>
+    </div>
 
-      <label>Usuario:</label>
-      <input type="text" id="usuario" required>
+    <div class="mb-3">
+      <label for="user" class="form-label">Usuario</label>
+      <input type="text" id="user" class="form-control" required />
+    </div>
 
-      <label>Contraseña:</label>
-      <input type="text" id="password" required>
+    <div class="mb-3">
+      <label for="pass" class="form-label">Contraseña</label>
+      <input type="text" id="pass" class="form-control" required />
+    </div>
 
-      <label>Días de duración (máx. 30):</label>
-      <input type="number" id="dias" max="30" required>
+    <div class="mb-3">
+      <label for="days" class="form-label">Días de duración (máx 30)</label>
+      <input type="number" id="days" class="form-control" max="30" min="1" required />
+    </div>
 
-      <label>Límite de conexión (máx. 500):</label>
-      <input type="number" id="limite" max="500" required>
+    <div class="mb-3">
+      <label for="limit" class="form-label">Límite de Conexión (máx 500)</label>
+      <input type="number" id="limit" class="form-control" max="500" min="1" required />
+    </div>
 
-      <button type="submit">Generar VPS</button>
-    </form>
-  </div>
+    <button type="submit" class="btn btn-primary w-100">Generar VPS</button>
+  </form>
+</div>
 
-  <!-- Modal -->
-  <div class="modal" id="modal">
+<!-- Modal -->
+<div class="modal fade" id="modalMensaje" tabindex="-1">
+  <div class="modal-dialog">
     <div class="modal-content">
-      <span class="close" onclick="cerrarModal()">&times;</span>
-      <div id="modal-body">Cargando...</div>
+      <div class="modal-body" id="modalContent">Procesando...</div>
     </div>
   </div>
+</div>
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
+<script>
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
       authDomain: "sistema-27b31.firebaseapp.com",
       projectId: "sistema-27b31",
       storageBucket: "sistema-27b31.appspot.com",
@@ -147,153 +189,85 @@
       appId: "1:32031316083:web:32cef8736c5a77fbb9f206",
       measurementId: "G-JSXX8PF8BC"
     };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+  // Redirige si no hay sesión
+  auth.onAuthStateChanged(user => {
+    if (!user) {
+      window.location.href = "login.html";
+    }
+  });
 
-    let uid = null;
+  const form = document.getElementById("vpsForm");
+  const modal = new bootstrap.Modal(document.getElementById("modalMensaje"));
+  const modalContent = document.getElementById("modalContent");
 
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        uid = user.uid;
-      } else {
-        window.location.href = "index.html"; // Redirigir si no ha iniciado sesión
-      }
-    });
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-    const form = document.getElementById("vpsForm");
-    const modal = document.getElementById("modal");
-    const modalBody = document.getElementById("modal-body");
+    const location = document.getElementById("location").value;
+    const username = document.getElementById("user").value.trim();
+    const password = document.getElementById("pass").value.trim();
+    const days = parseInt(document.getElementById("days").value);
+    const limit = parseInt(document.getElementById("limit").value);
 
-    function mostrarModal(contenido) {
-      modalBody.innerHTML = contenido;
-      modal.style.display = "flex";
+    if (days > 30 || limit > 500) {
+      alert("Días o límite excedido");
+      return;
     }
 
-    function cerrarModal() {
-      modal.style.display = "none";
+    const user = auth.currentUser;
+    const uid = user.uid;
+
+    const docRef = db.collection("usuarios").doc(uid);
+    const doc = await docRef.get();
+    const creditos = doc.exists ? doc.data().creditos || 0 : 0;
+
+    if (creditos < 6) {
+      alert("No tienes suficientes créditos.");
+      return;
     }
 
-    async function descontarCreditos(costo) {
-      const ref = db.collection("usuarios").doc(uid);
-      const snap = await ref.get();
-      if (!snap.exists) return false;
+    modal.show();
+    modalContent.innerText = "Procesando datos...";
+    await new Promise(r => setTimeout(r, 3000));
 
-      const data = snap.data();
-      const creditos = data.creditos || 0;
+    modalContent.innerText = "Procesando créditos...";
+    await new Promise(r => setTimeout(r, 2000));
 
-      if (creditos >= costo) {
-        await ref.update({ creditos: creditos - costo });
-        return true;
-      } else {
-        mostrarModal("❌ Créditos insuficientes.");
-        return false;
-      }
-    }
+    const fechaHoy = new Date();
+    const fechaExp = new Date();
+    fechaExp.setDate(fechaExp.getDate() + days);
+    const fechaExpStr = fechaExp.toLocaleDateString("es-PE");
 
-    form.addEventListener("submit", async e => {
-      e.preventDefault();
+    // Descontar créditos
+    await docRef.update({ creditos: creditos - 6 });
 
-      const ubicacion = document.getElementById("ubicacion").value;
-      const usuario = document.getElementById("usuario").value;
-      const password = document.getElementById("password").value;
-      const dias = parseInt(document.getElementById("dias").value);
-      const limite = parseInt(document.getElementById("limite").value);
+    // Mostrar datos finales
+    modalContent.innerHTML = `
+      <h5 class="text-success">¡Felicidades! Tu VPS fue creado con éxito</h5>
+      <hr>
+      <p><strong>IP de Servidor:</strong> 137.184.106.106</p>
+      <p><strong>Usuario:</strong> ${username}</p>
+      <p><strong>Contraseña:</strong> ${password}</p>
+      <p><strong>Días de Duración:</strong> ${days}</p>
+      <p><strong>Fecha de Expiración:</strong> ${fechaExpStr}</p>
+      <p><strong>Límite de Conexión:</strong> ${limit}</p>
+      <hr>
+      <p><strong>SSH:</strong> 22 | <strong>DROPBEAR:</strong> 80, 90 | <strong>SSL:</strong> 443 | <strong>SQUID:</strong> 3128</p>
+      <p><strong>Bad VPN:</strong> 7300 | <strong>Python:</strong> 100</p>
+      <hr>
+      <strong>PAYLOAD WEBSOCKET:</strong><br>
+      <code>
+        GET / HTTP/1.1<br>
+        Host: 137.184.106.106<br>
+        Upgrade: websocket<br><br>
+      </code>
+    `;
+  });
+</script>
 
-      if (dias > 30 || limite > 500) {
-        mostrarModal("❌ Límite excedido.");
-        return;
-      }
-
-      let costo = 0;
-      let resultado = "";
-
-      if (ubicacion === "estados-unidos") {
-        costo = 3;
-        resultado = `Procesando datos...<div class="spinner"></div>`;
-        mostrarModal(resultado);
-        await new Promise(r => setTimeout(r, 3000));
-        mostrarModal("Procesando créditos...<div class='spinner'></div>");
-        await new Promise(r => setTimeout(r, 2000));
-        const ok = await descontarCreditos(costo);
-        if (!ok) return;
-
-        mostrarModal(`🎉 Felicidades tu VPS fue creado con éxito 🎉
-
-IP de Servidor: 137.184.106.106
-Usuario: ${usuario}
-Contraseña: ${password}
-Días de Duración: ${dias}
-Fecha de Expiración: 30/07/2025
-Límite de Conexión: ${limite}
-
-SSH: 22
-DROPBEAR: 80 90
-SSL: 443
-SQUID: 3128
-Bad VPN: 7300
-Python: 100
-
-PAYLOAD WEBSOCKET:
-GET / HTTP/1.1[crlf]Host: 137.184.106.106[crlf]Upgrade: websocket[crlf][crlf]`);
-
-      } else if (ubicacion === "peru") {
-        costo = 9;
-        const ok = await descontarCreditos(costo);
-        if (!ok) return;
-
-        mostrarModal(`🔐 VPS LIBRE REGALO 🎉🎁
-
-👽 IP del Servidor:
-kevin.golbert-vps.fun
-👥 Usuario: regalo
-🗝️ Contraseña: regalo
-🏷️ Duración: 30 días
-
--------------------- payload --------------------
-GET / HTTP/1.1[crlf]Host: kevin.golbert-vps.site[crlf]Connection: Keep-Alive[crlf]User-Agent: [ua][crlf]Upgrade: websocket[crlf][crlf]
-
-🗓️ Fecha de Expiración: 30 días
-🔒 Límite de Conexión: 100
-🌐 Compatible con:
-🎮 Juegos online
-🍿 Netflix
-🎞️ Llamadas
-🕹️ Redes sociales
-📥 Descargas
-💯 Créditos: @servidoresvidaltecnet5`);
-        
-      } else if (ubicacion === "aleatorio") {
-        costo = 6;
-        const ok = await descontarCreditos(costo);
-        if (!ok) return;
-
-        mostrarModal(`◈─────⪧ IMPORTANT ⪦──────◈
-◈⪧ 🚫 NO SPAM
-◈⪧ ⚠️ NO DDOS
-◈⪧ 🎭 NO Hacking
-◈⪧ ⛔ NO Carding
-◈⪧ 🙅‍♂️ NO Torrent
-
-🐉 DRAGON VPS MANAGER 🐉
-
-◈ Host: 176.100.39.110
-◈ Usuario: test
-◈ Contraseña: 1234
-◈ Límite: 99
-◈ Expira: 27/06/2025
-
-◈ SSH: 22 | SSL: 443 | Squid: 8080 | DropBear: 80 | BadVPN: 7300
-
-◈ Online: http://176.100.39.110:8888/server/online
-dns.blackoftcloud.site
-
-©️ DRAGON VPS`);
-      } else {
-        mostrarModal("Selecciona una ubicación válida.");
-      }
-    });
-  </script>
 </body>
-    </html>
+          </html>
