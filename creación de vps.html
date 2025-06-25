@@ -4,190 +4,171 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Generador de VPS</title>
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
-<style>
-  /* Fuente moderna */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-
-:root {
-  --bg-color: #f7f9fc;
-  --primary: #0059ff;
-  --primary-dark: #003ecb;
-  --secondary: #ffffff;
-  --text-color: #2c3e50;
-  --border-color: #dfe6e9;
-  --success: #27ae60;
-  --danger: #e74c3c;
-  --shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
-  --radius: 12px;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Inter', sans-serif;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  padding: 30px 15px;
-}
-
-.container {
-  max-width: 600px;
-  margin: auto;
-  background: var(--secondary);
-  padding: 30px;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border-color);
-}
-
-h2 {
-  text-align: center;
-  font-weight: 700;
-  color: var(--primary-dark);
-  margin-bottom: 25px;
-}
-
-label {
-  font-weight: 600;
-  margin-bottom: 5px;
-  display: block;
-}
-
-input, select {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  font-size: 1rem;
-  margin-bottom: 20px;
-  transition: border 0.3s ease;
-}
-
-input:focus, select:focus {
-  border-color: var(--primary);
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(0, 89, 255, 0.15);
-}
-
-button {
-  background-color: var(--primary);
-  color: white;
-  border: none;
-  padding: 14px;
-  border-radius: var(--radius);
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  width: 100%;
-  transition: background 0.3s ease;
-}
-
-button:hover {
-  background-color: var(--primary-dark);
-}
-
-/* Modal mejorado */
-.modal-content {
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 20px;
-  background-color: #fff;
-  color: var(--text-color);
-  border: none;
-}
-
-.modal-body h5 {
-  font-weight: 700;
-  color: var(--success);
-  margin-bottom: 15px;
-}
-
-.modal-body code {
-  background: #f1f1f1;
-  padding: 10px;
-  display: block;
-  border-radius: 8px;
-  font-family: monospace;
-  white-space: pre-line;
-}
-
-/* Responsive */
-@media screen and (max-width: 600px) {
-  .container {
-    padding: 20px;
-  }
-
-  input, select, button {
-    font-size: 0.95rem;
-  }
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Fuente y estilos -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #f7f9fc;
+      --primary: #0059ff;
+      --primary-dark: #003ecb;
+      --secondary: #ffffff;
+      --text-color: #2c3e50;
+      --border-color: #dfe6e9;
+      --success: #27ae60;
+      --danger: #e74c3c;
+      --shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+      --radius: 12px;
     }
-</style>
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding: 30px 15px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: var(--secondary);
+      padding: 30px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-color);
+    }
+
+    h2 {
+      text-align: center;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 25px;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      font-size: 1rem;
+      margin-bottom: 20px;
+      transition: border 0.3s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 89, 255, 0.15);
+    }
+
+    button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: var(--radius);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: var(--primary-dark);
+    }
+
+    /* Responsive */
+    @media screen and (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+      input, select, button {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
 </head>
-<body class="bg-light">
+<body>
 
-<div class="container mt-5">
-  <h2 class="text-center">Generador de VPS</h2>
-  <form id="vpsForm" class="mt-4">
-
-    <!-- Selector de localización (solo Perú) -->
-<div class="form-group">
-  <label for="location">Localización:</label>
-  <select id="location" class="form-control">
-    <option value="Perú">Perú</option>
-  </select>
-</div>
-
-    <div class="mb-3">
-      <label for="user" class="form-label">Usuario</label>
-      <input type="text" id="user" class="form-control" required />
+<div class="container">
+  <h2>Generador de VPS</h2>
+  <form id="vpsForm">
+    <div>
+      <label for="location">Localización:</label>
+      <select id="location">
+        <option value="Perú">Perú</option>
+      </select>
     </div>
 
-    <div class="mb-3">
-      <label for="pass" class="form-label">Contraseña</label>
-      <input type="text" id="pass" class="form-control" required />
+    <div>
+      <label for="username">Usuario</label>
+      <input type="text" id="username" required />
     </div>
 
-    <div class="mb-3">
-      <label for="days" class="form-label">Días de duración (máx 30)</label>
-      <input type="number" id="days" class="form-control" max="30" min="1" required />
+    <div>
+      <label for="password">Contraseña</label>
+      <input type="text" id="password" required />
     </div>
 
-    <div class="mb-3">
-      <label for="limit" class="form-label">Límite de Conexión (máx 500)</label>
-      <input type="number" id="limit" class="form-control" max="500" min="1" required />
+    <div>
+      <label for="days">Días de duración (máx 30)</label>
+      <input type="number" id="days" max="30" min="1" required />
     </div>
 
-    <button type="submit" class="btn btn-primary w-100">Generar VPS</button>
+    <div>
+      <label for="limit">Límite de Conexión (máx 500)</label>
+      <input type="number" id="limit" max="500" min="1" required />
+    </div>
+
+    <button type="submit">Generar VPS</button>
   </form>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="modalMensaje" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-body" id="modalContent">Procesando...</div>
-    </div>
-  </div>
-</div>
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+  // Configura tu Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
+      authDomain: "sistema-27b31.firebaseapp.com",
+      projectId: "sistema-27b31",
+      storageBucket: "sistema-27b31.appspot.com",
+      messagingSenderId: "32031316083",
+      appId: "1:32031316083:web:32cef8736c5a77fbb9f206",
+      measurementId: "G-JSXX8PF8BC"
+    };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
   firebase.auth().onAuthStateChanged(function(user) {
     if (!user) {
       window.location.href = "login.html";
     }
   });
 
-  document.getElementById("generateVps").addEventListener("click", function () {
+  document.getElementById("vpsForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
     const location = document.getElementById("location").value;
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
     const days = parseInt(document.getElementById("days").value);
     const limit = parseInt(document.getElementById("limit").value);
 
@@ -200,78 +181,64 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     Swal.fire({
-      title: "Procesando datos...",
+      title: "Procesando...",
       allowOutsideClick: false,
       didOpen: () => Swal.showLoading()
     });
 
     setTimeout(() => {
-      Swal.fire({
-        title: "Procesando créditos...",
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading()
-      });
+      const user = firebase.auth().currentUser;
+      const uid = user.uid;
 
-      setTimeout(() => {
-        const user = firebase.auth().currentUser;
-        const uid = user.uid;
+      const userRef = db.collection("usuarios").doc(uid);
+      userRef.get().then((doc) => {
+        const data = doc.data();
+        const creditos = data?.creditos || 0;
 
-        const userRef = firebase.firestore().collection("usuarios").doc(uid);
-        userRef.get().then((doc) => {
-          const data = doc.data();
-          const creditos = data.creditos || 0;
+        if (creditos < 6) {
+          return Swal.fire("Error", "No tienes créditos suficientes", "error");
+        }
 
-          if (creditos < 6) {
-            return Swal.fire("Error", "No tienes créditos suficientes", "error");
-          }
-
-          // Descuenta los créditos
-          userRef.update({
-            creditos: firebase.firestore.FieldValue.increment(-6)
-          });
-
-          // Cálculo de fechas
-          const hoy = new Date();
-          const expiracion = new Date(hoy);
-          expiracion.setDate(hoy.getDate() + days);
-
-          const formato = (fecha) => {
-            return `${String(fecha.getDate()).padStart(2, "0")}/${String(fecha.getMonth() + 1).padStart(2, "0")}/${fecha.getFullYear()}`;
-          };
-
-          // Muestra mensaje final
-          Swal.fire({
-            icon: "success",
-            title: "¡Felicidades! Tu VPS fue creado con éxito",
-            html: `
-              <h5>Datos de la VPS</h5>
-              <code>
-                IP de Servidor: 137.184.106.106<br>
-                Usuario: ${username}<br>
-                Contraseña: ${password}<br>
-                Días de Duración: ${days}<br>
-                Fecha de Expiración: ${formato(expiracion)}<br>
-                Límite de Conexión: ${limit}<br><br>
-                SSH: 22<br>
-                DROPBEAR: 80 90<br>
-                SSL: 443<br>
-                SQUID: 3128<br>
-                Bad VPN: 7300<br>
-                Python: 100<br><br>
-                PAYLOAD WEBSOCKET:<br>
-                GET / HTTP/1.1[crlf]<br>
-                Host: 137.184.106.106[crlf]<br>
-                Upgrade: websocket[crlf][crlf]
-              </code>
-            `,
-            confirmButtonText: "Cerrar"
-          });
-
+        userRef.update({
+          creditos: firebase.firestore.FieldValue.increment(-6)
         });
-      }, 2000);
-    }, 3000);
+
+        const hoy = new Date();
+        const expiracion = new Date(hoy);
+        expiracion.setDate(hoy.getDate() + days);
+
+        const formato = (fecha) => {
+          return `${String(fecha.getDate()).padStart(2, "0")}/${String(fecha.getMonth() + 1).padStart(2, "0")}/${fecha.getFullYear()}`;
+        };
+
+        Swal.fire({
+          icon: "success",
+          title: "¡VPS creada con éxito!",
+          html: `
+            <h5>Datos de la VPS</h5>
+            <code>
+IP de Servidor: 137.184.106.106<br>
+Usuario: ${username}<br>
+Contraseña: ${password}<br>
+Días de Duración: ${days}<br>
+Fecha de Expiración: ${formato(expiracion)}<br>
+Límite de Conexión: ${limit}<br><br>
+SSH: 22<br>
+DROPBEAR: 80 90<br>
+SSL: 443<br>
+SQUID: 3128<br>
+Bad VPN: 7300<br>
+Python: 100<br><br>
+PAYLOAD WEBSOCKET:<br>
+GET / HTTP/1.1[crlf]<br>
+Host: 137.184.106.106[crlf]<br>
+Upgrade: websocket[crlf][crlf]
+            </code>`,
+          confirmButtonText: "Cerrar"
+        });
+      });
+    }, 2000);
   });
-});
 </script>
 </body>
-</html>
+    </html>
