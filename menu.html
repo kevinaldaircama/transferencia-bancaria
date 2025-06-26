@@ -1,143 +1,312 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>menú de sistemas</title>
-  <meta name="monetag" content="15fdd43a0ca6adc9b85bc663c4ff6974">
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#121212" />
-  <link rel="icon" type="image/png" href="3440119_ico.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>menú principal</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', sans-serif; background: #111; color: #eee; }
 
-    .menu-toggle { position: fixed; top: 10px; left: 10px; z-index: 2000; }
-    .hamburger { font-size: 28px; background: none; border: none; color: #eee; cursor: pointer; }
-    .sidebar { position: fixed; top: 0; left: -250px; width: 220px; height: 100%; background: #222; padding: 20px; box-shadow: 4px 0 10px rgba(0,0,0,0.5); transition: left 0.3s ease; z-index: 1500; }
-    .sidebar.mostrar { left: 0; }
-    .boton { width: 100%; padding: 12px; margin: 8px 0; background: #007bff; border: none; border-radius: 8px; color: #fff; cursor: pointer; font-size: 16px; }
-    .boton:hover { background: #0056b3; }
+    body {
+      background-color: #111;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .dashboard-container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 1rem;
+    }
+    .header-section {
+      background: linear-gradient(to right, #00223e, #3a6073);
+      border-radius: 15px;
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+    .header-section img {
+      border-radius: 50%;
+      width: 80px;
+    }
+    .credit-box, .queries-box {
+      padding: 1rem;
+      border-radius: 10px;
+      margin-top: 1rem;
+    }
+    .credit-box {
+      background-color: #202d3a;
+    }
+    .queries-box {
+      background-color: #47222e;
+    }
+    .btn-credits, .btn-invite {
+      background-color: #0d6efd;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      margin: 1rem 0;
+      display: inline-block;
+      text-decoration: none;
+    }
+    .query-search {
+      background-color: #222;
+      padding: 1rem;
+      border-radius: 10px;
+      margin: 2rem 0;
+    }
+    .category-btn {
+      background-color: #007bff;
+      color: white;
+      margin: 0.4rem;
+      border: none;
+      padding: 0.5rem 0.75rem;
+      border-radius: 10px;
+      display: inline-block;
+      text-decoration: none;
+    }
+    .category-btn i {
+      margin-right: 0.5rem;
+    }
+    .filter-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #aaa;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -260px;
+      width: 250px;
+      height: 100%;
+      background-color: #1e1e1e;
+      transition: left 0.3s;
+      padding: 1rem;
+      z-index: 2000;
+    }
+    .sidebar.active {
+      left: 0;
+    }
+    .sidebar .nav-link {
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0.5rem 0;
+      text-decoration: none;
+    }
+    .sidebar .nav-link:hover {
+      color: #0d6efd;
+    }
+    .hamburger {
+      font-size: 24px;
+      cursor: pointer;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 2100;
+    }
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 1rem;
+      cursor: pointer;
+    }
 
-    .contenedor { padding: 80px 20px 40px; max-width: 900px; margin: auto; text-align: center; }
-    .caja { background: #222; margin-bottom: 20px; padding: 20px; border-radius: 10px; }
-
-    footer { text-align: center; padding: 20px; background: #1a1a1a; color: #999; font-size: 14px; }
-
-    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 3000; }
-    .modal.ocultar { display: none; }
-    .modal-content { background: #fff; color: #222; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); animation: fadeIn 0.4s ease; text-align: center; }
-    @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-    .modal-content h2 { margin-bottom: 20px; color: #007bff; }
-    .modal-content button { background: #007bff; color: #fff; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; transition: background 0.3s; font-size: 16px; }
-    .modal-content button:hover { background: #0056b3; }
+    /* Tema claro */
+    body.light-mode {
+      background-color: #f5f5f5;
+      color: #111;
+    }
+    body.light-mode .sidebar {
+      background-color: #e0e0e0;
+    }
+    body.light-mode .nav-link {
+      color: #111;
+    }
+    body.light-mode .nav-link:hover {
+      color: #0d6efd;
+    }
+    body.light-mode .dashboard-container {
+      background-color: #fff;
+      color: #000;
+    }
+    body.light-mode .credit-box {
+      background-color: #dee2e6;
+    }
+    body.light-mode .queries-box {
+      background-color: #f8d7da;
+    }
   </style>
 </head>
+
 <body>
+  <div class="hamburger text-white">
+    <i class="fas fa-bars" onclick="toggleSidebar()"></i>
+  </div>
 
-  <!-- Menú hamburguesa -->
-  <div class="menu-toggle"><button class="hamburger" onclick="toggleSidebar()">☰</button></div>
-
-  <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
-    <button class="boton" onclick="irA('menu.html')">inicio</button>
-    <button class="boton" onclick="irA('perfil.html')">Perfil</button>
-    <button class="boton" onclick="irA('sistema.html')">Sistema</button>
-    <button class="boton" onclick="irA('fake.html')">Apps Fake</button>
-    <button class="boton" onclick="irA('transaccionesvip.html')">transacciones</button>
-    <button class="boton" onclick="irA('curso.html')">curso y mucho mas</button>
-    <button class="boton" onclick="irA('https://t.me/+htBRSnCdtFplNDZh')">canal de soporte</button>
-  </div>
-
-  <!-- Contenido principal -->
-  <div class="contenedor">
-    <div class="caja">Bienvenido a la mejor plataforma para pagar servicios profesionalmente.</div>
-    <div class="caja">Sistemas sincronizados con APIs reales.</div>
-    <div class="caja">Soporte disponible para cualquier duda.</div>
-    <div class="caja">Responsabilidad por el uso de datos recae en el usuario.</div>
-    <div class="caja">Monitoreo de actividad y suspensión por uso incorrecto.</div>
-  </div>
-
-  <!-- Footer -->
-  <footer>
-    <p>Desarrollado por <strong>KEVINTECHTUTORIALS</strong></p>
-    <p>Todos los derechos reservados ©️</p>
-  </footer>
-
-  <!-- Modal -->
-  <div id="modal" class="modal ocultar">
-    <div class="modal-content" id="modal-content">
-      <!-- Aquí se crea el contenido dinámicamente -->
+    <h6 class="text-primary">BARRA DE MENU</h6>
+    <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Inicio</a>
+    <a href="freecred.html" class="nav-link"><i class="fas fa-credit-card"></i>Créditos gratis</a>
+    <a href="menu.html" class="nav-link"><i class="fas fa-list"></i> Consultas <span class="badge bg-danger">NEW</span></a>
+    <a href="referido.html" class="nav-link"><i class="fas fa-users"></i> Mis Referidos</a>
+    <hr>
+    <h6 class="text-primary">OUR FEATURES</h6>
+    <div class="toggle-switch" onclick="toggleMode()" id="modeToggle">
+      <i class="fas fa-moon text-light" id="modeIcon"></i>
+      <span id="modeText">Modo Oscuro</span>
+    </div>
+    <div class="mt-3">
+       <a href="panel.html" class="btn btn-primary w-100">Acceso admin</a>
+    </div>
+    <div class="mt-2">
+      <a href="https://ejemplo.com/soporte" class="btn btn-primary w-100"><i class="fas fa-headset"></i> Soporte</a>
     </div>
   </div>
 
-  <!-- Firebase (versión modular) -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+  <div class="dashboard-container">
+    <div class="header-section">
+      <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Avatar" />
+      <p>Plan: <span class="text-warning">FREE</span> | Tipo de Cuenta: <span class="text-info">Personal</span></p>
+      <h1>KTT</h1>
+      <h4 class="text-light">on search</h4>
+      <p>Encuentra conexiones, construye historias: tu búsqueda comienza aquí.</p>
+      <a href="planes.html" class="btn-credits">Comprar Créditos <i class="fas fa-coins"></i></a>
+    </div>
+    <div class="row">
+      <div class="col-md-6 credit-box">
+        <h5>Saldo Total</h5>
+        <p id="saldoUsuario">$0.00 <span class="text-muted">saldo actual a la fecha</span></p>
+        <div class="progress">
+          <div class="progress-bar bg-success" style="width:100%">Saldo</div>
+        </div>
+      </div>
+      <div class="col-md-6 queries-box">
+        <h5>Consultas Realizadas</h5>
+        <p>0 <a href="https://ejemplo.com/historial" class="text-white">ver historial</a></p>
+        <div class="progress">
+          <div class="progress-bar bg-danger" style="width:90%"></div>
+        </div>
+      </div>
+    </div>
+    <div class="text-center mt-3">
+      <a href="referido.html" class="btn-invite"><i class="fas fa-user-plus"></i> Invitar Amigos</a>
+      <p class="text-muted">Comparte tu enlace de referidos y obtén créditos por su recarga</p>
+      <!-- Aquí se agregará el UID dinámicamente -->
+    </div>
+    <div class="query-search">
+      <label for="consultaInput">Consultas 2025</label>
+      <input type="text" id="consultaInput" class="form-control" placeholder="Buscar por nombre o tipo de consulta" />
+      <div class="filter-tags">
+        <span class="badge bg-primary">Todos</span>
+      </div>
+    </div>
+    <div class="mt-4">
+      <h5>Categorías Populares</h5>
+      <div>
+        <a href="#" class="category-btn"><i class="fas fa-user"></i>inicio</a>
+        <a href="#" class="category-btn"><i class="fas fa-user"></i>internet</a>
+        <a href="#" class="category-btn"><i class="fas fa-user"></i>cuentas streaming</a>
+        <a href="#" class="category-btn"><i class="fas fa-user"></i>vps</a>
+      </div>
+    </div>
+    <div class="footer">
+      <p>© 2025 transferencia vip App | Desarrollado por KTT</p>
+    </div>
+  </div>
 
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <script>
+    // Configuración Firebase
     const firebaseConfig = {
-      apiKey: "AIzaSyB8trNcvfkXBo6eMfQc85O5J1R-s8sF-rQ",
-      authDomain: "sistem-86419.firebaseapp.com",
-      projectId: "sistem-86419",
-      storageBucket: "sistem-86419.firebasestorage.app",
-      messagingSenderId: "370404958161",
-      appId: "1:370404958161:web:4502f01d9a5b71961d0af0",
-      measurementId: "G-PLNZV8YC4F"
+      apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
+      authDomain: "sistema-27b31.firebaseapp.com",
+      databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com",
+      projectId: "sistema-27b31",
+      storageBucket: "sistema-27b31.appspot.com",
+      messagingSenderId: "32031316083",
+      appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
 
-    const modal = document.getElementById("modal");
-    const modalContent = document.getElementById("modal-content");
-
-    onAuthStateChanged(auth, user => {
+    auth.onAuthStateChanged(user => {
       if (user) {
-        modal.classList.remove("ocultar");
-        modalContent.innerHTML = `
-          <h2>Inicio de sesión exitoso</h2>
-          <button id="btnAceptar">Aceptar</button>
-        `;
-        document.getElementById("btnAceptar").addEventListener("click", () => {
-          modal.classList.add("ocultar");
+        const uid = user.uid;
+
+        // Mostrar saldo
+        const creditosRef = db.ref(`usuarios/${uid}/comisionesTotales`);
+        creditosRef.on('value', snapshot => {
+          const creditos = parseFloat(snapshot.val()) || 0;
+          document.getElementById('saldoUsuario').innerHTML =
+            `$${creditos.toFixed(2)} <span class="text-muted">saldo actual a la fecha</span>`;
         });
+
+        // Mostrar y copiar UID
+        const uidTexto = document.createElement('p');
+        uidTexto.innerHTML = `<strong>Tu UID:</strong> <code id="uidCopiable" style="cursor:pointer">${uid}</code>`;
+        uidTexto.classList.add('text-info');
+        document.querySelector('.text-center.mt-3').appendChild(uidTexto);
+
+        // Copiar al portapapeles
+        setTimeout(() => {
+          document.getElementById('uidCopiable').addEventListener('click', () => {
+            navigator.clipboard.writeText(uid).then(() => {
+              const msg = document.createElement('div');
+              msg.innerText = "✅ UID copiado al portapapeles";
+              msg.style.color = "#0f0";
+              msg.style.fontSize = "0.9rem";
+              msg.style.marginTop = "0.3rem";
+              uidTexto.appendChild(msg);
+              setTimeout(() => msg.remove(), 2000);
+            });
+          });
+        }, 100);
       } else {
-        modal.classList.remove("ocultar");
-        modalContent.innerHTML = `
-          <h2>No puedes acceder ya que no cuentas con una suscripción</h2>
-          <button id="btnIniciar">Comprar ahora</button>
-        `;
-        document.getElementById("btnIniciar").addEventListener("click", () => {
-          window.location.href = 'depósito.html';
-        });
+        // Redirige al login si no está logueado
+        window.location.href = "login.html";
       }
     });
 
-    window.toggleSidebar = () => document.getElementById("sidebar").classList.toggle("mostrar");
-    window.irA = url => { 
-      if (url === 'index.html') {
-        signOut(auth).then(() => window.location.href = 'login.html');
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('active');
+    }
+
+    function toggleMode() {
+      const body = document.body;
+      const icon = document.getElementById('modeIcon');
+      const text = document.getElementById('modeText');
+
+      body.classList.toggle('light-mode');
+
+      if (body.classList.contains('light-mode')) {
+        icon.classList.remove('fa-moon', 'text-light');
+        icon.classList.add('fa-sun', 'text-warning');
+        text.textContent = 'Modo Claro';
       } else {
-        window.location.href = url;
+        icon.classList.remove('fa-sun', 'text-warning');
+        icon.classList.add('fa-moon', 'text-light');
+        text.textContent = 'Modo Oscuro';
       }
-    };
+    }
+    
+   
   </script>
-
-  <!-- Chat de Tawk.to integrado -->
-  <!--Start of Tawk.to Script-->
-  <script type="text/javascript">
-    var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
-    (function () {
-      var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
-      s1.async = true;
-      s1.src = 'https://embed.tawk.to/684e55b59a4b03190ad926ae/1itovtkdo';
-      s1.charset = 'UTF-8';
-      s1.setAttribute('crossorigin', '*');
-      s0.parentNode.insertBefore(s1, s0);
-    })();
-  </script>
-  <!--End of Tawk.to Script-->
-
 </body>
 </html>
