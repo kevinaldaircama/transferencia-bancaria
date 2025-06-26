@@ -7,6 +7,33 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <style>
+  #loaderOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000000cc;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .loader {
+    border: 10px solid #f3f3f3;
+    border-top: 10px solid #3498db;
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
     body {
       background-color: #111;
       color: #fff;
@@ -146,6 +173,9 @@
     }
   </style>
 </head>
+<div id="loaderOverlay">
+  <div class="loader"></div>
+</div>
 <body>
   <div class="hamburger text-white">
     <i class="fas fa-bars" onclick="toggleSidebar()"></i>
@@ -303,6 +333,17 @@
         text.textContent = 'Modo Oscuro';
       }
     }
+    
+    // ⏳ Mostrar el círculo de carga por 2 minutos
+setTimeout(() => {
+  document.getElementById('loaderOverlay').style.display = 'none';
+}, 1 * 10 * 1000); // 1 minutos
+
+// ⏰ Redirigir al login después de 10 minutos
+setTimeout(() => {
+  alert("Tu sesión ha expirado. Serás redirigido al login.");
+  window.location.href = "login.html"; // Cambia esto a tu archivo de login real
+}, 10 * 60 * 1000); // 10 minutos
   </script>
 </body>
-                                </html>
+</html>
