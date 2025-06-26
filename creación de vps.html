@@ -1,130 +1,179 @@
-<!DOCTYPE html><html lang="es">
+<!DOCTYPE html>
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
   <title>Generador de VPS</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
   <style>
+    body {
+      background-color: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .form-control, .form-select {
+      background-color: #222;
+      color: #fff;
+      border: 1px solid #444;
+    }
+    .btn-primary {
+      background-color: #007bff;
+      border: none;
+    }
     .modal-content {
-      border-radius: 1rem;
+      background-color: #1e1e1e;
+      color: #fff;
+      border-radius: 10px;
+    }
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.5rem;
+      color: #fff;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <div class="container py-5">
-    <h2 class="mb-4">Generador de VPS</h2>
-    <form id="vpsForm">
-      <div class="mb-3">
-        <label class="form-label">Localización</label>
-        <select class="form-select" id="location">
-          <option value="US">Estados Unidos</option>
-          <option value="PE">Perú</option>
-          <option value="random">Aleatorio</option>
-        </select>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Nombre de usuario</label>
-        <input type="text" class="form-control" id="username" required>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Contraseña</label>
-        <input type="text" class="form-control" id="password" required>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Días de duración (máx. 30)</label>
-        <input type="number" class="form-control" id="days" max="30" required>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Límite de conexión (máx. 500)</label>
-        <input type="number" class="form-control" id="limit" max="500" required>
-      </div>
-      <button type="submit" class="btn btn-primary">Generar VPS</button>
-    </form>
-  </div>  <!-- Modal -->  <div class="modal fade" id="modalInfo" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalLabel">Información</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body" id="modalBody">
-          <!-- Contenido dinámico -->
-        </div>
+
+  <h2 class="mb-4">Generador de VPS</h2>
+  <div class="mb-3">
+    <label class="form-label">Localización</label>
+    <select id="localizacion" class="form-select">
+      <option value="Estados Unidos">Estados Unidos</option>
+      <option value="Perú">Perú</option>
+      <option value="Aleatorio">Aleatorio</option>
+    </select>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Usuario</label>
+    <input type="text" id="usuario" class="form-control" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Contraseña</label>
+    <input type="text" id="contrasena" class="form-control" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Días de duración (máx 30)</label>
+    <input type="number" id="dias" class="form-control" max="30" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Límite de conexión (máx 500)</label>
+    <input type="number" id="limite" class="form-control" max="500" />
+  </div>
+  <button class="btn btn-primary" onclick="generarVPS()">Generar VPS</button>
+
+  <!-- Modal -->
+  <div class="modal fade" id="modalVPS" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content p-4 position-relative">
+        <span class="close" onclick="cerrarModal()">&times;</span>
+        <div id="modalContenido"></div>
       </div>
     </div>
-  </div>  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  </div>
 
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
+    // Configuración de Firebase
     const firebaseConfig = {
-      apiKey: "TU_API_KEY",
-      authDomain: "TU_AUTH_DOMAIN",
-      projectId: "TU_PROJECT_ID",
-      storageBucket: "TU_STORAGE_BUCKET",
-      messagingSenderId: "TU_SENDER_ID",
-      appId: "TU_APP_ID"
+      apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
+      authDomain: "sistema-27b31.firebaseapp.com",
+      databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com",
+      projectId: "sistema-27b31",
+      storageBucket: "sistema-27b31.appspot.com",
+      messagingSenderId: "32031316083",
+      appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+    let UID = null;
 
-    let currentUID = null;
-    let modalInstance = null;
-
-    function showModal(text) {
-      const modalBody = document.getElementById("modalBody");
-      modalBody.innerHTML = `<p>${text}</p>`;
-
-      if (!modalInstance) {
-        modalInstance = new bootstrap.Modal(document.getElementById("modalInfo"), {
-          backdrop: 'static',
-          keyboard: false
-        });
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        UID = user.uid;
+      } else {
+        window.location.href = "login.html";
       }
-
-      modalInstance.show();
-    }
-
-    onAuthStateChanged(auth, async user => {
-      if (!user) return window.location.href = "login.html";
-      currentUID = user.uid;
     });
 
-    document.getElementById("vpsForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
+    function mostrarModal(mensaje) {
+      document.getElementById('modalContenido').innerHTML = `<p>${mensaje}</p>`;
+      new bootstrap.Modal(document.getElementById('modalVPS')).show();
+    }
 
-      const location = document.getElementById("location").value;
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
-      const days = Math.min(parseInt(document.getElementById("days").value), 30);
-      const limit = Math.min(parseInt(document.getElementById("limit").value), 500);
+    function cerrarModal() {
+      bootstrap.Modal.getInstance(document.getElementById('modalVPS')).hide();
+    }
 
-      const userRef = doc(db, "usuarios", currentUID);
-      const userSnap = await getDoc(userRef);
+    function generarVPS() {
+      const loc = document.getElementById('localizacion').value;
+      const user = document.getElementById('usuario').value.trim();
+      const pass = document.getElementById('contrasena').value.trim();
+      const dias = Math.min(parseInt(document.getElementById('dias').value), 30);
+      const limite = Math.min(parseInt(document.getElementById('limite').value), 500);
 
-      if (!userSnap.exists()) return showModal("Error: Usuario no encontrado");
+      if (!user || !pass || !dias || !limite) {
+        return alert("Todos los campos son obligatorios.");
+      }
 
-      let saldo = userSnap.data().saldousuario || 0;
-      if (saldo < 6) return showModal("No tienes créditos suficientes (mínimo 6).");
+      mostrarModal("Procesando datos...");
+      setTimeout(() => {
+        mostrarModal("Procesando créditos...");
+        setTimeout(async () => {
+          const creditosRef = db.ref(`usuarios/${UID}/comisionesTotales`);
+          const snapshot = await creditosRef.get();
+          let creditos = parseFloat(snapshot.val()) || 0;
 
-      showModal("Procesando datos...");
-      await new Promise(res => setTimeout(res, 3000));
+          if (creditos < 6) {
+            mostrarModal("Créditos insuficientes para generar un VPS.");
+            return;
+          }
 
-      showModal("Procesando créditos...");
-      await new Promise(res => setTimeout(res, 2000));
+          // Descontar créditos
+          await creditosRef.set((creditos - 6).toFixed(2));
 
-      await updateDoc(userRef, { saldousuario: saldo - 6 });
+          // Calcular fecha de expiración
+          const fechaExp = new Date();
+          fechaExp.setDate(fechaExp.getDate() + dias);
+          const fechaFormateada = fechaExp.toLocaleDateString('es-ES');
 
-      const fechaHoy = new Date();
-      const fechaExp = new Date();
-      fechaExp.setDate(fechaHoy.getDate() + days);
-      const fechaFormateada = fechaExp.toLocaleDateString('es-PE');
+          const ip = "137.184.106.106";
+          const payload = `GET / HTTP/1.1[crlf]Host: ${ip}[crlf]Upgrade: websocket[crlf][crlf]`;
 
-      const info = `Felicidades tu VPS fue creado con éxito\n\nDatos de la VPS\n---------------------------------------------------------------------------------\nIP de Servidor: 137.184.106.106\nUsuario: ${username}\nContraseña: ${password}\nDías de Duración: ${days}\nFecha de Expiración: ${fechaFormateada}\nLímite de Conexión: ${limit}\n---------------------------------------------------------------------------------\nSSH: 22\nDROPBEAR: 80 90\nSSL: 443\nSQUID: 3128\nBad VPN: 7300\nPython: 100\n---------------------------------------------------------------------------------\nPAYLOAD WEBSOCKET: GET / HTTP/1.1[crlf]Host: 137.184.106.106[crlf]Upgrade: websocket[crlf][crlf]\n---------------------------------------------------------------------------------`;
-
-      showModal(`<pre>${info}</pre>`);});
-
-  </script>  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script></body>
+          mostrarModal(`
+            <h5 class="text-success">🎉 Felicidades, tu VPS fue creado con éxito</h5>
+            <hr>
+            <pre>
+IP de Servidor: ${ip}
+Usuario: ${user}
+Contraseña: ${pass}
+Días de Duración: ${dias}
+Fecha de Expiración: ${fechaFormateada}
+Límite de Conexión: ${limite}
+------------------------------
+SSH: 22
+DROPBEAR: 80 90
+SSL: 443
+SQUID: 3128
+Bad VPN: 7300
+Python: 100
+------------------------------
+PAYLOAD WEBSOCKET:
+${payload}
+            </pre>
+          `);
+        }, 2000);
+      }, 3000);
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
