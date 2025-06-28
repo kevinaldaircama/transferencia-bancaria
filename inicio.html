@@ -243,8 +243,8 @@
       <div>
         <a href="#" class="category-btn"><i class="fas fa-user"></i>inicio</a>
         <a href="#" class="category-btn"><i class="fas fa-user"></i>internet</a>
-        <a href="curso.html" class="category-btn"><i class="fas fa-user"></i>cursos</a>
-        <a href="creación de vps.html" class="category-btn"><i class="fas fa-user"></i>vps</a>
+        <a href="#" class="category-btn"><i class="fas fa-user"></i>cuentas streaming</a>
+        <a href="#" class="category-btn"><i class="fas fa-user"></i>#</a>
       </div>
     </div>
     <div class="footer">
@@ -253,83 +253,97 @@
   </div>
 
   <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-<script>
-  // Tu configuración de Firebase
-  const firebaseConfig = {
-    apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
-    authDomain: "sistema-27b31.firebaseapp.com",
-    projectId: "sistema-27b31",
-    storageBucket: "sistema-27b31.appspot.com",
-    messagingSenderId: "32031316083",
-    appId: "1:32031316083:web:32cef8736c5a77fbb9f206",
-    measurementId: "G-JSXX8PF8BC"
-  };
+  <script>
+    // Configuración Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
+      authDomain: "sistema-27b31.firebaseapp.com",
+      databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com",
+      projectId: "sistema-27b31",
+      storageBucket: "sistema-27b31.appspot.com",
+      messagingSenderId: "32031316083",
+      appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
+    };
 
-  // Inicializa Firebase
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
 
-  // Verifica el estado del usuario
-  window.addEventListener('DOMContentLoaded', () => {
-    auth.onAuthStateChanged(async (user) => {
-      const modal = document.getElementById('modal');
-      const content = document.getElementById('modal-content');
-
+    auth.onAuthStateChanged(user => {
       if (user) {
-        try {
-          // Obtiene el documento del usuario
-          const docRef = db.collection('usuarios').doc(user.uid);
-          const docSnap = await docRef.get();
+        const uid = user.uid;
 
-          if (docSnap.exists) {
-            const data = docSnap.data();
-            const creditos = data.comisionesTotales || 0;
+        // Mostrar saldo
+        const creditosRef = db.ref(`usuarios/${uid}/comisionesTotales`);
+        creditosRef.on('value', snapshot => {
+          const creditos = parseFloat(snapshot.val()) || 0;
+          document.getElementById('saldoUsuario').innerHTML =
+            `$${creditos.toFixed(2)} <span class="text-muted">saldo actual a la fecha</span>`;
+        });
 
-            if (creditos >= 4100) {
-              // Tiene suficientes créditos
-              modal.style.display = 'none'; // Ocultar modal si todo OK
-            } else {
-              // No tiene créditos suficientes
-              content.innerHTML = `
-                <h2>❌ Acceso restringido</h2>
-                <p>Necesitas al menos 4100 créditos para ingresar.<br>Actualmente tienes: <strong>${creditos}</strong> créditos.</p>
-                <button onclick="location.href='https://tu-pagina-de-cargar-creditos.com'">Cargar Créditos</button>
-              `;
-              modal.style.display = 'flex';
-            }
-          } else {
-            // Documento no existe
-            content.innerHTML = `
-              <h2>⚠️ Cuenta incompleta</h2>
-              <p>No se encontró tu información de créditos.</p>
-              <button onclick="location.href='login.html'">Cerrar sesión</button>
-            `;
-            modal.style.display = 'flex';
-          }
-        } catch (error) {
-          console.error("Error obteniendo créditos:", error);
-          content.innerHTML = `
-            <h2>❌ Error</h2>
-            <p>No pudimos verificar tus créditos. Intenta de nuevo.</p>
-            <button onclick="location.reload()">Reintentar</button>
-          `;
-          modal.style.display = 'flex';
-        }
+        // Mostrar y copiar UID
+        const uidTexto = document.createElement('p');
+        uidTexto.innerHTML = `<strong>Tu UID:</strong> <code id="uidCopiable" style="cursor:pointer">${uid}</code>`;
+        uidTexto.classList.add('text-info');
+        document.querySelector('.text-center.mt-3').appendChild(uidTexto);
+
+        // Copiar al portapapeles
+        setTimeout(() => {
+          document.getElementById('uidCopiable').addEventListener('click', () => {
+            navigator.clipboard.writeText(uid).then(() => {
+              const msg = document.createElement('div');
+              msg.innerText = "✅ UID copiado al portapapeles";
+              msg.style.color = "#0f0";
+              msg.style.fontSize = "0.9rem";
+              msg.style.marginTop = "0.3rem";
+              uidTexto.appendChild(msg);
+              setTimeout(() => msg.remove(), 2000);
+            });
+          });
+        }, 100);
       } else {
-        // No está autenticado
-        content.innerHTML = `
-          <h2>⚠️ Debes iniciar sesión antes de continuar</h2>
-          <button onclick="location.href='login.html'">Ir a Login</button>
-        `;
-        modal.style.display = 'flex';
+        // Redirige al login si no está logueado
+        window.location.href = "login.html";
       }
     });
-  });
-</script>
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('active');
+    }
+
+    function toggleMode() {
+      const body = document.body;
+      const icon = document.getElementById('modeIcon');
+      const text = document.getElementById('modeText');
+
+      body.classList.toggle('light-mode');
+
+      if (body.classList.contains('light-mode')) {
+        icon.classList.remove('fa-moon', 'text-light');
+        icon.classList.add('fa-sun', 'text-warning');
+        text.textContent = 'Modo Claro';
+      } else {
+        icon.classList.remove('fa-sun', 'text-warning');
+        icon.classList.add('fa-moon', 'text-light');
+        text.textContent = 'Modo Oscuro';
+      }
+    }
+    
+    // ⏳ Mostrar el círculo de carga por 2 minutos
+setTimeout(() => {
+  document.getElementById('loaderOverlay').style.display = 'none';
+}, 1 * 10 * 1000); // 1 minutos
+
+// ⏰ Redirigir al login después de 10 minutos
+setTimeout(() => {
+  alert("Tu sesión ha expirado. Serás redirigido al login.");
+  window.location.href = "login.html"; // Cambia esto a tu archivo de login real
+}, 10 * 60 * 1000); // 10 minutos
+  </script>
 </body>
 </html>
