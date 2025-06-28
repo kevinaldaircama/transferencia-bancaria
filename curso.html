@@ -147,47 +147,85 @@
     </div>
   </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
-  <script>
-    // Tu configuración de Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
-      authDomain: "sistema-27b31.firebaseapp.com",
-      projectId: "sistema-27b31",
-      storageBucket: "sistema-27b31.appspot.com",
-      messagingSenderId: "32031316083",
-      appId: "1:32031316083:web:32cef8736c5a77fbb9f206",
-      measurementId: "G-JSXX8PF8BC"
-    };
+<script>
+  // Tu configuración de Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
+    authDomain: "sistema-27b31.firebaseapp.com",
+    projectId: "sistema-27b31",
+    storageBucket: "sistema-27b31.appspot.com",
+    messagingSenderId: "32031316083",
+    appId: "1:32031316083:web:32cef8736c5a77fbb9f206",
+    measurementId: "G-JSXX8PF8BC"
+  };
 
-    // Inicializa Firebase
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+  // Inicializa Firebase
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
 
-    // Verifica el estado del usuario
-    window.addEventListener('DOMContentLoaded', () => {
-      auth.onAuthStateChanged(user => {
-        const modal = document.getElementById('modal');
-        const content = document.getElementById('modal-content');
+  // Verifica el estado del usuario
+  window.addEventListener('DOMContentLoaded', () => {
+    auth.onAuthStateChanged(async user => {
+      const modal = document.getElementById('modal');
+      const content = document.getElementById('modal-content');
 
-        if (user) {
+      if (user) {
+        try {
+          // Consultar los créditos del usuario
+          const docRef = db.collection("usuarios").doc(user.uid);
+          const docSnap = await docRef.get();
+
+          if (docSnap.exists) {
+            const data = docSnap.data();
+            const creditos = data.creditos || 0;
+
+            if (creditos >= 4100) {
+              // Tiene suficientes créditos
+              content.innerHTML = `
+                <h2>✅ Acceso concedido</h2>
+                <p>Tienes ${creditos} créditos.</p>
+                <button onclick="document.getElementById('modal').style.display='none'">Continuar</button>
+              `;
+            } else {
+              // No tiene créditos suficientes
+              content.innerHTML = `
+                <h2>⚠️ Acceso denegado</h2>
+                <p>No tienes suficientes créditos para ingresar. Créditos actuales: ${creditos}</p>
+                <button onclick="location.href='login.html'">Cerrar sesión</button>
+              `;
+            }
+          } else {
+            // No existe el documento del usuario
+            content.innerHTML = `
+              <h2>⚠️ Datos no encontrados</h2>
+              <p>No se encontraron datos de créditos para tu cuenta.</p>
+              <button onclick="location.href='login.html'">Cerrar sesión</button>
+            `;
+          }
+        } catch (error) {
+          console.error(error);
           content.innerHTML = `
-            <h2>✅ Inicio de sesión exitoso</h2>
-            <button onclick="document.getElementById('modal').style.display='none'">Continuar</button>
-          `;
-        } else {
-          content.innerHTML = `
-            <h2>⚠️ Debes iniciar sesión antes de continuar</h2>
-            <button onclick="location.href='login.html'">Ir a Login</button>
+            <h2>❌ Error al obtener créditos</h2>
+            <p>${error.message}</p>
+            <button onclick="location.href='login.html'">Cerrar sesión</button>
           `;
         }
+      } else {
+        content.innerHTML = `
+          <h2>⚠️ Debes iniciar sesión antes de continuar</h2>
+          <button onclick="location.href='login.html'">Ir a Login</button>
+        `;
+      }
 
-        modal.style.display = 'flex';
-      });
+      modal.style.display = 'flex';
     });
-  </script>
+  });
+</script>
 </body>
 </html>
