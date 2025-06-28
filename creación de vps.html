@@ -1,46 +1,76 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Generador de VPS</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
   <style>
+    body {
+      background-color: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .form-control, .form-select {
+      background-color: #222;
+      color: #fff;
+      border: 1px solid #444;
+    }
+    .btn-primary {
+      background-color: #007bff;
+      border: none;
+    }
+    .modal-content {
+      background-color: #1e1e1e;
+      color: #fff;
+      border-radius: 10px;
+    }
     .close {
       position: absolute;
-      top: 10px; right: 15px;
-      font-size: 24px; cursor: pointer;
+      top: 10px;
+      right: 15px;
+      font-size: 1.5rem;
+      color: #fff;
+      cursor: pointer;
     }
-    pre { white-space: pre-wrap; word-break: break-word; }
   </style>
 </head>
-<body class="bg-dark text-white p-4">
-  <h2>🛠️ Generador de VPS</h2>
-  <p class="text-warning mb-4">
-    Puedes sacar las VPS que quieras, pero se descontarán <strong>6 créditos</strong> por cada una.
-  </p>
+<body>
 
+  <h2 class="mb-4">Generador de VPS</h2>
   <div class="mb-3">
-    <label>Localización:</label>
-    <select id="localizacion" class="form-control">
-      <option>Estados Unidos</option>
-      <option>Perú</option>
-      <option>Aleatorio</option>
+    <label class="form-label">Localización</label>
+    <select id="localizacion" class="form-select">
+      <option value="Estados Unidos">Estados Unidos</option>
+      <option value="Perú">Perú</option>
+      <option value="Aleatorio">Aleatorio</option>
     </select>
   </div>
-  <input id="usuario" class="form-control mb-2" placeholder="Nombre de usuario">
-  <input id="contrasena" class="form-control mb-2" placeholder="Contraseña">
-  <input id="dias" type="number" class="form-control mb-2" placeholder="Días de duración (máx 30)">
-  <input id="limite" type="number" class="form-control mb-3" placeholder="Límite de conexión (máx 500)">
-  <button onclick="generarVPS()" class="btn btn-primary">Generar VPS</button>
+  <div class="mb-3">
+    <label class="form-label">Usuario</label>
+    <input type="text" id="usuario" class="form-control" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Contraseña</label>
+    <input type="text" id="contrasena" class="form-control" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Días de duración (máx 30)</label>
+    <input type="number" id="dias" class="form-control" max="30" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Límite de conexión (máx 500)</label>
+    <input type="number" id="limite" class="form-control" max="500" />
+  </div>
+  <button class="btn btn-primary" onclick="generarVPS()">Generar VPS</button>
 
   <!-- Modal -->
   <div class="modal fade" id="modalVPS" tabindex="-1">
     <div class="modal-dialog">
-      <div class="modal-content p-4 position-relative text-black" id="modalClick">
+      <div class="modal-content p-4 position-relative">
         <span class="close" onclick="cerrarModal()">&times;</span>
         <div id="modalContenido"></div>
-        <div id="copiadoMsg" class="text-success mt-2" style="display:none;">📋 Copiado al portapapeles</div>
       </div>
     </div>
   </div>
@@ -50,6 +80,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script>
+    // Configuración de Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
       authDomain: "sistema-27b31.firebaseapp.com",
@@ -63,70 +94,64 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
+    let UID = null;
 
     auth.onAuthStateChanged(user => {
-      if (!user) window.location.href = "index.html";
+      if (user) {
+        UID = user.uid;
+      } else {
+        window.location.href = "login.html";
+      }
     });
 
-    document.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("modalClick").addEventListener("click", () => {
-        const text = document.getElementById("modalContenido").innerText;
-        navigator.clipboard.writeText(text).then(() => {
-          document.getElementById("copiadoMsg").style.display = 'block';
-          setTimeout(() => document.getElementById("copiadoMsg").style.display = 'none', 2000);
-        });
-      });
-    });
-
-    function cerrarModal() {
-      const modal = bootstrap.Modal.getInstance(document.getElementById('modalVPS'));
-      modal.hide();
+    function mostrarModal(mensaje) {
+      document.getElementById('modalContenido').innerHTML = `<p>${mensaje}</p>`;
+      new bootstrap.Modal(document.getElementById('modalVPS')).show();
     }
 
-    async function generarVPS() {
-      const loc = document.getElementById("localizacion").value;
-      const user = document.getElementById("usuario").value.trim();
-      const pass = document.getElementById("contrasena").value.trim();
-      const dias = parseInt(document.getElementById("dias").value);
-      const limite = parseInt(document.getElementById("limite").value);
+    function cerrarModal() {
+      bootstrap.Modal.getInstance(document.getElementById('modalVPS')).hide();
+    }
 
-      if (!user || !pass || !dias || !limite) return alert("Completa todos los campos.");
-      if (dias > 30) return alert("Máximo 30 días.");
-      if (limite > 500) return alert("Máximo 500 conexiones.");
+    function generarVPS() {
+      const loc = document.getElementById('localizacion').value;
+      const user = document.getElementById('usuario').value.trim();
+      const pass = document.getElementById('contrasena').value.trim();
+      const dias = Math.min(parseInt(document.getElementById('dias').value), 30);
+      const limite = Math.min(parseInt(document.getElementById('limite').value), 500);
 
-      const usuario = auth.currentUser;
-      if (!usuario) return window.location.href = "login.html";
-
-      const UID = usuario.uid;
-      const creditosRef = db.ref(`usuarios/${UID}/saldousuario`);
-      const snapshot = await creditosRef.get();
-      const creditos = parseFloat(snapshot.val() || 0);
-
-      if (creditos < 6) return alert("Créditos insuficientes.");
+      if (!user || !pass || !dias || !limite) {
+        return alert("Todos los campos son obligatorios.");
+      }
 
       mostrarModal("Procesando datos...");
-      await esperar(3000);
-      mostrarModal("Procesando créditos...");
-      await esperar(2000);
+      setTimeout(() => {
+        mostrarModal("Procesando créditos...");
+        setTimeout(async () => {
+          const creditosRef = db.ref(`usuarios/${UID}/comisionesTotales`);
+          const snapshot = await creditosRef.get();
+          let creditos = parseFloat(snapshot.val()) || 0;
 
-      const ip = "137.184.106.106";
-      const fechaExp = new Date();
-      fechaExp.setDate(fechaExp.getDate() + dias);
-      const fechaFormateada = fechaExp.toLocaleDateString('es-ES');
+          if (creditos < 6) {
+            mostrarModal("Créditos insuficientes para generar un VPS.");
+            return;
+          }
 
-      await creditosRef.set((creditos - 6).toFixed(2));
+          // Descontar créditos
+          await creditosRef.set((creditos - 6).toFixed(2));
 
-      const nuevaVPS = {
-        ip, usuario: user, contrasena: pass, dias, limite,
-        localizacion: loc, fechaExpiracion: fechaFormateada,
-        fechaCreacion: new Date().toLocaleString('es-ES'), uid: UID
-      };
-      await db.ref("admin/vpsGeneradas").push(nuevaVPS);
+          // Calcular fecha de expiración
+          const fechaExp = new Date();
+          fechaExp.setDate(fechaExp.getDate() + dias);
+          const fechaFormateada = fechaExp.toLocaleDateString('es-ES');
 
-      mostrarModal(`
-        <h5 class="text-success">🎉 Felicidades, tu VPS fue creado con éxito</h5>
-        <hr>
-<pre>
+          const ip = "137.184.106.106";
+          const payload = `GET / HTTP/1.1[crlf]Host: ${ip}[crlf]Upgrade: websocket[crlf][crlf]`;
+
+          mostrarModal(`
+            <h5 class="text-success">🎉 Felicidades, tu VPS fue creado con éxito</h5>
+            <hr>
+            <pre>
 IP de Servidor: ${ip}
 Usuario: ${user}
 Contraseña: ${pass}
@@ -142,20 +167,13 @@ Bad VPN: 7300
 Python: 100
 ------------------------------
 PAYLOAD WEBSOCKET:
-GET / HTTP/1.1[crlf]Host: ${ip}[crlf]Upgrade: websocket[crlf][crlf]
-</pre>
-<small class="text-muted">Haz clic para copiar la información</small>
-      `);
-    }
-
-    function mostrarModal(contenido) {
-      document.getElementById("modalContenido").innerHTML = contenido;
-      new bootstrap.Modal(document.getElementById('modalVPS')).show();
-    }
-
-    function esperar(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
+${payload}
+            </pre>
+          `);
+        }, 2000);
+      }, 3000);
     }
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
