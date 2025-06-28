@@ -48,12 +48,12 @@
     </select>
   </div>
   <div class="mb-3">
-    <label class="form-label">Usuario</label>
-    <input type="text" id="usuario" class="form-control" />
+    <label class="form-label">Nombre de Usuario</label>
+    <input type="text" id="usuario" class="form-control" placeholder="Escribe un nombre de usuario"/>
   </div>
   <div class="mb-3">
     <label class="form-label">Contraseña</label>
-    <input type="text" id="contrasena" class="form-control" />
+    <input type="text" id="contrasena" class="form-control" placeholder="Escribe una contraseña"/>
   </div>
   <div class="mb-3">
     <label class="form-label">Días de duración (máx 30)</label>
@@ -80,7 +80,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script>
-    // Configuración de Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
       authDomain: "sistema-27b31.firebaseapp.com",
@@ -115,12 +114,13 @@
 
     function generarVPS() {
       const loc = document.getElementById('localizacion').value;
-      const user = document.getElementById('usuario').value.trim();
-      const pass = document.getElementById('contrasena').value.trim();
-      const dias = Math.min(parseInt(document.getElementById('dias').value), 30);
-      const limite = Math.min(parseInt(document.getElementById('limite').value), 500);
+      const diasInput = parseInt(document.getElementById('dias').value);
+      const limiteInput = parseInt(document.getElementById('limite').value);
 
-      if (!user || !pass || !dias || !limite) {
+      const dias = Math.min(diasInput, 30);
+      const limite = Math.min(limiteInput, 500);
+
+      if (!dias || !limite) {
         return alert("Todos los campos son obligatorios.");
       }
 
@@ -140,7 +140,6 @@
           // Descontar créditos
           await creditosRef.set((creditos - 6).toFixed(2));
 
-          // Calcular fecha de expiración
           const fechaExp = new Date();
           fechaExp.setDate(fechaExp.getDate() + dias);
           const fechaFormateada = fechaExp.toLocaleDateString('es-ES');
@@ -153,8 +152,8 @@
             <hr>
             <pre>
 IP de Servidor: ${ip}
-Usuario: ${user}
-Contraseña: ${pass}
+Usuario: regalo
+Contraseña: regalo
 Días de Duración: ${dias}
 Fecha de Expiración: ${fechaFormateada}
 Límite de Conexión: ${limite}
