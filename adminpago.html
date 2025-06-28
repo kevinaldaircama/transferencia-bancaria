@@ -45,19 +45,20 @@
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyB8trNcvfkXBo6eMfQc85O5J1R-s8sF-rQ",
-      authDomain: "sistem-86419.firebaseapp.com",
-      projectId: "sistem-86419",
-      storageBucket: "sistem-86419.appspot.com",
-      messagingSenderId: "370404958161",
-      appId: "1:370404958161:web:4502f01d9a5b71961d0af0",
-      measurementId: "G-PLNZV8YC4F"
+      apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
+      authDomain: "sistema-27b31.firebaseapp.com",
+      projectId: "sistema-27b31",
+      storageBucket: "sistema-27b31.appspot.com",
+      messagingSenderId: "32031316083",
+      appId: "1:32031316083:web:32cef8736c5a77fbb9f206",
+      measurementId: "G-JSXX8PF8BC"
     };
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    const adminEmail = "kevinaldaircamachoserna8.18@gmail.com"; // ← Cambia esto por el correo del admin autorizado
+    const adminEmail = "kevinaldaircamachoserna51@gmail.com"; // ← Cambia esto por el correo del admin autorizado
 
     auth.onAuthStateChanged(user => {
       if (user && user.email === adminEmail) {
