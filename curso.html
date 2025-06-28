@@ -13,7 +13,6 @@
       margin: 0;
       padding: 0;
     }
-
     .topbar {
       background-color: #2c2c3c;
       padding: 10px 20px;
@@ -21,12 +20,10 @@
       justify-content: space-between;
       align-items: center;
     }
-
     .logo {
       font-size: 24px;
       font-weight: bold;
     }
-
     .btn-cursos {
       background: #8b5cf6;
       border: none;
@@ -35,30 +32,25 @@
       border-radius: 5px;
       cursor: pointer;
     }
-
     .usuario {
       display: flex;
       gap: 10px;
       align-items: center;
     }
-
     .container {
       padding: 20px;
     }
-
     .section-title {
       background: #8b5cf6;
       padding: 10px 15px;
       border-radius: 10px;
       margin-bottom: 20px;
     }
-
     .card-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 15px;
     }
-
     .card {
       background: #2c2c3c;
       border-radius: 10px;
@@ -67,22 +59,17 @@
       overflow: hidden;
       box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
-
     .card img {
       width: 100%;
       height: auto;
     }
-
     .card-content {
       padding: 10px 15px;
     }
-
     .completado {
       color: #4ade80;
       font-weight: bold;
     }
-
-    /* Modal */
     .modal {
       display: none;
       position: fixed;
@@ -94,7 +81,6 @@
       justify-content: center;
       align-items: center;
     }
-
     .modal-content {
       background: white;
       color: black;
@@ -104,7 +90,6 @@
       max-width: 400px;
       width: 80%;
     }
-
     .modal-content button {
       background: #8b5cf6;
       color: white;
@@ -121,19 +106,16 @@
     <div class="logo">KTT</div>
     <div class="topbar-actions">
       <button class="btn-cursos">Usuario Premium</button>
-    
-      </div>
     </div>
   </header>
 
   <main class="container">
     <h2 class="section-title">curso y mucho mas</h2>
     <div class="card-grid">
-      <!-- Tarjeta de ejemplo -->
       <a href="https://youtu.be/IFzD_0Zk6z4" target="_blank" class="card">
         <img src="IMG_20250616_135340.png" alt="Curso 1">
         <div class="card-content">
-          <h3>guia completa del sistema de transferencia vip </h3>
+          <h3>guia completa del sistema de transferencia vip</h3>
           <span class="completado">ver ahora</span>
         </div>
       </a>
@@ -142,90 +124,83 @@
 
   <!-- Modal -->
   <div id="modal" class="modal">
-    <div class="modal-content" id="modal-content">
-      <!-- El contenido se llena con JS -->
-    </div>
+    <div class="modal-content" id="modal-content"></div>
   </div>
 
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
-<script>
-  // Tu configuración de Firebase
-  const firebaseConfig = {
-    apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
-    authDomain: "sistema-27b31.firebaseapp.com",
-    projectId: "sistema-27b31",
-    storageBucket: "sistema-27b31.appspot.com",
-    messagingSenderId: "32031316083",
-    appId: "1:32031316083:web:32cef8736c5a77fbb9f206",
-    measurementId: "G-JSXX8PF8BC"
-  };
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
+      authDomain: "sistema-27b31.firebaseapp.com",
+      projectId: "sistema-27b31",
+      storageBucket: "sistema-27b31.appspot.com",
+      messagingSenderId: "32031316083",
+      appId: "1:32031316083:web:32cef8736c5a77fbb9f206",
+      measurementId: "G-JSXX8PF8BC"
+    };
 
-  // Inicializa Firebase
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-  // Verifica el estado del usuario
-  window.addEventListener('DOMContentLoaded', () => {
-    auth.onAuthStateChanged(async user => {
-      const modal = document.getElementById('modal');
-      const content = document.getElementById('modal-content');
+    window.addEventListener('DOMContentLoaded', () => {
+      auth.onAuthStateChanged(async user => {
+        const modal = document.getElementById('modal');
+        const content = document.getElementById('modal-content');
 
-      if (user) {
-        try {
-          // Consultar los créditos del usuario
-          const docRef = db.collection("usuarios").doc(user.uid);
-          const docSnap = await docRef.get();
+        if (user) {
+          try {
+            const docRef = db.collection('usuarios').doc(user.uid);
+            const docSnap = await docRef.get();
 
-          if (docSnap.exists) {
-            const data = docSnap.data();
-            const creditos = data.creditos || 0;
+            if (docSnap.exists) {
+              const creditos = docSnap.data().creditos || 0;
 
-            if (creditos >= 4100) {
-              // Tiene suficientes créditos
-              content.innerHTML = `
-                <h2>✅ Acceso concedido</h2>
-                <p>Tienes ${creditos} créditos.</p>
-                <button onclick="document.getElementById('modal').style.display='none'">Continuar</button>
-              `;
+              if (creditos >= 400) {
+                // Descontar 400 créditos
+                await docRef.update({
+                  creditos: firebase.firestore.FieldValue.increment(-400)
+                });
+
+                content.innerHTML = `
+                  <h2>✅ Acceso concedido</h2>
+                  <p>Se descontaron 400 créditos. Te quedan ${creditos - 400} créditos.</p>
+                  <button onclick="document.getElementById('modal').style.display='none'">Continuar</button>
+                `;
+              } else {
+                content.innerHTML = `
+                  <h2>❌ Créditos insuficientes</h2>
+                  <p>Necesitas al menos 400 créditos para acceder. Actualmente tienes ${creditos}.</p>
+                  <button onclick="location.href='recargar.html'">Recargar Créditos</button>
+                `;
+              }
             } else {
-              // No tiene créditos suficientes
               content.innerHTML = `
-                <h2>⚠️ Acceso denegado</h2>
-                <p>No tienes suficientes créditos para ingresar. Créditos actuales: ${creditos}</p>
-                <button onclick="location.href='login.html'">Cerrar sesión</button>
+                <h2>⚠️ No se encontró tu información de créditos.</h2>
+                <button onclick="location.href='login.html'">Volver</button>
               `;
             }
-          } else {
-            // No existe el documento del usuario
+          } catch (error) {
+            console.error(error);
             content.innerHTML = `
-              <h2>⚠️ Datos no encontrados</h2>
-              <p>No se encontraron datos de créditos para tu cuenta.</p>
-              <button onclick="location.href='login.html'">Cerrar sesión</button>
+              <h2>⚠️ Error al verificar créditos.</h2>
+              <p>${error.message}</p>
+              <button onclick="location.href='login.html'">Volver</button>
             `;
           }
-        } catch (error) {
-          console.error(error);
+        } else {
           content.innerHTML = `
-            <h2>❌ Error al obtener créditos</h2>
-            <p>${error.message}</p>
-            <button onclick="location.href='login.html'">Cerrar sesión</button>
+            <h2>⚠️ Debes iniciar sesión antes de continuar</h2>
+            <button onclick="location.href='login.html'">Ir a Login</button>
           `;
         }
-      } else {
-        content.innerHTML = `
-          <h2>⚠️ Debes iniciar sesión antes de continuar</h2>
-          <button onclick="location.href='login.html'">Ir a Login</button>
-        `;
-      }
-
-      modal.style.display = 'flex';
+        modal.style.display = 'flex';
+      });
     });
-  });
-</script>
+  </script>
 </body>
-</html>
+  </html>
