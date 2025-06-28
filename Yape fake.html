@@ -11,9 +11,10 @@
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
   <script>
-    // ⚠️ Reemplaza estos valores con los de tu proyecto Firebase
+    // Configuración de Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
       authDomain: "sistema-27b31.firebaseapp.com",
@@ -24,12 +25,14 @@
       measurementId: "G-JSXX8PF8BC"
     };
     firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
   </script>
-<link rel="manifest" href="manifest.json" />
+
+  <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#121212" />
   <link rel="icon" type="image/png" href="3440119_ico.png">
+
   <style>
-    /* Tu CSS existente aquí (sin cambios) */
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
@@ -220,7 +223,6 @@
   </div>
 </div>
 
-<!-- Modal Compartir -->
 <div id="modalCompartir">
   <div id="modalContenido">
     <h3>¿Dónde deseas compartir?</h3>
@@ -230,98 +232,43 @@
   </div>
 </div>
 
-<!-- Modal de sesión -->
 <div id="modalSesion" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 20; justify-content: center; align-items: center;">
   <div style="background: white; padding: 20px; border-radius: 10px; text-align: center; max-width: 300px;">
     <h3 id="mensajeSesion">Verificando sesión...</h3>
-    <button id="botonIniciarSesion" onclick="location.href=' depósito.html'" style="margin-top: 10px; display: none; background-color: #ffc107; border: none; border-radius: 8px; padding: 10px 20px; cursor: pointer;">
-      comprar ahora
-    </button>
+    <button id="botonIniciarSesion" onclick="location.href='depósito.html'" style="margin-top: 10px; display: none; background-color: #ffc107; border: none; border-radius: 8px; padding: 10px 20px; cursor:pointer;">Iniciar Sesión</button>
   </div>
 </div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
-  const db = firebase.firestore();
-
-  async function validarYGenerar() {
+  function validarYGenerar() {
     const user = firebase.auth().currentUser;
-
     if (!user) {
-      document.getElementById("mensaje").innerText = "Debes iniciar sesión.";
+      alert("Debes iniciar sesión.");
       return;
     }
-
     const uid = user.uid;
-    const numero = document.getElementById("numero").value.trim();
-    const nombre = document.getElementById("nombre").value.trim();
-    const monto = document.getElementById("monto").value.trim();
-    const destino = document.getElementById("destino").value.trim();
-
-    // Validación básica
-    if (!numero || !nombre || !monto || !destino) {
-      document.getElementById("mensaje").innerText = "Completa todos los campos.";
-      return;
-    }
-
-    // Verificar recaptcha
-    const recaptchaResponse = grecaptcha.getResponse();
-    if (!recaptchaResponse) {
-      document.getElementById("mensaje").innerText = "Por favor completa el reCAPTCHA.";
-      return;
-    }
-
-    // Mostrar mensaje de procesamiento
-    document.getElementById("mensaje").innerText = "Verificando saldo...";
-
-    try {
-      const userDocRef = db.collection("usuarios").doc(uid);
-      const doc = await userDocRef.get();
-
-      if (!doc.exists) {
-        document.getElementById("mensaje").innerText = "Usuario no encontrado en Firestore.";
-        return;
+    const userRef = db.collection("usuarios").doc(uid);
+    userRef.get().then(doc => {
+      if (doc.exists) {
+        const data = doc.data();
+        const saldo = data.comisionesTotales || 0;
+        if (saldo >= 4) {
+          userRef.update({
+            comisionesTotales: firebase.firestore.FieldValue.increment(-4)
+          }).then(() => {
+            generarComprobante();
+          });
+        } else {
+          alert("No tienes créditos suficientes.");
+        }
+      } else {
+        alert("No se encontró tu información.");
       }
-
-      const saldo = doc.data().saldo || 0;
-
-      if (saldo < 4) {
-        document.getElementById("mensaje").innerText = "No tienes créditos suficientes.";
-        return;
-      }
-
-      // Descontar 4 créditos
-      await userDocRef.update({
-        saldo: firebase.firestore.FieldValue.increment(-4)
-      });
-
-      document.getElementById("mensaje").innerText = "Créditos descontados. Generando comprobante...";
-
-      // Aquí ya puedes mostrar tu comprobante
-      mostrarComprobante(numero, nombre, monto, destino);
-
-    } catch (error) {
-      console.error(error);
-      document.getElementById("mensaje").innerText = "Ocurrió un error al procesar tu solicitud.";
-    }
-  }
-
-  function mostrarComprobante(numero, nombre, monto, destino) {
-    // Aquí puedes mantener tu lógica actual para armar y mostrar el comprobante
-    document.getElementById("formulario").style.display = "none";
-    document.getElementById("comprobante").style.display = "block";
-    document.getElementById("verMonto").innerText = "S/" + monto;
-    document.getElementById("verNombre").innerText = nombre;
-    document.getElementById("verNumero").innerText = numero;
-    document.getElementById("verDestino").innerText = destino;
-    document.getElementById("verCodigo").innerText = Math.floor(Math.random() * 900000 + 100000);
-    document.getElementById("operacionId").innerText = Math.floor(Math.random() * 90000000 + 10000000);
-
-    const ahora = new Date();
-    const fecha = ahora.toLocaleDateString();
-    const hora = ahora.toLocaleTimeString();
-    document.getElementById("verFechaHora").innerText = `📅 ${fecha} | 🕐 ${hora}`;
+    }).catch(error => {
+      console.error("Error:", error);
+    });
   }
 </script>
+
 </body>
-    </html>
+              </html>
