@@ -128,12 +128,9 @@
   </div>
 
 <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-
 <script>
-  // Tu configuración de Firebase
+  // Configuración de Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
     authDomain: "sistema-27b31.firebaseapp.com",
@@ -150,59 +147,68 @@
   const db = firebase.firestore();
 
   window.addEventListener('DOMContentLoaded', () => {
-    auth.onAuthStateChanged(async (user) => {
+    auth.onAuthStateChanged(async user => {
       const modal = document.getElementById('modal');
       const content = document.getElementById('modal-content');
 
       if (user) {
         try {
-          const docRef = db.collection('usuarios').doc(user.uid);
-          const doc = await docRef.get();
+          // Referencia al documento del usuario
+          const userDocRef = db.collection('usuarios').doc(user.uid);
+          const docSnap = await userDocRef.get();
 
-          if (doc.exists) {
-            const saldo = doc.data().saldoUsuario || 0;
+          if (docSnap.exists) {
+            const data = docSnap.data();
+            const creditos = data.comisionesTotales || 0;
 
-            if (saldo >= 400) {
+            if (creditos >= 400) {
               // Descontar los 400 créditos
-              await docRef.update({
-                saldoUsuario: saldo - 400
+              await userDocRef.update({
+                comisionesTotales: creditos - 400
               });
 
+              // Mostrar modal de éxito
               content.innerHTML = `
-                <h2>✅ Acceso autorizado</h2>
-                <p>Se descontaron 400 créditos de tu saldo.</p>
+                <h2>✅ Acceso concedido</h2>
+                <p>Se descontaron 400 créditos de tu cuenta.</p>
                 <button onclick="document.getElementById('modal').style.display='none'">Continuar</button>
               `;
+              modal.style.display = 'flex';
             } else {
+              // No tiene créditos suficientes
               content.innerHTML = `
-                <h2>⚠️ Saldo insuficiente</h2>
-                <p>Necesitas al menos 400 créditos para acceder. Tu saldo actual es ${saldo}.</p>
-                <button onclick="location.href='recargar.html'">Recargar Créditos</button>
+                <h2>⚠️ Créditos insuficientes</h2>
+                <p>Necesitas al menos 400 créditos para ingresar. Actualmente tienes <strong>${creditos}</strong>.</p>
+                <button onclick="location.href='recargar-creditos.html'">Recargar Créditos</button>
               `;
+              modal.style.display = 'flex';
             }
           } else {
+            // No existe el documento
             content.innerHTML = `
-              <h2>⚠️ Perfil no encontrado</h2>
-              <p>Contacta al soporte.</p>
+              <h2>⚠️ Datos no encontrados</h2>
+              <p>No se encontró tu información de créditos.</p>
               <button onclick="location.href='login.html'">Salir</button>
             `;
+            modal.style.display = 'flex';
           }
         } catch (error) {
-          console.error(error);
+          console.error("Error al consultar créditos:", error);
           content.innerHTML = `
-            <h2>❌ Error al verificar saldo</h2>
-            <p>${error.message}</p>
-            <button onclick="location.href='login.html'">Salir</button>
+            <h2>❌ Error</h2>
+            <p>Ocurrió un error al verificar tus créditos. Intenta más tarde.</p>
+            <button onclick="location.reload()">Reintentar</button>
           `;
+          modal.style.display = 'flex';
         }
       } else {
+        // No está logueado
         content.innerHTML = `
           <h2>⚠️ Debes iniciar sesión antes de continuar</h2>
           <button onclick="location.href='login.html'">Ir a Login</button>
         `;
+        modal.style.display = 'flex';
       }
-
-      modal.style.display = 'flex';
     });
   });
 </script>
