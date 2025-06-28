@@ -42,9 +42,7 @@
   <div class="mb-3">
     <label class="form-label">Localización</label>
     <select id="localizacion" class="form-select">
-      <option value="Estados Unidos">Estados Unidos</option>
       <option value="Perú">Perú</option>
-      <option value="Aleatorio">Aleatorio</option>
     </select>
   </div>
   <div class="mb-3">
@@ -144,7 +142,7 @@
           fechaExp.setDate(fechaExp.getDate() + dias);
           const fechaFormateada = fechaExp.toLocaleDateString('es-ES');
 
-          const ip = "137.184.106.106";
+          const ip = "kevin.golbert-vps.fun";
           const payload = `GET / HTTP/1.1[crlf]Host: ${ip}[crlf]Upgrade: websocket[crlf][crlf]`;
 
           mostrarModal(`
