@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Suscripción VIP</title>
+  <link rel="stylesheet" href="styles.css" />
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -71,7 +72,7 @@
       left: 0; top: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.75);
+      background: rgba(0, 0, 0, 0.85);
       justify-content: center;
       align-items: center;
     }
@@ -84,6 +85,13 @@
       max-width: 400px;
       width: 80%;
     }
+    .modal-content input {
+      width: 80%;
+      padding: 10px;
+      margin-top: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
     .modal-content button {
       background: #8b5cf6;
       color: white;
@@ -93,15 +101,9 @@
       margin-top: 1rem;
       cursor: pointer;
     }
-    .uid-box {
-      background: #f3f3f3;
-      color: #333;
-      padding: 0.5rem;
-      border-radius: 6px;
-      word-break: break-all;
+    .error {
+      color: red;
       margin-top: 0.5rem;
-      cursor: pointer;
-      font-size: 0.9rem;
     }
   </style>
 </head>
@@ -115,8 +117,7 @@
 
   <main class="container">
     <h2 class="section-title">curso y mucho mas</h2>
-    <div class="card-grid" id="content-grid" style="display:none;">
-      <!-- Tarjeta de ejemplo -->
+    <div class="card-grid">
       <a href="https://youtu.be/IFzD_0Zk6z4" target="_blank" class="card">
         <img src="IMG_20250616_135340.png" alt="Curso 1">
         <div class="card-content">
@@ -127,18 +128,39 @@
     </div>
   </main>
 
-  <div id="modal" class="modal">
-    <div class="modal-content" id="modal-content">
-      <!-- Se rellena con JS -->
+  <!-- Modal de contraseña -->
+  <div id="passwordModal" class="modal" style="display:flex;">
+    <div class="modal-content">
+      <h2>🔒 Ingreso protegido</h2>
+      <p>Por favor, ingresa la contraseña para acceder:</p>
+      <input type="password" id="passwordInput" placeholder="Contraseña">
+      <div id="errorMsg" class="error"></div>
+      <button onclick="checkPassword()">Ingresar</button>
     </div>
   </div>
 
-  <!-- Firebase SDK -->
+  <!-- Modal de autenticación Firebase -->
+  <div id="modal" class="modal">
+    <div class="modal-content" id="modal-content">
+      <!-- Se llenará con JS -->
+    </div>
+  </div>
+
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
   <script>
+    function checkPassword() {
+      const password = document.getElementById('passwordInput').value;
+      const errorMsg = document.getElementById('errorMsg');
+      if (password === 'currsovip') {
+        document.getElementById('passwordModal').style.display = 'none';
+      } else {
+        errorMsg.textContent = '❌ Contraseña incorrecta.';
+      }
+    }
+
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
       authDomain: "sistema-27b31.firebaseapp.com",
@@ -148,68 +170,25 @@
       appId: "1:32031316083:web:32cef8736c5a77fbb9f206",
       measurementId: "G-JSXX8PF8BC"
     };
-
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
-    const db = firebase.firestore();
 
     window.addEventListener('DOMContentLoaded', () => {
-      const modal = document.getElementById('modal');
-      const content = document.getElementById('modal-content');
-      const grid = document.getElementById('content-grid');
-
-      auth.onAuthStateChanged(async user => {
-        if (!user) {
+      auth.onAuthStateChanged(user => {
+        const modal = document.getElementById('modal');
+        const content = document.getElementById('modal-content');
+        if (user) {
+          content.innerHTML = `
+            <h2>✅ Inicio de sesión exitoso</h2>
+            <button onclick="document.getElementById('modal').style.display='none'">Continuar</button>
+          `;
+        } else {
           content.innerHTML = `
             <h2>⚠️ Debes iniciar sesión antes de continuar</h2>
             <button onclick="location.href='login.html'">Ir a Login</button>
           `;
-          modal.style.display = 'flex';
-          return;
         }
-
-        try {
-          const docRef = db.collection('usuarios').doc(user.uid);
-          const doc = await docRef.get();
-          let creditos = 0;
-          if (doc.exists) {
-            creditos = doc.data().creditos || 0;
-          }
-
-          content.innerHTML = `
-            <h2>Necesitas ingresar tu UID antes de continuar</h2>
-            <div class="uid-box" onclick="navigator.clipboard.writeText('${user.uid}')">
-              ${user.uid}<br><small>(Click para copiar)</small>
-            </div>
-            <p>Creditos disponibles: <strong id="creditos">${creditos}</strong></p>
-            <button id="confirmar">Confirmar y descontar 1 crédito</button>
-          `;
-          modal.style.display = 'flex';
-
-          document.getElementById('confirmar').addEventListener('click', async () => {
-            if (creditos < 40) {
-              alert("No tienes al menos 40 créditos disponibles.");
-              return;
-            }
-            // Descontar crédito
-            await docRef.update({
-              creditos: firebase.firestore.FieldValue.increment(-1)
-            });
-            // Actualizar número mostrado
-            creditos -= 1;
-            document.getElementById('creditos').innerText = creditos;
-            // Mostrar contenido y cerrar modal
-            grid.style.display = 'grid';
-            modal.style.display = 'none';
-          });
-
-        } catch (error) {
-          console.error("Error al obtener créditos:", error);
-          content.innerHTML = `
-            <h2>Ocurrió un error al verificar tus créditos.</h2>
-          `;
-          modal.style.display = 'flex';
-        }
+        modal.style.display = 'flex';
       });
     });
   </script>
