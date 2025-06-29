@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Suscripción VIP</title>
-  <link rel="stylesheet" href="styles.css" />
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -32,13 +31,9 @@
       border-radius: 5px;
       cursor: pointer;
     }
-    .usuario {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
     .container {
       padding: 20px;
+      display: none; /* Oculto hasta que confirme el UID */
     }
     .section-title {
       background: #8b5cf6;
@@ -71,7 +66,7 @@
       font-weight: bold;
     }
     .modal {
-      display: none;
+      display: flex;
       position: fixed;
       z-index: 999;
       left: 0; top: 0;
@@ -89,6 +84,11 @@
       text-align: center;
       max-width: 400px;
       width: 80%;
+    }
+    .modal-content input {
+      padding: 8px;
+      width: 90%;
+      margin-top: 1rem;
     }
     .modal-content button {
       background: #8b5cf6;
@@ -109,108 +109,92 @@
     </div>
   </header>
 
-  <main class="container">
-    <h2 class="section-title">curso y mucho mas</h2>
+  <main class="container" id="mainContent">
+    <h2 class="section-title">curso y mucho más</h2>
     <div class="card-grid">
       <a href="https://youtu.be/IFzD_0Zk6z4" target="_blank" class="card">
         <img src="IMG_20250616_135340.png" alt="Curso 1">
         <div class="card-content">
-          <h3>guia completa del sistema de transferencia vip</h3>
-          <span class="completado">ver ahora</span>
+          <h3>Guía completa del sistema de transferencia VIP</h3>
+          <span class="completado">Ver ahora</span>
         </div>
       </a>
     </div>
   </main>
 
-  <!-- Modal -->
   <div id="modal" class="modal">
-    <div class="modal-content" id="modal-content"></div>
+    <div class="modal-content">
+      <h2>⚠️ Necesitas ingresar tu UID antes de continuar</h2>
+      <input type="text" id="uidInput" placeholder="Ingrese su UID" />
+      <button id="confirmUid">Confirmar</button>
+    </div>
   </div>
 
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-<script>
-  // Configuración de Firebase
-  const firebaseConfig = {
-    apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
-    authDomain: "sistema-27b31.firebaseapp.com",
-    projectId: "sistema-27b31",
-    storageBucket: "sistema-27b31.appspot.com",
-    messagingSenderId: "32031316083",
-    appId: "1:32031316083:web:32cef8736c5a77fbb9f206",
-    measurementId: "G-JSXX8PF8BC"
-  };
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
-  // Inicializa Firebase
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
+      authDomain: "sistema-27b31.firebaseapp.com",
+      projectId: "sistema-27b31",
+      storageBucket: "sistema-27b31.appspot.com",
+      messagingSenderId: "32031316083",
+      appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-  window.addEventListener('DOMContentLoaded', () => {
-    auth.onAuthStateChanged(async user => {
-      const modal = document.getElementById('modal');
-      const content = document.getElementById('modal-content');
+    const modal = document.getElementById('modal');
+    const confirmBtn = document.getElementById('confirmUid');
+    const uidInput = document.getElementById('uidInput');
+    const mainContent = document.getElementById('mainContent');
 
-      if (user) {
-        try {
-          // Referencia al documento del usuario
-          const userDocRef = db.collection('usuarios').doc(user.uid);
-          const docSnap = await userDocRef.get();
+    confirmBtn.addEventListener('click', async () => {
+      const uid = uidInput.value.trim();
+      if (!uid) {
+        alert('Ingrese un UID válido.');
+        return;
+      }
 
-          if (docSnap.exists) {
-            const data = docSnap.data();
-            const creditos = data.comisionesTotales || 0;
+      try {
+        const docRef = db.collection('usuarios').doc(uid);
+        const doc = await docRef.get();
 
-            if (creditos >= 400) {
-              // Descontar los 400 créditos
-              await userDocRef.update({
-                comisionesTotales: creditos - 400
-              });
-
-              // Mostrar modal de éxito
-              content.innerHTML = `
-                <h2>✅ Acceso concedido</h2>
-                <p>Se descontaron 400 créditos de tu cuenta.</p>
-                <button onclick="document.getElementById('modal').style.display='none'">Continuar</button>
-              `;
-              modal.style.display = 'flex';
-            } else {
-              // No tiene créditos suficientes
-              content.innerHTML = `
-                <h2>⚠️ Créditos insuficientes</h2>
-                <p>Necesitas al menos 400 créditos para ingresar. Actualmente tienes <strong>${creditos}</strong>.</p>
-                <button onclick="location.href='recargar-creditos.html'">Recargar Créditos</button>
-              `;
-              modal.style.display = 'flex';
-            }
-          } else {
-            // No existe el documento
-            content.innerHTML = `
-              <h2>⚠️ Datos no encontrados</h2>
-              <p>No se encontró tu información de créditos.</p>
-              <button onclick="location.href='login.html'">Salir</button>
-            `;
-            modal.style.display = 'flex';
-          }
-        } catch (error) {
-          console.error("Error al consultar créditos:", error);
-          content.innerHTML = `
-            <h2>❌ Error</h2>
-            <p>Ocurrió un error al verificar tus créditos. Intenta más tarde.</p>
-            <button onclick="location.reload()">Reintentar</button>
-          `;
-          modal.style.display = 'flex';
+        if (!doc.exists) {
+          alert('El UID no existe.');
+          return;
         }
-      } else {
-        // No está logueado
-        content.innerHTML = `
-          <h2>⚠️ Debes iniciar sesión antes de continuar</h2>
-          <button onclick="location.href='login.html'">Ir a Login</button>
-        `;
-        modal.style.display = 'flex';
+
+        const data = doc.data();
+
+        // Si ya consumió el acceso, mostrar el contenido sin descontar
+        if (data.accesoConsumido) {
+          modal.style.display = 'none';
+          mainContent.style.display = 'block';
+          return;
+        }
+
+        // Verificar créditos
+        if (data.creditos >= 40) {
+          // Descontar 1 crédito y marcar que consumió acceso
+          await docRef.update({
+            creditos: firebase.firestore.FieldValue.increment(-1),
+            accesoConsumido: true
+          });
+          alert('Se descontó 1 crédito.');
+          modal.style.display = 'none';
+          mainContent.style.display = 'block';
+        } else {
+          alert('No tienes suficientes créditos.');
+        }
+      } catch (error) {
+        console.error(error);
+        alert('Error al verificar UID.');
       }
     });
-  });
-</script>
+  </script>
 </body>
   </html>
