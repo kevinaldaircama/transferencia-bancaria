@@ -11,28 +11,25 @@
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
   <script>
-    // Configuración de Firebase
+    // ⚠️ Reemplaza estos valores con los de tu proyecto Firebase
     const firebaseConfig = {
-      apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
-      authDomain: "sistema-27b31.firebaseapp.com",
-      projectId: "sistema-27b31",
-      storageBucket: "sistema-27b31.appspot.com",
-      messagingSenderId: "32031316083",
-      appId: "1:32031316083:web:32cef8736c5a77fbb9f206",
-      measurementId: "G-JSXX8PF8BC"
+      apiKey: "AIzaSyB8trNcvfkXBo6eMfQc85O5J1R-s8sF-rQ",
+      authDomain: "sistem-86419.firebaseapp.com",
+      projectId: "sistem-86419",
+      storageBucket: "sistem-86419.firebasestorage.app",
+      messagingSenderId: "370404958161",
+      appId: "1:370404958161:web:4502f01d9a5b71961d0af0",
+      measurementId: "G-PLNZV8YC4F"
     };
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
   </script>
-
-  <link rel="manifest" href="manifest.json" />
+<link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#121212" />
   <link rel="icon" type="image/png" href="3440119_ico.png">
-
   <style>
+    /* Tu CSS existente aquí (sin cambios) */
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
@@ -223,6 +220,7 @@
   </div>
 </div>
 
+<!-- Modal Compartir -->
 <div id="modalCompartir">
   <div id="modalContenido">
     <h3>¿Dónde deseas compartir?</h3>
@@ -232,43 +230,129 @@
   </div>
 </div>
 
+<!-- Modal de sesión -->
 <div id="modalSesion" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 20; justify-content: center; align-items: center;">
   <div style="background: white; padding: 20px; border-radius: 10px; text-align: center; max-width: 300px;">
     <h3 id="mensajeSesion">Verificando sesión...</h3>
-    <button id="botonIniciarSesion" onclick="location.href='depósito.html'" style="margin-top: 10px; display: none; background-color: #ffc107; border: none; border-radius: 8px; padding: 10px 20px; cursor:pointer;">Iniciar Sesión</button>
+    <button id="botonIniciarSesion" onclick="location.href=' planes.html'" style="margin-top: 10px; display: none; background-color: #ffc107; border: none; border-radius: 8px; padding: 10px 20px; cursor: pointer;">
+      comprar créditos
+    </button>
   </div>
 </div>
 
 <script>
   function validarYGenerar() {
-    const user = firebase.auth().currentUser;
-    if (!user) {
-      alert("Debes iniciar sesión.");
+    const response = grecaptcha.getResponse();
+    if (response.length === 0) {
+      alert("Por favor, completa el reCAPTCHA.");
       return;
     }
-    const uid = user.uid;
-    const userRef = db.collection("usuarios").doc(uid);
-    userRef.get().then(doc => {
-      if (doc.exists) {
-        const data = doc.data();
-        const saldo = data.comisionesTotales || 0;
-        if (saldo >= 4) {
-          userRef.update({
-            comisionesTotales: firebase.firestore.FieldValue.increment(-4)
-          }).then(() => {
-            generarComprobante();
+    generarComprobante();
+  }
+
+  function generarComprobante() {
+    const numero = document.getElementById('numero').value.trim();
+    const nombre = document.getElementById('nombre').value.trim();
+    const monto = document.getElementById('monto').value.trim();
+    const destino = document.getElementById('destino').value;
+
+    if (!numero || !nombre || !monto || !destino) {
+      alert("Por favor, completa todos los campos.");
+      return;
+    }
+
+    document.getElementById('mensaje').innerText = "Generando datos...";
+    setTimeout(() => {
+      const now = new Date();
+      const fecha = now.toLocaleDateString('es-PE', { day: 'numeric', month: 'short', year: 'numeric' });
+      const hora = now.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
+      const codigo = Math.floor(100 + Math.random() * 900);
+      const operacion = Math.floor(10000000 + Math.random() * 90000000);
+
+      document.getElementById('verMonto').innerText = `S/${parseFloat(monto).toFixed(2)}`;
+      document.getElementById('verNombre').innerText = nombre;
+      document.getElementById('verFechaHora').innerText = `${fecha} | ${hora}`;
+      document.getElementById('verCodigo').innerText = codigo;
+      document.getElementById('verNumero').innerText = `*** ***${numero.slice(-3)}`;
+      document.getElementById('operacionId').innerText = operacion;
+      document.getElementById('verDestino').innerText = destino;
+
+      document.getElementById('mensajeBienvenida').style.display = "none";
+      document.getElementById('formulario').style.display = "none";
+      document.getElementById('comprobante').style.display = "block";
+    }, 1000);
+  }
+
+  function cerrarComprobante() {
+    document.getElementById('comprobante').style.display = "none";
+    document.getElementById('formulario').style.display = "block";
+    document.getElementById('mensajeBienvenida').style.display = "block";
+  }
+
+  function mostrarModal() {
+    document.getElementById('modalCompartir').style.display = "flex";
+  }
+
+  function cerrarModal() {
+    document.getElementById('modalCompartir').style.display = "none";
+  }
+
+  async function descargarPDF() {
+    const comprobante = document.getElementById('comprobante');
+    const canvas = await html2canvas(comprobante, { scale: 2, backgroundColor: "#650D89" });
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const width = 210;
+    const height = (canvas.height * width) / canvas.width;
+    pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+    pdf.save('comprobante.pdf');
+    cerrarModal();
+  }
+
+  async function compartir() {
+    try {
+      const comprobante = document.getElementById('comprobante');
+      const canvas = await html2canvas(comprobante, { scale: 2, backgroundColor: "#650D89" });
+      canvas.toBlob(async (blob) => {
+        const file = new File([blob], "comprobante.png", { type: blob.type });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            title: "Comprobante",
+            text: "Aquí está tu comprobante generado.",
+            files: [file],
           });
         } else {
-          alert("No tienes créditos suficientes.");
+          alert("Tu navegador no soporta esta función.");
         }
-      } else {
-        alert("No se encontró tu información.");
-      }
-    }).catch(error => {
-      console.error("Error:", error);
-    });
+      });
+    } catch (error) {
+      alert("No se pudo compartir.");
+    }
+    cerrarModal();
   }
-</script>
 
+  // Verifica el estado de sesión al cargar
+  window.onload = () => {
+    const modalSesion = document.getElementById('modalSesion');
+    const mensajeSesion = document.getElementById('mensajeSesion');
+    const botonIniciar = document.getElementById('botonIniciarSesion');
+
+    firebase.auth().onAuthStateChanged((user) => {
+      modalSesion.style.display = "flex";
+      if (user) {
+        mensajeSesion.innerText = "Inicio de sesión exitoso ✅";
+        botonIniciar.style.display = "none";
+        setTimeout(() => {
+          modalSesion.style.display = "none";
+        }, 2000);
+      } else {
+        mensajeSesion.innerText = "no puedes acceder yá que no cuentas con créditos suficiente";
+        botonIniciar.style.display = "inline-block";
+      }
+    });
+  };
+</script>
 </body>
-              </html>
+          </html>
+                                                                               
