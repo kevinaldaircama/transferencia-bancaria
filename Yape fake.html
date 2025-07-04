@@ -242,11 +242,42 @@
 
 <script>
   function validarYGenerar() {
-    const response = grecaptcha.getResponse();
-    if (response.length === 0) {
-      alert("Por favor, completa el reCAPTCHA.");
+  const response = grecaptcha.getResponse();
+  if (response.length === 0) {
+    alert("Por favor, completa el reCAPTCHA.");
+    return;
+  }
+
+  const user = firebase.auth().currentUser;
+  if (!user) {
+    alert("Debes iniciar sesión para generar el comprobante.");
+    return;
+  }
+
+  const uid = user.uid;
+  const db = firebase.database();
+
+  // Verificar créditos
+  db.ref(`usuarios/${uid}/comisionesTotales`).once('value').then(snapshot => {
+    let saldo = parseFloat(snapshot.val()) || 0;
+
+    if (saldo < 6) {
+      alert("❌ No tienes créditos suficientes. Necesitas al menos 6.");
       return;
     }
+
+    // Descontar 6 créditos
+    const nuevoSaldo = saldo - 6;
+    db.ref(`usuarios/${uid}/comisionesTotales`).set(nuevoSaldo)
+      .then(() => {
+        generarComprobante();
+      })
+      .catch(error => {
+        console.error("Error al descontar créditos:", error);
+        alert("Ocurrió un error al procesar la operación.");
+      });
+  });
+}
     generarComprobante();
   }
 
