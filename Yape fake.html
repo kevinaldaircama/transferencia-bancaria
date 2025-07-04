@@ -257,7 +257,6 @@
   const uid = user.uid;
   const db = firebase.database();
 
-  // Verificar créditos
   db.ref(`usuarios/${uid}/comisionesTotales`).once('value').then(snapshot => {
     let saldo = parseFloat(snapshot.val()) || 0;
 
@@ -266,7 +265,6 @@
       return;
     }
 
-    // Descontar 6 créditos
     const nuevoSaldo = saldo - 6;
     db.ref(`usuarios/${uid}/comisionesTotales`).set(nuevoSaldo)
       .then(() => {
@@ -277,7 +275,7 @@
         alert("Ocurrió un error al procesar la operación.");
       });
   });
-}
+  }
     generarComprobante();
   }
 
