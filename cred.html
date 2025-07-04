@@ -66,6 +66,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
+  // Configuración Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
     authDomain: "sistema-27b31.firebaseapp.com",
@@ -89,14 +90,12 @@
     if (user) {
       const email = user.email;
       const uid = user.uid;
-
       document.getElementById('uidUsuario').innerText = `UID: ${uid}`;
 
       if (admins.includes(email)) {
         document.getElementById('adminPanel').style.display = 'block';
 
-        const creditosRef = db.ref(`usuarios/${uid}/comisionesTotales`);
-        creditosRef.on('value', snapshot => {
+        db.ref(`usuarios/${uid}/comisionesTotales`).on('value', snapshot => {
           const creditos = parseFloat(snapshot.val()) || 0;
           document.getElementById('saldoUsuario').innerHTML =
             `$${creditos.toFixed(2)} <span class="text-muted">saldo actual a la fecha</span>`;
@@ -111,7 +110,7 @@
     }
   });
 
-  // ✅ FUNCIÓN CORREGIDA CON ACTUALIZACIÓN AL NODO DE REFERIDOS
+  // 🔄 Función de recarga con actualización también del nodo referidos
   function recargarCreditos() {
     const uid = document.getElementById('inputUid').value.trim();
     const monto = parseFloat(document.getElementById('inputMonto').value);
@@ -130,32 +129,33 @@
         return creditosRef.set(nuevoSaldo).then(() => nuevoSaldo);
       })
       .then(nuevoSaldo => {
-        // Buscar el referidoId
-        return db.ref(`usuarios/${uid}/referidoId`).once('value')
-          .then(snap => {
-            const refId = snap.val();
-            if (refId) {
-              const fechaActual = new Date().toLocaleString();
+        alert('Recarga exitosa.');
 
-              return db.ref(`referidos/${refId}/${uid}`).once('value').then(rSnap => {
-                const data = rSnap.val() || {};
-                const recargas = data.recargas || 0;
+        // Actualiza el saldo visible si es para sí mismo
+        if (auth.currentUser && auth.currentUser.uid === uid) {
+          document.getElementById('saldoUsuario').innerHTML =
+            `$${nuevoSaldo.toFixed(2)} <span class="text-muted">saldo actualizado</span>`;
+        }
 
-                return db.ref(`referidos/${refId}/${uid}`).update({
-                  saldo: nuevoSaldo.toFixed(2),
-                  recargas: recargas + 1,
-                  ultima: fechaActual
-                });
-              });
-            }
-          })
-          .then(() => {
-            alert('Recarga exitosa.');
-            if (auth.currentUser && auth.currentUser.uid === uid) {
-              document.getElementById('saldoUsuario').innerHTML =
-                `$${nuevoSaldo.toFixed(2)} <span class="text-muted">saldo actualizado</span>`;
-            }
+        // 🔄 ACTUALIZAR DATOS EN REFERIDOS
+        db.ref(`usuarios/${uid}/referidoId`).once('value').then(refSnap => {
+          const refId = refSnap.val();
+          if (!refId) return;
+
+          const referidoRef = db.ref(`referidos/${refId}/${uid}`);
+          referidoRef.once('value').then(snap => {
+            const refData = snap.val() || {};
+            const saldoAnterior = parseFloat(refData.saldo || 0);
+            const recargasAnteriores = parseInt(refData.recargas || 0);
+            const nuevaFecha = new Date().toLocaleDateString('es-ES');
+
+            referidoRef.update({
+              saldo: (saldoAnterior + monto).toFixed(2),
+              recargas: recargasAnteriores + 1,
+              ultima: nuevaFecha
+            });
           });
+        });
       })
       .catch(error => {
         console.error('Error al recargar:', error);
@@ -163,6 +163,5 @@
       });
   }
 </script>
-
 </body>
 </html>
