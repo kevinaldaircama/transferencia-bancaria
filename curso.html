@@ -121,7 +121,7 @@
         const errorMsg = document.getElementById('errorMsg');
 
         if (!user) {
-          window.location.href = 'login.html';
+          window.location.href = 'index.html';
           return;
         }
 
@@ -131,10 +131,10 @@
         db.ref(`usuarios/${uid}/comisionesTotales`).once('value').then(snapshot => {
           const saldo = parseFloat(snapshot.val()) || 0;
 
-          if (saldo >= 800) {
+          if (saldo >= 1900) {
             cardGrid.style.display = 'grid';
           } else {
-            errorMsg.textContent = '❌ Acceso denegado: necesitas al menos 800 créditos para ingresar.';
+            errorMsg.textContent = '❌ Acceso denegado: necesitas 1900 créditos para ingresar.';
           }
         }).catch(err => {
           console.error(err);
