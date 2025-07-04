@@ -42,7 +42,7 @@
       margin-bottom: 20px;
     }
     .card-grid {
-      display: grid;
+      display: none; /* oculto por defecto */
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 15px;
     }
@@ -65,45 +65,11 @@
       color: #4ade80;
       font-weight: bold;
     }
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 999;
-      left: 0; top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.85);
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-content {
-      background: white;
-      color: black;
-      padding: 2rem;
-      border-radius: 10px;
-      text-align: center;
-      max-width: 400px;
-      width: 80%;
-    }
-    .modal-content input {
-      width: 80%;
-      padding: 10px;
-      margin-top: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    .modal-content button {
-      background: #8b5cf6;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      margin-top: 1rem;
-      cursor: pointer;
-    }
-    .error {
+    .error-msg {
       color: red;
-      margin-top: 0.5rem;
+      text-align: center;
+      margin-top: 20px;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -116,79 +82,64 @@
   </header>
 
   <main class="container">
-    <h2 class="section-title">curso y mucho mas</h2>
-    <div class="card-grid">
+    <h2 class="section-title">Curso y mucho más</h2>
+    <div class="card-grid" id="cardGrid">
       <a href="https://youtu.be/IFzD_0Zk6z4" target="_blank" class="card">
         <img src="IMG_20250616_135340.png" alt="Curso 1">
         <div class="card-content">
-          <h3>guia completa del sistema de transferencia vip</h3>
-          <span class="completado">ver ahora</span>
+          <h3>Guía completa del sistema de transferencia VIP</h3>
+          <span class="completado">Ver ahora</span>
         </div>
       </a>
     </div>
+    <div class="error-msg" id="errorMsg"></div>
   </main>
-
-  <!-- Modal de contraseña -->
-  <div id="passwordModal" class="modal" style="display:flex;">
-    <div class="modal-content">
-      <h2>🔒 Ingreso protegido</h2>
-      <p>Por favor, ingresa la contraseña para acceder:</p>
-      <input type="password" id="passwordInput" placeholder="Contraseña">
-      <div id="errorMsg" class="error"></div>
-      <button onclick="checkPassword()">Ingresar</button>
-    </div>
-  </div>
-
-  <!-- Modal de autenticación Firebase -->
-  <div id="modal" class="modal">
-    <div class="modal-content" id="modal-content">
-      <!-- Se llenará con JS -->
-    </div>
-  </div>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
   <script>
-    function checkPassword() {
-      const password = document.getElementById('passwordInput').value;
-      const errorMsg = document.getElementById('errorMsg');
-      if (password === 'currsovip') {
-        document.getElementById('passwordModal').style.display = 'none';
-      } else {
-        errorMsg.textContent = '❌ Contraseña incorrecta.';
-      }
-    }
-
     // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
       authDomain: "sistema-27b31.firebaseapp.com",
+      databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com",
       projectId: "sistema-27b31",
       storageBucket: "sistema-27b31.appspot.com",
       messagingSenderId: "32031316083",
-      appId: "1:32031316083:web:32cef8736c5a77fbb9f206",
-      measurementId: "G-JSXX8PF8BC"
+      appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
     };
+
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
+    const db = firebase.database();
 
     window.addEventListener('DOMContentLoaded', () => {
       auth.onAuthStateChanged(user => {
-        const modal = document.getElementById('modal');
-        const content = document.getElementById('modal-content');
-        if (user) {
-          content.innerHTML = `
-            <h2>✅ Inicio de sesión exitoso</h2>
-            <button onclick="document.getElementById('modal').style.display='none'">Continuar</button>
-          `;
-        } else {
-          content.innerHTML = `
-            <h2>⚠️ Debes iniciar sesión antes de continuar</h2>
-            <button onclick="location.href='login.html'">Ir a Login</button>
-          `;
+        const cardGrid = document.getElementById('cardGrid');
+        const errorMsg = document.getElementById('errorMsg');
+
+        if (!user) {
+          window.location.href = 'login.html';
+          return;
         }
-        modal.style.display = 'flex';
+
+        const uid = user.uid;
+
+        // Obtener saldo y validar
+        db.ref(`usuarios/${uid}/comisionesTotales`).once('value').then(snapshot => {
+          const saldo = parseFloat(snapshot.val()) || 0;
+
+          if (saldo >= 800) {
+            cardGrid.style.display = 'grid';
+          } else {
+            errorMsg.textContent = '❌ Acceso denegado: necesitas al menos 800 créditos para ingresar.';
+          }
+        }).catch(err => {
+          console.error(err);
+          errorMsg.textContent = 'Error al verificar tu saldo. Intenta nuevamente.';
+        });
       });
     });
   </script>
