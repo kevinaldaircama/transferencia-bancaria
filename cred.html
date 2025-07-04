@@ -66,7 +66,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-  // Configuración Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
     authDomain: "sistema-27b31.firebaseapp.com",
@@ -81,26 +80,21 @@
   const auth = firebase.auth();
   const db = firebase.database();
 
-  // Lista de correos permitidos (administradores)
   const admins = [
     "admin1@gmail.com",
     "kevinaldaircamachoserna51@gmail.com"
   ];
 
-  // Verifica si el usuario autenticado es un administrador
   auth.onAuthStateChanged(user => {
     if (user) {
       const email = user.email;
       const uid = user.uid;
 
-      // Mostrar UID del usuario actual
       document.getElementById('uidUsuario').innerText = `UID: ${uid}`;
 
       if (admins.includes(email)) {
-        // Mostrar el panel solo si es administrador
         document.getElementById('adminPanel').style.display = 'block';
 
-        // Mostrar saldo propio
         const creditosRef = db.ref(`usuarios/${uid}/comisionesTotales`);
         creditosRef.on('value', snapshot => {
           const creditos = parseFloat(snapshot.val()) || 0;
@@ -109,7 +103,6 @@
         });
 
       } else {
-        // Si no es admin, mostrar mensaje de acceso denegado
         document.getElementById('noAccessMsg').style.display = 'block';
       }
     } else {
@@ -118,7 +111,7 @@
     }
   });
 
-  // Función de recarga
+  // ✅ FUNCIÓN CORREGIDA CON ACTUALIZACIÓN AL NODO DE REFERIDOS
   function recargarCreditos() {
     const uid = document.getElementById('inputUid').value.trim();
     const monto = parseFloat(document.getElementById('inputMonto').value);
@@ -137,11 +130,32 @@
         return creditosRef.set(nuevoSaldo).then(() => nuevoSaldo);
       })
       .then(nuevoSaldo => {
-        alert('Recarga exitosa.');
-        if (auth.currentUser && auth.currentUser.uid === uid) {
-          document.getElementById('saldoUsuario').innerHTML =
-            `$${nuevoSaldo.toFixed(2)} <span class="text-muted">saldo actualizado</span>`;
-        }
+        // Buscar el referidoId
+        return db.ref(`usuarios/${uid}/referidoId`).once('value')
+          .then(snap => {
+            const refId = snap.val();
+            if (refId) {
+              const fechaActual = new Date().toLocaleString();
+
+              return db.ref(`referidos/${refId}/${uid}`).once('value').then(rSnap => {
+                const data = rSnap.val() || {};
+                const recargas = data.recargas || 0;
+
+                return db.ref(`referidos/${refId}/${uid}`).update({
+                  saldo: nuevoSaldo.toFixed(2),
+                  recargas: recargas + 1,
+                  ultima: fechaActual
+                });
+              });
+            }
+          })
+          .then(() => {
+            alert('Recarga exitosa.');
+            if (auth.currentUser && auth.currentUser.uid === uid) {
+              document.getElementById('saldoUsuario').innerHTML =
+                `$${nuevoSaldo.toFixed(2)} <span class="text-muted">saldo actualizado</span>`;
+            }
+          });
       })
       .catch(error => {
         console.error('Error al recargar:', error);
