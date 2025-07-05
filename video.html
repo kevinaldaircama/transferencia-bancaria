@@ -1,22 +1,35 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tutorial</title>
   <style>
+    :root {
+      --color-bg: #2c2f48;
+      --color-header: #1e2035;
+      --color-primary: #8c5de1;
+      --color-card: #383c57;
+      --color-text: #ffffff;
+      --color-subtext: #dddddd;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background-color: #2c2f48;
-      color: white;
+      background-color: var(--color-bg);
+      color: var(--color-text);
     }
 
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: #1e2035;
+      background-color: var(--color-header);
       padding: 15px 20px;
       flex-wrap: wrap;
     }
@@ -27,14 +40,18 @@
     }
 
     .header button {
-      background-color: #8c5de1;
-      color: white;
+      background-color: var(--color-primary);
+      color: var(--color-text);
       border: none;
       padding: 10px 20px;
       border-radius: 8px;
       font-weight: bold;
       cursor: pointer;
-      margin-top: 10px;
+      transition: background-color 0.3s;
+    }
+
+    .header button:hover {
+      background-color: #764ed3;
     }
 
     .container {
@@ -43,14 +60,15 @@
     }
 
     .video-card {
-      background-color: #383c57;
+      background-color: var(--color-card);
       border-radius: 12px;
       padding: 20px;
-      max-width: 600px;
+      max-width: 700px;
       margin: 0 auto;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     }
 
-    .video-card video {
+    video {
       width: 100%;
       height: auto;
       border-radius: 8px;
@@ -59,19 +77,12 @@
     .description {
       margin-top: 20px;
       font-weight: bold;
-      color: #ddd;
+      color: var(--color-subtext);
       font-size: 1rem;
+      word-wrap: break-word;
     }
 
-    .success-msg {
-      background-color: #4caf50;
-      padding: 10px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      font-weight: bold;
-    }
-
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
       .header {
         flex-direction: column;
         align-items: flex-start;
@@ -82,12 +93,26 @@
         margin-top: 10px;
       }
 
+      .container {
+        padding: 10px;
+      }
+
+      .video-card {
+        padding: 15px;
+      }
+
       .description {
         font-size: 0.95rem;
       }
+    }
 
-      .container {
-        padding: 10px;
+    @media (max-width: 480px) {
+      .description {
+        font-size: 0.9rem;
+      }
+
+      .header h2 {
+        font-size: 1.3em;
       }
     }
   </style>
@@ -98,25 +123,29 @@
     <button onclick="window.location.href='curso.html'">Regresar</button>
   </div>
 
-  <div class="container" id="content" style="display: none;">
-    <div class="success-msg">Inicio de sesión exitoso</div>
+  <div class="container" id="content">
     <div class="video-card">
       <video controls>
-        <source src="video.mp4" type="video/mp4">
+        <source src="video.mp4" type="video/mp4" />
         Tu navegador no soporta la reproducción de video.
       </video>
       <div class="description">
-        paso para la instalación,
+        Paso para la instalación:
       </div>
       <div class="description">
-    descargar la aplicación en mediafire 
+        Descargar la aplicación desde Mediafire.
+      </div>
+      <div class="description">
+        <a href="https://www.mediafire.com/file/a567bmswtj2ctmu/Youtube_premium_5.4.80.103_Noads.apk/file" style="color: #8c5de1;" target="_blank">
+          Descargar APK desde Mediafire
+        </a>
+      </div>
+      <div class="description">
+        Después de descargar e instalar, ¡disfruta del contenido!
+      </div>
     </div>
-    <div class="description">
-        https://www.mediafire.com/file/a567bmswtj2ctmu/Youtube_premium_5.4.80.103_Noads.apk/file
   </div>
-<div class="description">
-        después de descarga e instalar disfruta del contenido 
-        </div>
+
   <script type="module" src="video.js"></script>
 </body>
-  </html>
+</html>
