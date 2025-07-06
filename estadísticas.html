@@ -1,0 +1,116 @@
+<!DOCTYPE html><html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Estadísticas del Sistema</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    .panel {
+      max-width: 900px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: #e3e7f1;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .card h3 {
+      margin: 0;
+      font-size: 24px;
+      color: #3f51b5;
+    }
+    .card p {
+      margin: 5px 0 0;
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <h2>Estadísticas del Sistema</h2>
+    <div class="stats">
+      <div class="card">
+        <h3 id="totalUsuarios">0</h3>
+        <p>Usuarios registrados</p>
+      </div>
+      <div class="card">
+        <h3 id="totalRecargas">0</h3>
+        <p>Total de recargas</p>
+      </div>
+      <div class="card">
+        <h3 id="totalCreditos">0</h3>
+        <p>Créditos en circulación</p>
+      </div>
+      <div class="card">
+        <h3 id="totalReferidos">0</h3>
+        <p>Total de referidos</p>
+      </div>
+    </div>
+  </div>  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
+      authDomain: "sistema-27b31.firebaseapp.com",
+      databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com",
+      projectId: "sistema-27b31",
+      storageBucket: "sistema-27b31.appspot.com",
+      messagingSenderId: "32031316083",
+      appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function cargarEstadisticas() {
+      db.ref('usuarios').once('value').then(snapshot => {
+        const data = snapshot.val();
+        let total = 0;
+        let recargas = 0;
+        let creditos = 0;
+
+        for (let uid in data) {
+          total++;
+          const user = data[uid];
+          if (user.recargas) recargas += parseInt(user.recargas);
+          if (user.comisionesTotales) creditos += parseFloat(user.comisionesTotales);
+        }
+
+        document.getElementById('totalUsuarios').innerText = total;
+        document.getElementById('totalRecargas').innerText = recargas;
+        document.getElementById('totalCreditos').innerText = creditos.toFixed(2);
+      });
+
+      db.ref('referidos').once('value').then(snapshot => {
+        const data = snapshot.val();
+        let totalRef = 0;
+        for (let refId in data) {
+          totalRef += Object.keys(data[refId]).length;
+        }
+        document.getElementById('totalReferidos').innerText = totalRef;
+      });
+    }
+
+    window.onload = cargarEstadisticas;
+  </script></body>
+</html>
