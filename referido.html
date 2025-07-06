@@ -3,51 +3,58 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Panel de Referidos</title>
-  <style>
+<style>
   * {
     box-sizing: border-box;
   }
 
   body {
     font-family: 'Segoe UI', sans-serif;
-    background-color: #eef2f7;
+    background: linear-gradient(to right, #e3f2fd, #fbe9e7);
     margin: 0;
     padding: 0;
     color: #333;
   }
 
   .container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
+    max-width: 1140px;
+    margin: 40px auto;
+    padding: 30px;
     background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    transition: all 0.3s ease-in-out;
   }
 
   h2 {
     text-align: center;
     margin-bottom: 30px;
+    color: #2c3e50;
   }
 
   .ref-link, .filters {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
   }
 
   .ref-link input, .filters input, .filters select {
-    flex: 1 1 250px;
+    flex: 1 1 200px;
     padding: 12px;
     border-radius: 8px;
     border: 1px solid #ccc;
-    transition: border-color 0.3s;
+    transition: border-color 0.2s;
+  }
+
+  .ref-link input:focus, .filters input:focus {
+    border-color: #42a5f5;
+    outline: none;
   }
 
   .ref-link button, .filters button {
     padding: 12px 18px;
-    background: #5c6bc0;
+    background: #42a5f5;
     color: white;
     border: none;
     border-radius: 8px;
@@ -56,90 +63,79 @@
   }
 
   .ref-link button:hover, .filters button:hover {
-    background: #3f51b5;
+    background: #1e88e5;
   }
 
   .stats, .comisiones {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: 15px;
     margin-bottom: 25px;
   }
 
   .card {
+    flex: 1 1 220px;
     padding: 20px;
     border-radius: 12px;
     color: white;
     text-align: center;
     font-weight: bold;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    transition: transform 0.3s;
   }
 
-  .blue { background: #3f51b5; }
-  .green { background: #43a047; }
-  .yellow { background: #fdd835; color: #333; }
-  .purple { background: #8e24aa; }
-
-  .card button {
-    margin-top: 10px;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    cursor: pointer;
-    transition: background 0.3s;
+  .card:hover {
+    transform: translateY(-5px);
   }
 
-  .card button:hover {
-    background: rgba(255, 255, 255, 0.35);
-  }
+  .blue    { background: #2196f3; }
+  .green   { background: #43a047; }
+  .yellow  { background: #ffeb3b; color: #444; }
+  .purple  { background: #8e24aa; }
 
   table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
-    background: #fff;
-  }
-
-  th, td {
-    text-align: left;
-    padding: 12px;
-    border-bottom: 1px solid #e0e0e0;
+    font-size: 15px;
   }
 
   th {
     background-color: #f5f5f5;
-    font-weight: 600;
+    color: #555;
+    padding: 12px;
+    text-align: left;
+  }
+
+  td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
   }
 
   .no-data {
     text-align: center;
-    padding: 40px;
-    color: #777;
+    padding: 50px;
+    color: #888;
+    font-size: 16px;
   }
 
   #modal {
     display: none;
     position: fixed;
-    z-index: 999;
+    z-index: 9999;
     top: 0; left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.6);
-    display: flex;
-    justify-content: center;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5);
     align-items: center;
+    justify-content: center;
   }
 
   .modal-content {
-    background: #fff;
-    padding: 30px 20px;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 400px;
+    background: white;
+    padding: 40px 30px;
+    border-radius: 12px;
     text-align: center;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    max-width: 400px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
   }
 
   .modal-content p {
@@ -149,25 +145,54 @@
 
   .modal-content button {
     margin: 10px;
-    padding: 10px 18px;
+    padding: 10px 20px;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
+    font-weight: bold;
     cursor: pointer;
-    font-weight: 600;
   }
 
-  .modal-content .yes { background: #4caf50; color: white; }
-  .modal-content .no { background: #f44336; color: white; }
+  .modal-content .yes {
+    background: #4caf50;
+    color: white;
+  }
+
+  .modal-content .no {
+    background: #f44336;
+    color: white;
+  }
 
   /* Responsive */
   @media (max-width: 768px) {
-    .ref-link, .filters {
+    .ref-link, .filters, .stats, .comisiones {
       flex-direction: column;
     }
 
-    .ref-link input, .filters input, .filters select, .ref-link button, .filters button {
+    .card {
+      flex: 1 1 100%;
+    }
+
+    .ref-link button, .filters button {
       width: 100%;
-      margin-right: 0;
+    }
+
+    table, th, td {
+      font-size: 14px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .container {
+      padding: 20px;
+    }
+
+    .modal-content {
+      padding: 20px;
+    }
+
+    .modal-content button {
+      width: 100%;
+      margin: 8px 0;
     }
   }
 </style>
