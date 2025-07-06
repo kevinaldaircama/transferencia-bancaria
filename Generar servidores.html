@@ -1,0 +1,158 @@
+<!DOCTYPE html><html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de Servidor</title>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #1a1a2e;
+      color: white;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .box {
+      background-color: #16213e;
+      padding: 30px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    select, input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #0f3460;
+      color: white;
+      cursor: pointer;
+    }
+    .hidden {
+      display: none;
+    }
+    .message {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+    .result {
+      margin-top: 20px;
+      background-color: #0f3460;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    .result p {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Crear tu Servidor VIP</h2>
+    <select id="operador">
+      <option value="">Selecciona Operador</option>
+      <option value="Movistar">Movistar</option>
+      <option value="Claro">Claro</option>
+      <option value="Bitel">Bitel</option>
+      <option value="Entel">Entel</option>
+    </select>
+    <input type="number" id="dias" placeholder="Cantidad de días (7 a 30)">
+    <button onclick="generarServidor()">Generar Servidor</button><div class="message" id="mensaje"></div>
+<div class="result hidden" id="resultado"></div>
+
+  </div>  <script>
+    // Configuración Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
+      authDomain: "sistema-27b31.firebaseapp.com",
+      databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com",
+      projectId: "sistema-27b31",
+      storageBucket: "sistema-27b31.appspot.com",
+      messagingSenderId: "32031316083",
+      appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    function generarServidor() {
+      const operador = document.getElementById('operador').value;
+      const dias = parseInt(document.getElementById('dias').value);
+      const mensaje = document.getElementById('mensaje');
+      const resultado = document.getElementById('resultado');
+
+      if (!operador || isNaN(dias) || dias < 7 || dias > 30) {
+        mensaje.innerText = '⚠️ Ingresa un operador válido y entre 7 y 30 días.';
+        return;
+      }
+
+      mensaje.innerText = 'Procesando datos...';
+
+      auth.onAuthStateChanged(user => {
+        if (!user) {
+          mensaje.innerText = '🔒 Debes iniciar sesión para continuar';
+          return;
+        }
+
+        const uid = user.uid;
+        const ref = db.ref('usuarios/' + uid);
+        ref.once('value').then(snapshot => {
+          const datos = snapshot.val() || {};
+          let creditos = parseFloat(datos.comisionesTotales || 0);
+
+          if (creditos < 10) {
+            mensaje.innerText = '❌ Créditos insuficientes. Se requieren 10 créditos.';
+            return;
+          }
+
+          // Descuento y animación de mensajes
+          creditos -= 10;
+          ref.update({ comisionesTotales: creditos });
+
+          setTimeout(() => {
+            mensaje.innerText = 'Generando servidor...';
+            setTimeout(() => {
+              mensaje.innerText = '';
+              resultado.classList.remove('hidden');
+              resultado.innerHTML = `
+                <h3>🎉 ¡Servidor creado con éxito!</h3>
+                <p><strong>Operador:</strong> ${operador}</p>
+                <p><strong>Días:</strong> ${dias}</p>
+                <p><strong>Tu nuevo saldo:</strong> ${creditos.toFixed(2)} créditos</p>
+                <button onclick="validarAcceso()">Acceder al servidor</button>
+              `;
+            }, 2000);
+          }, 2000);
+        });
+      });
+    }
+
+    function validarAcceso() {
+      const mensaje = document.getElementById('mensaje');
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          db.ref('usuarios/' + user.uid).once('value').then(snap => {
+            const creditos = parseFloat(snap.val().comisionesTotales || 0);
+            if (creditos >= 50) {
+              window.location.href = 'servidor.html';
+            } else {
+              mensaje.innerText = '⚠️ Necesitas al menos 50 créditos para acceder al servidor.';
+            }
+          });
+        }
+      });
+    }
+  </script></body>
+</html>
