@@ -2,182 +2,134 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generador de Servidor</title>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <title>Generador de Servidores</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      color: #fff;
-      margin: 0;
-      padding: 0;
+      background: #f0f0f0;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-    }.container {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 2rem;
-  border-radius: 15px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  width: 90%;
-  max-width: 400px;
-}
-
-h2 {
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
-select, input, button {
-  width: 100%;
-  margin: 0.5rem 0;
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-}
-
-button {
-  background-color: #4caf50;
-  color: white;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #45a049;
-}
-
-.hidden {
-  display: none;
-}
-
-.message {
-  background-color: #222;
-  padding: 1rem;
-  margin-top: 1rem;
-  border-radius: 10px;
-  text-align: center;
-}
-
-.error {
-  background-color: #e74c3c;
-  color: white;
-}
-
-.success {
-  background-color: #2ecc71;
-  color: white;
-}
-
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    .hidden {
+      display: none;
+    }
+    .mensaje {
+      text-align: center;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .success {
+      color: green;
+    }
   </style>
 </head>
 <body>
-<div class="container">
-  <h2>Generador de Servidor</h2>
-  <select id="operador">
-    <option value="">Selecciona Operador</option>
-    <option value="Movistar">Movistar</option>
-    <option value="Claro">Claro</option>
-    <option value="Bitel">Bitel</option>
-    <option value="Entel">Entel</option>
-  </select>
-  <input type="number" id="dias" placeholder="Días (7-30)" min="7" max="30">
-  <input type="text" id="usuario" placeholder="Usuario">
-  <input type="password" id="contrasena" placeholder="Contraseña">
-  <button onclick="generarServidor()">Generar</button>  <div id="estado" class="message hidden"></div>
-  <div id="resultado" class="message hidden"></div>
-  <div id="botonVer" class="hidden">
-    <button onclick="verServidor()">Ver servidor</button>
-  </div>
-</div><script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
-    authDomain: "sistema-27b31.firebaseapp.com",
-    databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com",
-    projectId: "sistema-27b31",
-    storageBucket: "sistema-27b31.appspot.com",
-    messagingSenderId: "32031316083",
-    appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.database();
+  <div class="container">
+    <h2>Generador de Servidores</h2>
+    <select id="operador">
+      <option value="">Selecciona un operador</option>
+      <option value="Movistar">Movistar</option>
+      <option value="Claro">Claro</option>
+      <option value="Bitel">Bitel</option>
+      <option value="Entel">Entel</option>
+    </select>
+    <input type="number" id="dias" placeholder="Días (7 - 30)" min="7" max="30">
+    <input type="text" id="usuario" placeholder="Usuario">
+    <input type="password" id="clave" placeholder="Contraseña">
+    <button onclick="generarServidor()">Generar</button><div class="mensaje" id="mensaje"></div>
+<div class="mensaje hidden" id="resultado"></div>
 
-  function mostrarMensaje(id, texto, tipo = '') {
-    const el = document.getElementById(id);
-    el.className = `message ${tipo}`;
-    el.textContent = texto;
-    el.classList.remove('hidden');
-  }
+  </div>  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>  <script>
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
+      authDomain: "sistema-27b31.firebaseapp.com",
+      databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com",
+      projectId: "sistema-27b31",
+      storageBucket: "sistema-27b31.appspot.com",
+      messagingSenderId: "32031316083",
+      appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
 
-  function generarServidor() {
-    const operador = document.getElementById('operador').value;
-    const dias = parseInt(document.getElementById('dias').value);
-    const usuario = document.getElementById('usuario').value;
-    const contrasena = document.getElementById('contrasena').value;
+    function generarServidor() {
+      const operador = document.getElementById('operador').value;
+      const dias = parseInt(document.getElementById('dias').value);
+      const usuario = document.getElementById('usuario').value;
+      const clave = document.getElementById('clave').value;
+      const mensaje = document.getElementById('mensaje');
+      const resultado = document.getElementById('resultado');
 
-    if (!operador || !dias || dias < 7 || dias > 30 || !usuario || !contrasena) {
-      mostrarMensaje('estado', 'Completa todos los campos correctamente.', 'error');
-      return;
-    }
+      if (!operador || isNaN(dias) || dias < 7 || dias > 30 || !usuario || !clave) {
+        alert('Por favor completa todos los campos correctamente.');
+        return;
+      }
 
-    const estado = document.getElementById('estado');
-    estado.classList.remove('success', 'error');
-    estado.textContent = 'Procesando datos...';
-    estado.classList.remove('hidden');
+      mensaje.textContent = 'Procesando datos...';
+      mensaje.classList.remove('hidden');
 
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        const uid = user.uid;
-        const creditosRef = db.ref(`usuarios/${uid}/creditos`);
-        creditosRef.once('value').then(snapshot => {
-          const creditos = parseFloat(snapshot.val()) || 0;
+      setTimeout(() => {
+        mensaje.textContent = 'Generando servidor...';
 
-          if (creditos < 10) {
-            mostrarMensaje('estado', 'No tienes suficientes créditos para generar el servidor.', 'error');
+        setTimeout(() => {
+          const user = auth.currentUser;
+          if (!user) {
+            mensaje.textContent = 'Debes iniciar sesión para continuar.';
             return;
           }
 
-          // Descuento y simulación
-          creditosRef.set(creditos - 10).then(() => {
-            setTimeout(() => {
-              estado.textContent = 'Generando servidor...';
-              setTimeout(() => {
-                mostrarMensaje('estado', '✔️ Tu servidor se creó con éxito.', 'success');
-                document.getElementById('resultado').innerHTML = `
-                  Operador: <strong>${operador}</strong><br>
-                  Usuario: <strong>${usuario}</strong><br>
-                  Contraseña: <strong>${contrasena}</strong><br>
-                  Días: <strong>${dias}</strong>
-                `;
-                document.getElementById('resultado').classList.remove('hidden');
-                document.getElementById('botonVer').classList.remove('hidden');
-              }, 2000);
-            }, 2000);
-          });
-        });
-      } else {
-        mostrarMensaje('estado', 'Debes iniciar sesión para usar esta función.', 'error');
-      }
-    });
-  }
+          const creditosRef = db.ref(`usuarios/${user.uid}/comisionesTotales`);
+          creditosRef.once('value').then(snapshot => {
+            const saldo = parseFloat(snapshot.val()) || 0;
 
-  function verServidor() {
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        db.ref(`usuarios/${user.uid}/creditos`).once('value').then(snap => {
-          const creditos = parseFloat(snap.val()) || 0;
-          if (creditos >= 50) {
-            window.location.href = "servidor.html";
-          } else {
-            mostrarMensaje('estado', 'No puedes visualizar el servidor porque no tienes 50 créditos.', 'error');
-          }
-        });
-      }
-    });
-  }
-</script></body>
+            if (saldo < 10) {
+              mensaje.textContent = 'No tienes suficientes créditos (10 necesarios).';
+              return;
+            }
+
+            // Descontar 10 créditos
+            creditosRef.set(saldo - 10).then(() => {
+              mensaje.classList.add('hidden');
+              resultado.classList.remove('hidden');
+              resultado.classList.add('success');
+              resultado.innerHTML = `
+                <p>✨ <strong>Felicidades, tu servidor fue creado con éxito.</strong></p>
+                <p>Operador: <strong>${operador}</strong></p>
+                <p>Días: <strong>${dias}</strong></p>
+                <p>Usuario: <strong>${usuario}</strong></p>
+                <p>Contraseña: <strong>${clave}</strong></p>
+                <br><button onclick="location.href='servidores.html'">Ir al servidor</button>
+              `;
+            });
+          });
+        }, 2000);
+      }, 2000);
+    }
+  </script></body>
 </html>
