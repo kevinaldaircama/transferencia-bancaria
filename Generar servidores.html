@@ -3,146 +3,181 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Generador de Servidor</title>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f0f0f0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      margin: 0;
+      padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      margin: 0;
-    }
-    .box {
-      background: white;
-      padding: 2rem;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
-      max-width: 400px;
-      width: 100%;
-    }
-    input, select, button {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    #mensaje {
-      margin-top: 10px;
-      font-weight: bold;
-      text-align: center;
-    }
-    .hidden {
-      display: none;
-    }
-    .success-box {
-      background: #e0ffe0;
-      padding: 1rem;
-      margin-top: 1rem;
-      border-radius: 8px;
-      color: #333;
-    }
-    .success-box button {
-      margin-top: 1rem;
-      background: #007bff;
-      color: white;
-      border: none;
-      padding: 10px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+    }.container {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 400px;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+select, input, button {
+  width: 100%;
+  margin: 0.5rem 0;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+button {
+  background-color: #4caf50;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+.hidden {
+  display: none;
+}
+
+.message {
+  background-color: #222;
+  padding: 1rem;
+  margin-top: 1rem;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.error {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.success {
+  background-color: #2ecc71;
+  color: white;
+}
+
   </style>
 </head>
 <body>
-  <div class="box">
-    <h2>Generador de Servidor</h2>
-    <select id="operador">
-      <option value="">Seleccione operador</option>
-      <option value="Movistar">Movistar</option>
-      <option value="Claro">Claro</option>
-      <option value="Bitel">Bitel</option>
-      <option value="Entel">Entel</option>
-    </select>
-    <input type="number" id="dias" placeholder="Días (7-30)" min="7" max="30">
-    <input type="text" id="usuario" placeholder="Usuario">
-    <input type="password" id="clave" placeholder="Contraseña">
-    <button onclick="generarServidor()">Generar</button>
-    <div id="mensaje"></div>
-    <div id="resultado" class="success-box hidden"></div>
-  </div>  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
-      authDomain: "sistema-27b31.firebaseapp.com",
-      databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com",
-      projectId: "sistema-27b31",
-      storageBucket: "sistema-27b31.appspot.com",
-      messagingSenderId: "32031316083",
-      appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
+<div class="container">
+  <h2>Generador de Servidor</h2>
+  <select id="operador">
+    <option value="">Selecciona Operador</option>
+    <option value="Movistar">Movistar</option>
+    <option value="Claro">Claro</option>
+    <option value="Bitel">Bitel</option>
+    <option value="Entel">Entel</option>
+  </select>
+  <input type="number" id="dias" placeholder="Días (7-30)" min="7" max="30">
+  <input type="text" id="usuario" placeholder="Usuario">
+  <input type="password" id="contrasena" placeholder="Contraseña">
+  <button onclick="generarServidor()">Generar</button>  <div id="estado" class="message hidden"></div>
+  <div id="resultado" class="message hidden"></div>
+  <div id="botonVer" class="hidden">
+    <button onclick="verServidor()">Ver servidor</button>
+  </div>
+</div><script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
+    authDomain: "sistema-27b31.firebaseapp.com",
+    databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com",
+    projectId: "sistema-27b31",
+    storageBucket: "sistema-27b31.appspot.com",
+    messagingSenderId: "32031316083",
+    appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.database();
 
-    function generarServidor() {
-      const operador = document.getElementById('operador').value;
-      const dias = parseInt(document.getElementById('dias').value);
-      const usuario = document.getElementById('usuario').value.trim();
-      const clave = document.getElementById('clave').value.trim();
-      const mensaje = document.getElementById('mensaje');
-      const resultado = document.getElementById('resultado');
+  function mostrarMensaje(id, texto, tipo = '') {
+    const el = document.getElementById(id);
+    el.className = `message ${tipo}`;
+    el.textContent = texto;
+    el.classList.remove('hidden');
+  }
 
-      if (!operador || !dias || dias < 7 || dias > 30 || !usuario || !clave) {
-        mensaje.innerText = 'Por favor complete todos los campos correctamente.';
-        return;
-      }
+  function generarServidor() {
+    const operador = document.getElementById('operador').value;
+    const dias = parseInt(document.getElementById('dias').value);
+    const usuario = document.getElementById('usuario').value;
+    const contrasena = document.getElementById('contrasena').value;
 
-      auth.onAuthStateChanged(user => {
-        if (user) {
-          const uid = user.uid;
-          const creditosRef = db.ref(`usuarios/${uid}/comisionesTotales`);
+    if (!operador || !dias || dias < 7 || dias > 30 || !usuario || !contrasena) {
+      mostrarMensaje('estado', 'Completa todos los campos correctamente.', 'error');
+      return;
+    }
 
-          creditosRef.once('value').then(snapshot => {
-            let saldo = parseFloat(snapshot.val()) || 0;
-            if (saldo < 10) {
-              mensaje.innerText = 'Créditos insuficientes. Necesitas al menos 10 créditos para generar.';
-              return;
-            }
-            mensaje.innerText = 'Procesando datos...';
+    const estado = document.getElementById('estado');
+    estado.classList.remove('success', 'error');
+    estado.textContent = 'Procesando datos...';
+    estado.classList.remove('hidden');
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        const uid = user.uid;
+        const creditosRef = db.ref(`usuarios/${uid}/creditos`);
+        creditosRef.once('value').then(snapshot => {
+          const creditos = parseFloat(snapshot.val()) || 0;
+
+          if (creditos < 10) {
+            mostrarMensaje('estado', 'No tienes suficientes créditos para generar el servidor.', 'error');
+            return;
+          }
+
+          // Descuento y simulación
+          creditosRef.set(creditos - 10).then(() => {
             setTimeout(() => {
-              mensaje.innerText = 'Generando servidor...';
+              estado.textContent = 'Generando servidor...';
               setTimeout(() => {
-                creditosRef.set(saldo - 10);
-                mensaje.innerText = '';
-                resultado.classList.remove('hidden');
-                resultado.innerHTML = `
-                  <h4>✨ ¡Felicidades! Tu servidor fue creado con éxito</h4>
-                  <p><strong>Operador:</strong> ${operador}</p>
-                  <p><strong>Días:</strong> ${dias}</p>
-                  <p><strong>Usuario:</strong> ${usuario}</p>
-                  <p><strong>Contraseña:</strong> ${clave}</p>
-                  <button onclick="verServidor()">Ver Servidor</button>
+                mostrarMensaje('estado', '✔️ Tu servidor se creó con éxito.', 'success');
+                document.getElementById('resultado').innerHTML = `
+                  Operador: <strong>${operador}</strong><br>
+                  Usuario: <strong>${usuario}</strong><br>
+                  Contraseña: <strong>${contrasena}</strong><br>
+                  Días: <strong>${dias}</strong>
                 `;
+                document.getElementById('resultado').classList.remove('hidden');
+                document.getElementById('botonVer').classList.remove('hidden');
               }, 2000);
             }, 2000);
           });
-        } else {
-          mensaje.innerText = 'Debes iniciar sesión para generar.';
-        }
-      });
-    }
+        });
+      } else {
+        mostrarMensaje('estado', 'Debes iniciar sesión para usar esta función.', 'error');
+      }
+    });
+  }
 
-    function verServidor() {
-      const uid = auth.currentUser.uid;
-      const ref = db.ref(`usuarios/${uid}/comisionesTotales`);
-      ref.once('value').then(snapshot => {
-        const saldo = parseFloat(snapshot.val()) || 0;
-        if (saldo >= 50) {
-          window.location.href = "servidor.html";
-        } else {
-          alert('Necesitas al menos 50 créditos para ver el servidor.');
-        }
-      });
-    }
-  </script></body>
-  </html>
+  function verServidor() {
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        db.ref(`usuarios/${user.uid}/creditos`).once('value').then(snap => {
+          const creditos = parseFloat(snap.val()) || 0;
+          if (creditos >= 50) {
+            window.location.href = "servidor.html";
+          } else {
+            mostrarMensaje('estado', 'No puedes visualizar el servidor porque no tienes 50 créditos.', 'error');
+          }
+        });
+      }
+    });
+  }
+</script></body>
+</html>
