@@ -1,3 +1,4 @@
+<!-- panel.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,35 +8,11 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <style>
-    body {
-      background-color: #111;
-      color: #fff;
-      font-family: 'Segoe UI', sans-serif;
-    }
-    .credit-box {
-      background-color: #202d3a;
-      padding: 1rem;
-      border-radius: 10px;
-      margin-top: 2rem;
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
-      display: none;
-    }
-    .form-control, .btn {
-      margin-top: 0.5rem;
-    }
-    #uidUsuario {
-      font-size: 0.85rem;
-      color: #aaa;
-    }
-    .no-access {
-      text-align: center;
-      color: red;
-      margin-top: 3rem;
-      font-weight: bold;
-      display: none;
-    }
+    body { background-color: #111; color: #fff; font-family: 'Segoe UI', sans-serif; }
+    .credit-box { background-color: #202d3a; padding: 1rem; border-radius: 10px; margin-top: 2rem; max-width: 500px; margin-left: auto; margin-right: auto; display: none; }
+    .form-control, .btn { margin-top: 0.5rem; }
+    #uidUsuario { font-size: 0.85rem; color: #aaa; }
+    .no-access { text-align: center; color: red; margin-top: 3rem; font-weight: bold; display: none; }
   </style>
 </head>
 <body>
@@ -66,7 +43,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-  // Configuración Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
     authDomain: "sistema-27b31.firebaseapp.com",
@@ -81,10 +57,7 @@
   const auth = firebase.auth();
   const db = firebase.database();
 
-  const admins = [
-    "admin1@gmail.com",
-    "kevinaldaircamachoserna51@gmail.com"
-  ];
+  const admins = ["admin1@gmail.com", "kevinaldaircamachoserna51@gmail.com"];
 
   auth.onAuthStateChanged(user => {
     if (user) {
@@ -94,13 +67,11 @@
 
       if (admins.includes(email)) {
         document.getElementById('adminPanel').style.display = 'block';
-
         db.ref(`usuarios/${uid}/comisionesTotales`).on('value', snapshot => {
           const creditos = parseFloat(snapshot.val()) || 0;
           document.getElementById('saldoUsuario').innerHTML =
             `$${creditos.toFixed(2)} <span class="text-muted">saldo actual a la fecha</span>`;
         });
-
       } else {
         document.getElementById('noAccessMsg').style.display = 'block';
       }
@@ -110,7 +81,6 @@
     }
   });
 
-  // 🔄 Función de recarga con actualización también del nodo referidos
   function recargarCreditos() {
     const uid = document.getElementById('inputUid').value.trim();
     const monto = parseFloat(document.getElementById('inputMonto').value);
@@ -131,13 +101,11 @@
       .then(nuevoSaldo => {
         alert('Recarga exitosa.');
 
-        // Actualiza el saldo visible si es para sí mismo
         if (auth.currentUser && auth.currentUser.uid === uid) {
           document.getElementById('saldoUsuario').innerHTML =
             `$${nuevoSaldo.toFixed(2)} <span class="text-muted">saldo actualizado</span>`;
         }
 
-        // 🔄 ACTUALIZAR DATOS EN REFERIDOS
         db.ref(`usuarios/${uid}/referidoId`).once('value').then(refSnap => {
           const refId = refSnap.val();
           if (!refId) return;
@@ -155,13 +123,13 @@
               ultima: nuevaFecha
             });
           });
-          // 🔔 GUARDAR NOTIFICACIÓN PARA EL USUARIO
-const notiRef = db.ref(`usuarios/${uid}/notificacionRecarga`);
-notiRef.set({
-  mensaje: `Se recargaron correctamente ${monto.toFixed(2)} créditos a tu cuenta.`,
-  timestamp: Date.now(),
-  leido: false
-});
+        });
+
+        // ✅ NUEVA NOTIFICACIÓN
+        db.ref(`usuarios/${uid}/notificacionRecarga`).set({
+          mensaje: `Se recargaron correctamente ${monto.toFixed(2)} créditos a tu cuenta.`,
+          timestamp: Date.now(),
+          leido: false
         });
       })
       .catch(error => {
@@ -171,4 +139,4 @@ notiRef.set({
   }
 </script>
 </body>
-</html>
+  </html>
