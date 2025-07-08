@@ -176,6 +176,22 @@
 <div id="loaderOverlay">
   <div class="loader"></div>
 </div>
+  <!-- Modal de Notificación -->
+<div class="modal fade" id="modalNotificacion" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-dark">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLabel"><i class="fas fa-bell text-warning"></i> Notificación</h5>
+      </div>
+      <div class="modal-body" id="contenidoNotificacion">
+        <!-- Aquí va el mensaje -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
 <body>
   <div class="hamburger text-white">
     <i class="fas fa-bars" onclick="toggleSidebar()"></i>
@@ -259,7 +275,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     // Configuración Firebase
     const firebaseConfig = {
@@ -347,6 +363,31 @@ setTimeout(() => {
   alert("Tu sesión ha expirado. Serás redirigido al login.");
   window.location.href = "login.html"; // Cambia esto a tu archivo de login real
 }, 10 * 60 * 1000); // 10 minutos
+
+    const auth = firebase.auth();
+  const db = firebase.database();
+
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      const uid = user.uid;
+
+      // Consultar si hay notificación pendiente
+      db.ref(`usuarios/${uid}/notificacionRecarga`).once('value').then(snapshot => {
+        const data = snapshot.val();
+        if (data && !data.leido) {
+          document.getElementById('contenidoNotificacion').innerText = data.mensaje;
+
+          const modal = new bootstrap.Modal(document.getElementById('modalNotificacion'));
+          modal.show();
+
+          // Marcar como leída al cerrar
+          document.getElementById('modalNotificacion').addEventListener('hidden.bs.modal', () => {
+            db.ref(`usuarios/${uid}/notificacionRecarga/leido`).set(true);
+          });
+        }
+      });
+    }
+  });
   </script>
 </body>
 </html>
