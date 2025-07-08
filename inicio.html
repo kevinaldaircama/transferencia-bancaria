@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="es">
+<!DOCTYPE html>
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -6,107 +7,251 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <style>
-    body { background-color: #111; color: #fff; font-family: 'Segoe UI', sans-serif; }
-    .dashboard-container { max-width: 1200px; margin: auto; padding: 1rem; }
-    .header-section { background: linear-gradient(to right, #00223e, #3a6073); border-radius: 15px; text-align: center; padding: 2rem 1rem; }
-    .header-section img { border-radius: 50%; width: 80px; }
-    .credit-box, .queries-box { padding: 1rem; border-radius: 10px; margin-top: 1rem; }
-    .credit-box { background-color: #202d3a; }
-    .queries-box { background-color: #47222e; }
-    .btn-credits, .btn-invite { background-color: #0d6efd; color: white; border: none; padding: 0.5rem 1rem; border-radius: 10px; margin: 1rem 0; display: inline-block; text-decoration: none; }
-    .query-search { background-color: #222; padding: 1rem; border-radius: 10px; margin: 2rem 0; }
-    .category-btn { background-color: #007bff; color: white; margin: 0.4rem; border: none; padding: 0.5rem 0.75rem; border-radius: 10px; display: inline-block; text-decoration: none; }
-    .category-btn i { margin-right: 0.5rem; }
-    .filter-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
-    .footer { margin-top: 3rem; text-align: center; font-size: 0.85rem; color: #aaa; }
-    .sidebar { position: fixed; top: 0; left: -260px; width: 250px; height: 100%; background-color: #1e1e1e; transition: left 0.3s; padding: 1rem; z-index: 2000; }
-    .sidebar.active { left: 0; }
-    .sidebar .nav-link { color: #fff; display: flex; align-items: center; gap: 10px; margin: 0.5rem 0; text-decoration: none; }
-    .sidebar .nav-link:hover { color: #0d6efd; }
-    .hamburger { font-size: 24px; cursor: pointer; position: absolute; top: 10px; left: 10px; z-index: 2100; }
-    .toggle-switch { display: flex; align-items: center; gap: 10px; margin-top: 1rem; cursor: pointer; }
-    body.light-mode { background-color: #f5f5f5; color: #111; }
-    body.light-mode .sidebar { background-color: #e0e0e0; }
-    body.light-mode .nav-link { color: #111; }
-    body.light-mode .nav-link:hover { color: #0d6efd; }
-    body.light-mode .dashboard-container { background-color: #fff; color: #000; }
-    body.light-mode .credit-box { background-color: #dee2e6; }
-    body.light-mode .queries-box { background-color: #f8d7da; }
+  #loaderOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000000cc;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .loader {
+    border: 10px solid #f3f3f3;
+    border-top: 10px solid #3498db;
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+    body {
+      background-color: #111;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .dashboard-container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 1rem;
+    }
+    .header-section {
+      background: linear-gradient(to right, #00223e, #3a6073);
+      border-radius: 15px;
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+    .header-section img {
+      border-radius: 50%;
+      width: 80px;
+    }
+    .credit-box, .queries-box {
+      padding: 1rem;
+      border-radius: 10px;
+      margin-top: 1rem;
+    }
+    .credit-box {
+      background-color: #202d3a;
+    }
+    .queries-box {
+      background-color: #47222e;
+    }
+    .btn-credits, .btn-invite {
+      background-color: #0d6efd;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      margin: 1rem 0;
+      display: inline-block;
+      text-decoration: none;
+    }
+    .query-search {
+      background-color: #222;
+      padding: 1rem;
+      border-radius: 10px;
+      margin: 2rem 0;
+    }
+    .category-btn {
+      background-color: #007bff;
+      color: white;
+      margin: 0.4rem;
+      border: none;
+      padding: 0.5rem 0.75rem;
+      border-radius: 10px;
+      display: inline-block;
+      text-decoration: none;
+    }
+    .category-btn i {
+      margin-right: 0.5rem;
+    }
+    .filter-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #aaa;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -260px;
+      width: 250px;
+      height: 100%;
+      background-color: #1e1e1e;
+      transition: left 0.3s;
+      padding: 1rem;
+      z-index: 2000;
+    }
+    .sidebar.active {
+      left: 0;
+    }
+    .sidebar .nav-link {
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0.5rem 0;
+      text-decoration: none;
+    }
+    .sidebar .nav-link:hover {
+      color: #0d6efd;
+    }
+    .hamburger {
+      font-size: 24px;
+      cursor: pointer;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 2100;
+    }
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 1rem;
+      cursor: pointer;
+    }
+
+    /* Tema claro */
+    body.light-mode {
+      background-color: #f5f5f5;
+      color: #111;
+    }
+    body.light-mode .sidebar {
+      background-color: #e0e0e0;
+    }
+    body.light-mode .nav-link {
+      color: #111;
+    }
+    body.light-mode .nav-link:hover {
+      color: #0d6efd;
+    }
+    body.light-mode .dashboard-container {
+      background-color: #fff;
+      color: #000;
+    }
+    body.light-mode .credit-box {
+      background-color: #dee2e6;
+    }
+    body.light-mode .queries-box {
+      background-color: #f8d7da;
+    }
   </style>
 </head>
+<div id="loaderOverlay">
+  <div class="loader"></div>
+</div>
 <body>
-<div class="hamburger text-white">
-  <i class="fas fa-bars" onclick="toggleSidebar()"></i>
-</div>
-<div class="sidebar" id="sidebar">
-  <h6 class="text-primary">BARRA DE MENU</h6>
-  <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Inicio</a>
-  <a href="freecred.html" class="nav-link"><i class="fas fa-credit-card"></i>Créditos gratis</a>
-  <a href="menu.html" class="nav-link"><i class="fas fa-list"></i> Consultas <span class="badge bg-danger">NEW</span></a>
-  <a href="referido.html" class="nav-link"><i class="fas fa-users"></i> Mis Referidos</a>
-  <hr>
-  <h6 class="text-primary">OUR FEATURES</h6>
-  <div class="toggle-switch" onclick="toggleMode()" id="modeToggle">
-    <i class="fas fa-moon text-light" id="modeIcon"></i>
-    <span id="modeText">Modo Oscuro</span>
+  <div class="hamburger text-white">
+    <i class="fas fa-bars" onclick="toggleSidebar()"></i>
   </div>
-  <div class="mt-3">
-    <a href="panel.html" class="btn btn-primary w-100">Acceso admin</a>
+
+  <div class="sidebar" id="sidebar">
+    <h6 class="text-primary">BARRA DE MENU</h6>
+    <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Inicio</a>
+    <a href="freecred.html" class="nav-link"><i class="fas fa-credit-card"></i>Créditos gratis</a>
+    <a href="menu.html" class="nav-link"><i class="fas fa-list"></i> Consultas <span class="badge bg-danger">NEW</span></a>
+    <a href="referido.html" class="nav-link"><i class="fas fa-users"></i> Mis Referidos</a>
+    <hr>
+    <h6 class="text-primary">OUR FEATURES</h6>
+    <div class="toggle-switch" onclick="toggleMode()" id="modeToggle">
+      <i class="fas fa-moon text-light" id="modeIcon"></i>
+      <span id="modeText">Modo Oscuro</span>
+    </div>
+    <div class="mt-3">
+       <a href="panel.html" class="btn btn-primary w-100">Acceso admin</a>
+    </div>
+    <div class="mt-2">
+      <a href="https://ejemplo.com/soporte" class="btn btn-primary w-100"><i class="fas fa-headset"></i> Soporte</a>
+    </div>
   </div>
-  <div class="mt-2">
-    <a href="https://t.me/kevintechtutorialssoporte" class="btn btn-primary w-100"><i class="fas fa-headset"></i> Soporte</a>
-  </div>
-</div>
-<div class="dashboard-container">
-  <div class="header-section">
-    <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Avatar" />
-    <p>Plan: <span class="text-warning">FREE</span> | Tipo de Cuenta: <span class="text-info">Personal</span></p>
-    <h1>KTT</h1>
-    <h4 class="text-light">on search</h4>
-    <p>Encuentra conexiones, construye historias: tu búsqueda comienza aquí.</p>
-    <a href="planes.html" class="btn-credits">Comprar Créditos <i class="fas fa-coins"></i></a>
-  </div>
-  <div class="row">
-    <div class="col-md-6 credit-box">
-      <h5>Saldo Total</h5>
-      <p id="saldoUsuario">$0.00 <span class="text-muted">saldo actual a la fecha</span></p>
-      <div class="progress">
-        <div class="progress-bar bg-success" style="width:100%">Saldo</div>
+
+  <div class="dashboard-container">
+    <div class="header-section">
+      <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Avatar" />
+      <p>Plan: <span class="text-warning">FREE</span> | Tipo de Cuenta: <span class="text-info">Personal</span></p>
+      <h1>KTT</h1>
+      <h4 class="text-light">on search</h4>
+      <p>Encuentra conexiones, construye historias: tu búsqueda comienza aquí.</p>
+      <a href="planes.html" class="btn-credits">Comprar Créditos <i class="fas fa-coins"></i></a>
+    </div>
+    <div class="row">
+      <div class="col-md-6 credit-box">
+        <h5>Saldo Total</h5>
+        <p id="saldoUsuario">$0.00 <span class="text-muted">saldo actual a la fecha</span></p>
+        <div class="progress">
+          <div class="progress-bar bg-success" style="width:100%">Saldo</div>
+        </div>
+      </div>
+      <div class="col-md-6 queries-box">
+        <h5>Consultas Realizadas</h5>
+        <p>0 <a href="https://ejemplo.com/historial" class="text-white">ver historial</a></p>
+        <div class="progress">
+          <div class="progress-bar bg-danger" style="width:90%"></div>
+        </div>
       </div>
     </div>
-    <div class="col-md-6 queries-box">
-      <h5>Consultas Realizadas</h5>
-      <p>0 <a href="https://ejemplo.com/historial" class="text-white">ver historial</a></p>
-      <div class="progress">
-        <div class="progress-bar bg-danger" style="width:90%"></div>
+    <div class="text-center mt-3">
+      <a href="referido.html" class="btn-invite"><i class="fas fa-user-plus"></i> Invitar Amigos</a>
+      <p class="text-muted">Comparte tu enlace de referidos y obtén créditos por su recarga</p>
+      <!-- Aquí se agregará el UID dinámicamente -->
+    </div>
+    <div class="query-search">
+      <label for="consultaInput">Consultas 2025</label>
+      <input type="text" id="consultaInput" class="form-control" placeholder="Buscar por nombre o tipo de consulta" />
+      <div class="filter-tags">
+        <span class="badge bg-primary">Todos</span>
       </div>
     </div>
-  </div>
-  <div class="text-center mt-3">
-    <a href="referido.html" class="btn-invite"><i class="fas fa-user-plus"></i> Invitar Amigos</a>
-    <p class="text-muted">Comparte tu enlace de referidos y obtén créditos por su recarga</p>
-  </div>
-  <div class="query-search">
-    <label for="consultaInput">Consultas 2025</label>
-    <input type="text" id="consultaInput" class="form-control" placeholder="Buscar por nombre o tipo de consulta" />
-    <div class="filter-tags">
-      <span class="badge bg-primary">Todos</span>
-    </div>
-  </div>
-  <div class="mt-4">
-    <h5>Categorías Populares</h5>
-    <div>
-      <a href="#" class="category-btn"><i class="fas fa-user"></i>inicio</a>
+    <div class="mt-4">
+      <h5>Categorías Populares</h5>
+      <div>
+        <a href="#" class="category-btn"><i class="fas fa-user"></i>inicio</a>
       <a href="creación de vps.html" class="category-btn"><i class="fas fa-user"></i>generador de vps</a>
       <a href="curso.html" class="category-btn"><i class="fas fa-user"></i>curso streaming</a>
       <a href="Yape fake.html" class="category-btn"><i class="fas fa-user"></i>yape fake</a>
       <a href="Generar servidores.html" class="category-btn"><i class="fas fa-user"></i>generador de servidores</a>
+      </div>
+    </div>
+    <div class="footer">
+      <p>© 2025 transferencia vip App | Desarrollado por KTT</p>
     </div>
   </div>
-  <div class="footer">
-    <p>© 2025 transferencia vip App | Desarrollado por KTT</p>
-  </div>
-</div>
 <!-- Modal de Notificación -->
 <div class="modal fade" id="modalNotificacion" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -121,12 +266,13 @@
     </div>
   </div>
 </div>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-  const firebaseConfig = {
+  <script>
+const firebaseConfig = {
     apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
     authDomain: "sistema-27b31.firebaseapp.com",
     databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com",
@@ -154,6 +300,74 @@
       });
     }
   });
-</script>
+        // Mostrar saldo
+        const creditosRef = db.ref(`usuarios/${uid}/comisionesTotales`);
+        creditosRef.on('value', snapshot => {
+          const creditos = parseFloat(snapshot.val()) || 0;
+          document.getElementById('saldoUsuario').innerHTML =
+            `$${creditos.toFixed(2)} <span class="text-muted">saldo actual a la fecha</span>`;
+        });
+
+        // Mostrar y copiar UID
+        const uidTexto = document.createElement('p');
+        uidTexto.innerHTML = `<strong>Tu UID:</strong> <code id="uidCopiable" style="cursor:pointer">${uid}</code>`;
+        uidTexto.classList.add('text-info');
+        document.querySelector('.text-center.mt-3').appendChild(uidTexto);
+
+        // Copiar al portapapeles
+        setTimeout(() => {
+          document.getElementById('uidCopiable').addEventListener('click', () => {
+            navigator.clipboard.writeText(uid).then(() => {
+              const msg = document.createElement('div');
+              msg.innerText = "✅ UID copiado al portapapeles";
+              msg.style.color = "#0f0";
+              msg.style.fontSize = "0.9rem";
+              msg.style.marginTop = "0.3rem";
+              uidTexto.appendChild(msg);
+              setTimeout(() => msg.remove(), 2000);
+            });
+          });
+        }, 100);
+      } else {
+        // Redirige al login si no está logueado
+        window.location.href = "login.html";
+      }
+    });
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('active');
+    }
+
+    function toggleMode() {
+      const body = document.body;
+      const icon = document.getElementById('modeIcon');
+      const text = document.getElementById('modeText');
+
+      body.classList.toggle('light-mode');
+
+      if (body.classList.contains('light-mode')) {
+        icon.classList.remove('fa-moon', 'text-light');
+        icon.classList.add('fa-sun', 'text-warning');
+        text.textContent = 'Modo Claro';
+      } else {
+        icon.classList.remove('fa-sun', 'text-warning');
+        icon.classList.add('fa-moon', 'text-light');
+        text.textContent = 'Modo Oscuro';
+      }
+    }
+    
+    // ⏳ Mostrar el círculo de carga por 2 minutos
+setTimeout(() => {
+  document.getElementById('loaderOverlay').style.display = 'none';
+}, 1 * 10 * 1000); // 1 minutos
+
+// ⏰ Redirigir al login después de 10 minutos
+setTimeout(() => {
+  alert("Tu sesión ha expirado. Serás redirigido al login.");
+  window.location.href = "login.html"; // Cambia esto a tu archivo de login real
+}, 10 * 60 * 1000); // 10 minutos
+  </script>
 </body>
-          </html>
+                                     </html>
+               
