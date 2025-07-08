@@ -1,114 +1,112 @@
-<!DOCTYPE html>
-<html lang="es">
+<!DOCTYPE html><html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Registro</title>
   <link rel="icon" type="image/png" href="3440119_ico.png">
   <style>
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; }body {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+  margin: 0;
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
 
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #a1c4fd, #c2e9fb);
-      margin: 0;
-      display: flex;
-      height: 100vh;
-      justify-content: center;
-      align-items: center;
-    }
+.container {
+  background: white;
+  padding: 40px 30px;
+  border-radius: 16px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
 
-    .container {
-      background: white;
-      padding: 40px 30px;
-      border-radius: 16px;
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
-    }
+.container:hover {
+  transform: scale(1.01);
+}
 
-    .container:hover {
-      transform: scale(1.01);
-    }
+.logo {
+  width: 80px;
+  margin-bottom: 15px;
+}
 
-    .logo {
-      width: 80px;
-      margin-bottom: 15px;
-    }
+h2 {
+  margin: 10px 0 25px;
+  color: #333;
+}
 
-    h2 {
-      margin: 10px 0 25px;
-      color: #333;
-    }
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+}
 
-    input[type="email"],
-    input[type="password"] {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 16px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 15px;
-    }
+button {
+  width: 100%;
+  background-color: #007bff;
+  color: white;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
 
-    button {
-      width: 100%;
-      background-color: #007bff;
-      color: white;
-      padding: 14px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
+button:hover {
+  background-color: #0056b3;
+}
 
-    button:hover {
-      background-color: #0056b3;
-    }
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+  padding: 10px;
+  width: 100%;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+  margin-top: 15px;
+}
 
-    .google-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #ffffff;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 15px;
-      padding: 10px;
-      width: 100%;
-      cursor: pointer;
-      transition: box-shadow 0.3s ease;
-      margin-top: 15px;
-    }
+.google-btn:hover {
+  box-shadow: 0 0 8px rgba(0,0,0,0.2);
+}
 
-    .google-btn:hover {
-      box-shadow: 0 0 8px rgba(0,0,0,0.2);
-    }
+.google-icon {
+  height: 20px;
+  margin-right: 10px;
+}
 
-    .google-icon {
-      height: 20px;
-      margin-right: 10px;
-    }
+.g-recaptcha {
+  margin: 10px 0 20px;
+}
 
-    .g-recaptcha {
-      margin: 10px 0 20px;
-    }
+p {
+  margin-top: 20px;
+  font-size: 14px;
+}
 
-    p {
-      margin-top: 20px;
-      font-size: 14px;
-    }
+a {
+  color: #007bff;
+  text-decoration: none;
+}
 
-    a {
-      color: #007bff;
-      text-decoration: none;
-    }
+a:hover {
+  text-decoration: underline;
+}
 
-    a:hover {
-      text-decoration: underline;
-    }
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -117,24 +115,21 @@
 </head>
 <body>
   <div class="container">
-  <h2>Registro</h2>
+    <h2>Registro</h2>
     <img src="3440119_ico.png" alt="Logo" class="logo" />
     <form id="registerForm">
       <input type="email" id="regEmail" placeholder="Correo electrónico" required />
       <input type="password" id="regPass" placeholder="Contraseña" required />
       <div class="g-recaptcha" data-sitekey="6LelTk8rAAAAAM2svsIw-flrlvqhBZiNIuKgiqHw"></div>
       <button type="submit">Registrarse</button>
-    </form>
+    </form><button id="googleRegisterBtn" class="google-btn">
+  <img class="google-icon" src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo">
+  Registrarse con Google
+</button>
 
-    <button id="googleRegisterBtn" class="google-btn">
-      <img class="google-icon" src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo">
-      Registrarse con Google
-    </button>
+<p>¿Ya tienes cuenta? <a href="index.html">Inicia sesión aquí</a></p>
 
-    <p>¿Ya tienes cuenta? <a href="index.html">Inicia sesión aquí</a></p>
-  </div>
-
-  <script>
+  </div>  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
       authDomain: "sistema-27b31.firebaseapp.com",
@@ -151,10 +146,12 @@
     const db = firebase.database();
 
     function obtenerIdReferido() {
-      const path = window.location.pathname;
-      const partes = path.split('/');
-      let rawId = partes[partes.length - 1];
-      return rawId.replace(/[.#$[\]/]/g, '');
+      const pathParts = window.location.pathname.split('/');
+      const index = pathParts.indexOf("referido");
+      if (index !== -1 && pathParts[index + 1]) {
+        return pathParts[index + 1];
+      }
+      return null;
     }
 
     const idReferido = obtenerIdReferido();
@@ -177,24 +174,29 @@
           const userId = user.uid;
           const fecha = new Date().toISOString().split('T')[0];
 
-          const data = {
+          const dataUsuario = {
             correo: email,
             fecha: fecha,
             estado: 'activo',
             saldo: '0.00',
             recargas: 0,
             comision: '2.00',
-            ultima: '-'
+            ultima: '-',
+            comisionesTotales: idReferido ? 10 : 5
           };
 
           const updates = {};
-          updates[`referidos/${idReferido}/${userId}`] = data;
-          updates[`usuarios/${idReferido}/comisionesPendientes`] = firebase.database.ServerValue.increment(2);
+          updates[`usuarios/${userId}`] = dataUsuario;
+
+          if (idReferido) {
+            updates[`referidos/${idReferido}/${userId}`] = dataUsuario;
+            updates[`usuarios/${idReferido}/comisionesPendientes`] = firebase.database.ServerValue.increment(2);
+          }
 
           return db.ref().update(updates);
         })
         .then(() => {
-          alert('Registro exitoso. Ahora puedes iniciar sesión.');
+          alert('🎉 Registro exitoso. Ahora puedes iniciar sesión.');
           auth.signOut();
           window.location.href = "index.html";
         })
@@ -203,7 +205,6 @@
         });
     });
 
-    // Registro con Google
     document.getElementById('googleRegisterBtn').addEventListener('click', () => {
       const provider = new firebase.auth.GoogleAuthProvider();
 
@@ -213,7 +214,7 @@
           const userId = user.uid;
           const fecha = new Date().toISOString().split('T')[0];
 
-          const data = {
+          const dataUsuario = {
             correo: user.email,
             nombre: user.displayName,
             fecha: fecha,
@@ -222,12 +223,17 @@
             recargas: 0,
             comision: '2.00',
             ultima: '-',
-            google: true
+            google: true,
+            comisionesTotales: idReferido ? 10 : 5
           };
 
           const updates = {};
-          updates[`referidos/${idReferido}/${userId}`] = data;
-          updates[`usuarios/${idReferido}/comisionesPendientes`] = firebase.database.ServerValue.increment(2);
+          updates[`usuarios/${userId}`] = dataUsuario;
+
+          if (idReferido) {
+            updates[`referidos/${idReferido}/${userId}`] = dataUsuario;
+            updates[`usuarios/${idReferido}/comisionesPendientes`] = firebase.database.ServerValue.increment(2);
+          }
 
           return db.ref().update(updates);
         })
@@ -240,6 +246,5 @@
           alert("Error con Google: " + error.message);
         });
     });
-  </script>
-</body>
+  </script></body>
 </html>
