@@ -1,0 +1,83 @@
+<!DOCTYPE html><html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Convertidor de Créditos a Soles</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .converter-box {
+      background-color: #1f1f2e;
+      padding: 2rem;
+      border-radius: 10px;
+      max-width: 400px;
+      width: 100%;
+    }
+    .form-control, .btn {
+      margin-top: 1rem;
+    }
+    .message {
+      margin-top: 1rem;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+<div class="converter-box">
+  <h3 class="text-center">Convertir Créditos a Soles</h3>
+  <p class="text-muted">Tasa: 1 crédito = 1 sol</p>
+  <input type="number" id="creditosInput" class="form-control" placeholder="Créditos a convertir" />
+  <button class="btn btn-success w-100" onclick="convertirCreditos()">Convertir</button>
+  <div id="resultado" class="message"></div>
+</div><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script><script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
+    authDomain: "sistema-27b31.firebaseapp.com",
+    databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com",
+    projectId: "sistema-27b31",
+    storageBucket: "sistema-27b31.appspot.com",
+    messagingSenderId: "32031316083",
+    appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.database();
+
+  function convertirCreditos() {
+    const creditos = parseFloat(document.getElementById('creditosInput').value);
+    const resultado = document.getElementById('resultado');
+
+    if (isNaN(creditos) || creditos <= 0) {
+      resultado.innerHTML = '<div class="text-danger">Ingrese un número válido de créditos.</div>';
+      return;
+    }
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        const uid = user.uid;
+
+        db.ref(`usuarios/${uid}/depositoConfirmado`).once('value').then(snap => {
+          const deposito = snap.val();
+          if (deposito === true) {
+            resultado.innerHTML = `<div class="text-success">Se ha convertido ${creditos} créditos a ${creditos.toFixed(2)} soles. Puedes solicitar tu retiro.</div>`;
+          } else {
+            resultado.innerHTML = '<div class="text-warning">Debe depositar al menos 100 soles para activar los retiros.</div>';
+          }
+        });
+
+      } else {
+        resultado.innerHTML = '<div class="text-danger">Debes iniciar sesión para continuar.</div>';
+      }
+    });
+  }
+</script></body>
+</html>
