@@ -1,4 +1,4 @@
-<!-- Panel de Referidos Actualizado con Modal y Créditos -->
+<!-- Panel de Referidos Actualizado con Scroll Controlado -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Panel de Referidos</title>
   <style>
-    /* Estilo global */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(to right, #e0eafc, #cfdef3);
@@ -113,6 +112,10 @@
       color: white;
     }
 
+    .table-container {
+      overflow-x: auto;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -120,26 +123,22 @@
       border-radius: 10px;
       overflow: hidden;
       box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+      min-width: 800px;
+    }
+
+    th, td {
+      max-width: 160px;
+      padding: 12px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      border-bottom: 1px solid #eee;
     }
 
     th {
       background: #5c6bc0;
       color: white;
       text-align: left;
-      padding: 12px;
-    }
-
-    td {
-      padding: 12px;
-      border-bottom: 1px solid #eee;
-    }
-
-    /* Limita la longitud de correo */
-    td:first-child {
-      max-width: 180px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
     }
 
     .no-data {
@@ -211,181 +210,186 @@
   </style>
 </head>
 <body>
-<div class="container">
-  <h2>Panel de Referidos</h2>
-  <div class="ref-link">
-    <input type="text" id="referralLink" readonly>
-    <button onclick="copiarEnlace()">Copiar</button>
-  </div>
-  <div class="stats">
-    <div class="card blue">
-      <h3>Total Referidos</h3>
-      <p id="totalReferidos">0</p>
+  <div class="container">
+    <h2>Panel de Referidos</h2>
+    <div class="ref-link">
+      <input type="text" id="referralLink" readonly>
+      <button onclick="copiarEnlace()">Copiar</button>
     </div>
-    <div class="card green">
-      <h3>Referidos Activos</h3>
-      <p id="referidosActivos">0</p>
+    <div class="stats">
+      <div class="card blue">
+        <h3>Total Referidos</h3>
+        <p id="totalReferidos">0</p>
+      </div>
+      <div class="card green">
+        <h3>Referidos Activos</h3>
+        <p id="referidosActivos">0</p>
+      </div>
+    </div>
+    <div class="comisiones">
+      <div class="card yellow">
+        <h3>Comisiones Totales</h3>
+        <p id="comisionesTotales">0.00 créditos</p>
+      </div>
+      <div class="card purple">
+        <h3>Comisiones Pendientes</h3>
+        <p id="comisionesPendientes">0.00</p>
+        <button onclick="mostrarModal()">Cobrar Comisiones</button>
+      </div>
+    </div>
+    <div class="filters">
+      <input type="text" placeholder="Buscar por nombre de usuario...">
+      <select>
+        <option>Más recientes</option>
+        <option>Más antiguos</option>
+      </select>
+      <button id="saldoTotal">Mi saldo actual: 🪙 0</button>
+      <button>Mis Recargas</button>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Correo</th>
+            <th>Fecha Registro</th>
+            <th>Estado Usuario</th>
+            <th>Saldo Recargado</th>
+            <th>Recargas</th>
+            <th>Comisión</th>
+            <th>Última Recarga</th>
+          </tr>
+        </thead>
+        <tbody id="referidosTable">
+          <tr>
+            <td colspan="7" class="no-data">No se encontraron referidos<br><small>Comparte tu código para empezar a ganar</small></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
-  <div class="comisiones">
-    <div class="card yellow">
-      <h3>Comisiones Totales</h3>
-      <p id="comisionesTotales">0.00 créditos</p>
-    </div>
-    <div class="card purple">
-      <h3>Comisiones Pendientes</h3>
-      <p id="comisionesPendientes">0.00</p>
-      <button onclick="mostrarModal()">Cobrar Comisiones</button>
+
+  <div id="modal">
+    <div class="modal-content">
+      <p>¿Deseas cobrar tus comisiones?</p>
+      <button class="yes" onclick="cobrarComisiones()">Sí</button>
+      <button class="no" onclick="cerrarModal()">No</button>
     </div>
   </div>
-  <div class="filters">
-    <input type="text" placeholder="Buscar por nombre de usuario...">
-    <select>
-      <option>Más recientes</option>
-      <option>Más antiguos</option>
-    </select>
-    <button id="saldoTotal">Mi saldo actual: 🪙 0</button>
-    <button>Mis Recargas</button>
-  </div>
-  <table>
-    <thead>
-      <tr>
-        <th>Correo</th>
-        <th>Fecha Registro</th>
-        <th>Estado Usuario</th>
-        <th>Saldo Recargado</th>
-        <th>Recargas</th>
-        <th>Comisión</th>
-        <th>Última Recarga</th>
-      </tr>
-    </thead>
-    <tbody id="referidosTable">
-      <tr>
-        <td colspan="7" class="no-data">No se encontraron referidos<br><small>Comparte tu código para empezar a ganar</small></td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-<div id="modal">
-  <div class="modal-content">
-    <p>¿Deseas cobrar tus comisiones?</p>
-    <button class="yes" onclick="cobrarComisiones()">Sí</button>
-    <button class="no" onclick="cerrarModal()">No</button>
-  </div>
-</div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
-    authDomain: "sistema-27b31.firebaseapp.com",
-    databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com",
-    projectId: "sistema-27b31",
-    storageBucket: "sistema-27b31.appspot.com",
-    messagingSenderId: "32031316083",
-    appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.database();
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
+      authDomain: "sistema-27b31.firebaseapp.com",
+      databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com",
+      projectId: "sistema-27b31",
+      storageBucket: "sistema-27b31.appspot.com",
+      messagingSenderId: "32031316083",
+      appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
+    };
 
-  function copiarEnlace() {
-    const input = document.getElementById('referralLink');
-    input.select();
-    document.execCommand('copy');
-    alert('¡Enlace copiado!');
-  }
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
 
-  function mostrarModal() {
-    document.getElementById('modal').style.display = 'flex';
-  }
+    function copiarEnlace() {
+      const input = document.getElementById('referralLink');
+      input.select();
+      document.execCommand('copy');
+      alert('¡Enlace copiado!');
+    }
 
-  function cerrarModal() {
-    document.getElementById('modal').style.display = 'none';
-  }
+    function mostrarModal() {
+      document.getElementById('modal').style.display = 'flex';
+    }
 
-  function cobrarComisiones() {
-    const uid = auth.currentUser.uid;
-    db.ref(`usuarios/${uid}`).once('value').then(snap => {
-      const datos = snap.val() || {};
-      const pendientes = parseFloat(datos.comisionesPendientes || 0);
-      const totales = parseFloat(datos.comisionesTotales || 0);
-      if (pendientes > 0) {
-        db.ref(`usuarios/${uid}`).update({
-          comisionesPendientes: 0,
-          comisionesTotales: (totales + pendientes)
-        });
-        document.getElementById('comisionesPendientes').innerText = '0.00';
-        document.getElementById('comisionesTotales').innerText = (totales + pendientes).toFixed(2) + ' créditos';
-        document.getElementById('saldoTotal').innerText = 'Mi saldo actual: 🪙 ' + (totales + pendientes);
-      }
-      cerrarModal();
-    });
-  }
+    function cerrarModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
 
-  function generarCodigo(uid) {
-    return uid.substring(0, 2) + Math.floor(Math.random() * 100) + uid.substring(uid.length - 2);
-  }
+    function cobrarComisiones() {
+      const uid = auth.currentUser.uid;
+      db.ref(`usuarios/${uid}`).once('value').then(snap => {
+        const datos = snap.val() || {};
+        const pendientes = parseFloat(datos.comisionesPendientes || 0);
+        const totales = parseFloat(datos.comisionesTotales || 0);
+        if (pendientes > 0) {
+          db.ref(`usuarios/${uid}`).update({
+            comisionesPendientes: 0,
+            comisionesTotales: (totales + pendientes)
+          });
+          document.getElementById('comisionesPendientes').innerText = '0.00';
+          document.getElementById('comisionesTotales').innerText = (totales + pendientes).toFixed(2) + ' créditos';
+          document.getElementById('saldoTotal').innerText = 'Mi saldo actual: 🪙 ' + (totales + pendientes);
+        }
+        cerrarModal();
+      });
+    }
 
-  auth.onAuthStateChanged(user => {
-    if (!user) return window.location.href = 'login.html';
-    const uid = user.uid;
+    function generarCodigo(uid) {
+      return uid.substring(0, 2) + Math.floor(Math.random() * 100) + uid.substring(uid.length - 2);
+    }
 
-    db.ref(`usuarios/${uid}/referidoId`).once('value').then(snapshot => {
-      let refId = snapshot.val();
-      if (!refId) {
-        refId = generarCodigo(uid);
-        db.ref(`usuarios/${uid}/referidoId`).set(refId);
-      }
+    auth.onAuthStateChanged(user => {
+      if (!user) return window.location.href = 'login.html';
+      const uid = user.uid;
 
-      document.getElementById('referralLink').value = `https://transferenciavip.netlify.app/referido/${refId}`;
-
-      db.ref(`referidos/${refId}`).once('value', snap => {
-        const data = snap.val();
-        const tbody = document.getElementById('referidosTable');
-        tbody.innerHTML = '';
-        let total = 0, activos = 0, comisionesPendientes = 0;
-
-        if (data) {
-          for (let key in data) {
-            const r = data[key];
-            total++;
-            if (r.estado === 'activo') {
-              activos++;
-              comisionesPendientes += 2;
-            }
-            tbody.innerHTML += `
-              <tr>
-                <td>${r.correo}</td>
-                <td>${r.fecha}</td>
-                <td>${r.estado}</td>
-                <td>${r.saldo || '0.00'}</td>
-                <td>${r.recargas || 0}</td>
-                <td>${r.comision || '0.00'}</td>
-                <td>${r.ultima || '-'}</td>
-              </tr>`;
-          }
-        } else {
-          tbody.innerHTML = `<tr><td colspan="7" class="no-data">No se encontraron referidos<br><small>Comparte tu código para empezar a ganar</small></td></tr>`;
+      db.ref(`usuarios/${uid}/referidoId`).once('value').then(snapshot => {
+        let refId = snapshot.val();
+        if (!refId) {
+          refId = generarCodigo(uid);
+          db.ref(`usuarios/${uid}/referidoId`).set(refId);
         }
 
-        document.getElementById('totalReferidos').innerText = total;
-        document.getElementById('referidosActivos').innerText = activos;
-        db.ref(`usuarios/${uid}/comisionesPendientes`).set(comisionesPendientes);
-      });
+        document.getElementById('referralLink').value = `https://transferenciavip.netlify.app/referido/${refId}`;
 
-      db.ref(`usuarios/${uid}`).on('value', snap => {
-        const userInfo = snap.val() || {};
-        const total = parseFloat(userInfo.comisionesTotales || 0);
-        const pendientes = parseFloat(userInfo.comisionesPendientes || 0);
-        document.getElementById('comisionesTotales').innerText = total.toFixed(2) + ' créditos';
-        document.getElementById('comisionesPendientes').innerText = pendientes.toFixed(2);
-        document.getElementById('saldoTotal').innerText = 'Mi saldo actual: 🪙 ' + (total + pendientes);
+        db.ref(`referidos/${refId}`).once('value', snap => {
+          const data = snap.val();
+          const tbody = document.getElementById('referidosTable');
+          tbody.innerHTML = '';
+          let total = 0, activos = 0, comisionesPendientes = 0;
+
+          if (data) {
+            for (let key in data) {
+              const r = data[key];
+              total++;
+              if (r.estado === 'activo') {
+                activos++;
+                comisionesPendientes += 2;
+              }
+              tbody.innerHTML += `
+                <tr>
+                  <td>${r.correo}</td>
+                  <td>${r.fecha}</td>
+                  <td>${r.estado}</td>
+                  <td>${r.saldo || '0.00'}</td>
+                  <td>${r.recargas || 0}</td>
+                  <td>${r.comision || '0.00'}</td>
+                  <td>${r.ultima || '-'}</td>
+                </tr>`;
+            }
+          } else {
+            tbody.innerHTML = `<tr><td colspan="7" class="no-data">No se encontraron referidos<br><small>Comparte tu código para empezar a ganar</small></td></tr>`;
+          }
+
+          document.getElementById('totalReferidos').innerText = total;
+          document.getElementById('referidosActivos').innerText = activos;
+          db.ref(`usuarios/${uid}/comisionesPendientes`).set(comisionesPendientes);
+        });
+
+        db.ref(`usuarios/${uid}`).on('value', snap => {
+          const userInfo = snap.val() || {};
+          const total = parseFloat(userInfo.comisionesTotales || 0);
+          const pendientes = parseFloat(userInfo.comisionesPendientes || 0);
+          document.getElementById('comisionesTotales').innerText = total.toFixed(2) + ' créditos';
+          document.getElementById('comisionesPendientes').innerText = pendientes.toFixed(2);
+          document.getElementById('saldoTotal').innerText = 'Mi saldo actual: 🪙 ' + (total + pendientes);
+        });
       });
     });
-  });
-</script>
+  </script>
 </body>
   </html>
