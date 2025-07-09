@@ -2,11 +2,11 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Panel de Administrador</title>
+  <title>Panel de Administración</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Icons -->
+  <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
   <style>
     body {
@@ -14,21 +14,25 @@
       color: #c9d1d9;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding-top: 50px;
+      margin: 0;
+      padding-top: 56px;
+    }
+    .navbar {
+      background-color: #161b22;
+    }
+    .navbar-brand {
+      color: #58a6ff;
     }
     .panel-container {
-      width: 95%;
-      max-width: 800px;
-      text-align: center;
+      max-width: 1000px;
+      margin: auto;
+      padding: 2rem;
     }
     .btn-custom {
       background-color: #238636;
       color: #fff;
       border: none;
-      margin: 10px;
+      margin: 10px 0;
       padding: 15px;
       font-size: 1rem;
       border-radius: 10px;
@@ -43,7 +47,6 @@
     }
     .btn-custom i {
       margin-right: 8px;
-      font-size: 1.2rem;
     }
     .loader {
       border: 4px solid #30363d;
@@ -58,9 +61,7 @@
       0% { transform: rotate(0deg);}
       100% { transform: rotate(360deg);}
     }
-    .hidden {
-      display: none;
-    }
+    .hidden { display: none; }
     .access-denied {
       color: #f85149;
       font-weight: bold;
@@ -69,36 +70,41 @@
   </style>
 </head>
 <body>
-  <div class="panel-container">
-    <h1 class="mb-4">Panel de Administrador</h1>
-    <div id="loader" class="loader"></div>
-    <p id="bienvenida" class="mb-3 hidden"></p>
-    <p id="accesoDenegado" class="access-denied hidden">Acceso restringido: no eres administrador.</p>
 
-    <div id="menu" class="row justify-content-center hidden">
-      <div class="col-12 col-md-6">
+  <!-- Navbar superior -->
+  <nav class="navbar fixed-top navbar-dark">
+    <div class="container-fluid">
+      <span class="navbar-brand mb-0 h1">Admin Panel</span>
+      <button class="btn btn-sm btn-outline-light" onclick="cerrarSesion()">
+        <i class="bi bi-box-arrow-right"></i> Salir
+      </button>
+    </div>
+  </nav>
+
+  <div class="panel-container">
+    <div id="loader" class="loader"></div>
+    <p id="bienvenida" class="mb-4 hidden"></p>
+    <p id="accesoDenegado" class="access-denied hidden">Acceso denegado: No tienes permisos de administrador.</p>
+
+    <div id="menu" class="row hidden">
+      <div class="col-md-6">
         <button class="btn btn-custom" onclick="window.location.href='cred.html'">
-          <i class="bi bi-globe"></i>enviar créditos 
+          <i class="bi bi-cash-stack"></i> Enviar Créditos
         </button>
       </div>
-      <div class="col-12 col-md-6">
+      <div class="col-md-6">
         <button class="btn btn-custom" onclick="window.location.href='adminpago.html'">
-          <i class="bi bi-link-45deg"></i> administrador de créditos 
+          <i class="bi bi-credit-card-2-front"></i> Administrador de Créditos
         </button>
       </div>
-      <div class="col-12 col-md-6">
-        <button class="btn btn-custom" onclick="window.location.href='admin Panel.html'">
-          <i class="bi bi-gear"></i> mantenimiento 
+      <div class="col-md-6">
+        <button class="btn btn-custom" onclick="window.location.href='adminPanel.html'">
+          <i class="bi bi-tools"></i> Mantenimiento
         </button>
       </div>
-      <div class="col-12 col-md-6">
+      <div class="col-md-6">
         <button class="btn btn-custom" onclick="window.location.href='estadísticas.html'">
-          <i class="bi bi-people"></i> estadísticas 
-        </button>
-      </div>
-      <div class="col-12">
-        <button class="btn btn-custom" onclick="cerrarSesion()">
-          <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+          <i class="bi bi-bar-chart-line"></i> Estadísticas
         </button>
       </div>
     </div>
@@ -119,22 +125,17 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    const correoAdministrador = "kevinaldaircamachoserna51@gmail.com";
-
-    const loader = document.getElementById('loader');
-    const menu = document.getElementById('menu');
-    const bienvenida = document.getElementById('bienvenida');
-    const accesoDenegado = document.getElementById('accesoDenegado');
+    const ADMIN_EMAIL = "kevinaldaircamachoserna51@gmail.com";
 
     auth.onAuthStateChanged(user => {
-      loader.classList.add('hidden');
+      document.getElementById('loader').classList.add('hidden');
       if (user) {
-        if (user.email === correoAdministrador) {
-          bienvenida.textContent = `Bienvenido, ${user.email}`;
-          bienvenida.classList.remove('hidden');
-          menu.classList.remove('hidden');
+        if (user.email === ADMIN_EMAIL) {
+          document.getElementById('bienvenida').textContent = `Bienvenido, ${user.email}`;
+          document.getElementById('bienvenida').classList.remove('hidden');
+          document.getElementById('menu').classList.remove('hidden');
         } else {
-          accesoDenegado.classList.remove('hidden');
+          document.getElementById('accesoDenegado').classList.remove('hidden');
         }
       } else {
         window.location.href = "login.html";
@@ -142,12 +143,11 @@
     });
 
     function cerrarSesion() {
-      auth.signOut().then(() => {
-        window.location.href = "index.html";
-      });
+      auth.signOut().then(() => window.location.href = "index.html");
     }
   </script>
+
   <!-- Bootstrap Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-        </html>
+</html>
