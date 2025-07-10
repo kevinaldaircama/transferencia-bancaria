@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Consulta de DNI Perú</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      text-align: center;
+      background: #fff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 220px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin-left: 10px;
+      background: #0066cc;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #004fa3;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 10% auto;
+      padding: 30px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 500px;
+      position: relative;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+
+    .close {
+      position: absolute;
+      top: 10px; right: 20px;
+      font-size: 28px;
+      font-weight: bold;
+      color: #888;
+      cursor: pointer;
+    }
+
+    .close:hover {
+      color: #000;
+    }
+
+    ul {
+      text-align: left;
+      padding: 0;
+      list-style: none;
+      margin-top: 20px;
+    }
+
+    ul li {
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Consulta de DNI</h1>
+    <form id="dniForm">
+      <input type="text" id="dni" name="dni" maxlength="8" placeholder="Ingrese DNI" required>
+      <button type="submit">Consultar</button>
+    </form>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Datos del Ciudadano</h2>
+      <ul>
+        <li><strong>Número de documento:</strong> <span id="num_doc"></span></li>
+        <li><strong>Nombre completo:</strong> <span id="nombre"></span></li>
+        <li><strong>Fecha Nacimiento:</strong> <span id="nacimiento"></span></li>
+        <li><strong>Sexo:</strong> <span id="sexo"></span></li>
+        <li><strong>Código de verificación:</strong> <span id="verificacion"></span></li>
+        <li><strong>Departamento:</strong> <span id="departamento"></span></li>
+        <li><strong>Provincia:</strong> <span id="provincia"></span></li>
+        <li><strong>Distrito:</strong> <span id="distrito"></span></li>
+        <li><strong>Ubigeo:</strong> <span id="ubigeo"></span></li>
+        <li><strong>Dirección:</strong> <span id="direccion"></span></li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("dniForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const dni = document.getElementById("dni").value;
+      const apiUrl = `https://consultasperu.com/api/dni/${dni}`; // Reemplaza con tu API
+      const token = '4c7fd1768c6b981d0689467a52d599cfd4c31c24697bea0687506747003842cb'; // Reemplaza con tu token real
+
+      fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        }
+      })
+      .then(response => {
+        if (!response.ok) throw new Error("DNI no encontrado");
+        return response.json();
+      })
+      .then(data => {
+        // Asignar datos al modal
+        document.getElementById("num_doc").textContent = data.numeroDocumento || '';
+        document.getElementById("nombre").textContent = data.nombreCompleto || '';
+        document.getElementById("nacimiento").textContent = data.fechaNacimiento || '';
+        document.getElementById("sexo").textContent = data.sexo || '';
+        document.getElementById("verificacion").textContent = data.codigoVerificacion || '';
+        document.getElementById("departamento").textContent = data.departamento || '';
+        document.getElementById("provincia").textContent = data.provincia || '';
+        document.getElementById("distrito").textContent = data.distrito || '';
+        document.getElementById("ubigeo").textContent = data.ubigeo || '';
+        document.getElementById("direccion").textContent = data.direccion || '';
+
+        document.getElementById("modal").style.display = "block";
+      })
+      .catch(error => {
+        alert("Error al consultar DNI: " + error.message);
+      });
+    });
+
+    document.querySelector(".close").onclick = function() {
+      document.getElementById("modal").style.display = "none";
+    };
+
+    window.onclick = function(event) {
+      if (event.target == document.getElementById("modal")) {
+        document.getElementById("modal").style.display = "none";
+      }
+    };
+  </script>
+</body>
+                                       </html>
