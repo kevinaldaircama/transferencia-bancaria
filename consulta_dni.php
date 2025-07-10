@@ -7,7 +7,7 @@ if (!isset($_GET['dni'])) {
 }
 
 $dni = $_GET['dni'];
-$apiUrl = "https://api.consultasperu.com/api/v1/query";
+$apiUrl = "https://consultasperu.com/api/dni/$dni";
 $token = "4c7fd1768c6b981d0689467a52d599cfd4c31c24697bea0687506747003842cb"; // Reemplaza con tu token real
 
 $ch = curl_init();
