@@ -46,7 +46,6 @@
       background: #004fa3;
     }
 
-    /* Modal */
     .modal {
       display: none;
       position: fixed;
@@ -125,49 +124,43 @@
     document.getElementById("dniForm").addEventListener("submit", function(e) {
       e.preventDefault();
       const dni = document.getElementById("dni").value;
-      const apiUrl = `https://consultasperu.com/api/dni/${dni}`; // Reemplaza con tu API
-      const token = '4c7fd1768c6b981d0689467a52d599cfd4c31c24697bea0687506747003842cb'; // Reemplaza con tu token real
 
-      fetch(apiUrl, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token
-        }
-      })
-      .then(response => {
-        if (!response.ok) throw new Error("DNI no encontrado");
-        return response.json();
-      })
-      .then(data => {
-        // Asignar datos al modal
-        document.getElementById("num_doc").textContent = data.numeroDocumento || '';
-        document.getElementById("nombre").textContent = data.nombreCompleto || '';
-        document.getElementById("nacimiento").textContent = data.fechaNacimiento || '';
-        document.getElementById("sexo").textContent = data.sexo || '';
-        document.getElementById("verificacion").textContent = data.codigoVerificacion || '';
-        document.getElementById("departamento").textContent = data.departamento || '';
-        document.getElementById("provincia").textContent = data.provincia || '';
-        document.getElementById("distrito").textContent = data.distrito || '';
-        document.getElementById("ubigeo").textContent = data.ubigeo || '';
-        document.getElementById("direccion").textContent = data.direccion || '';
+      fetch("consulta_dni.php?dni=" + dni)
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            alert(data.error);
+            return;
+          }
 
-        document.getElementById("modal").style.display = "block";
-      })
-      .catch(error => {
-        alert("Error al consultar DNI: " + error.message);
-      });
+          document.getElementById("num_doc").textContent = data.numeroDocumento || '';
+          document.getElementById("nombre").textContent = data.nombreCompleto || '';
+          document.getElementById("nacimiento").textContent = data.fechaNacimiento || '';
+          document.getElementById("sexo").textContent = data.sexo || '';
+          document.getElementById("verificacion").textContent = data.codigoVerificacion || '';
+          document.getElementById("departamento").textContent = data.departamento || '';
+          document.getElementById("provincia").textContent = data.provincia || '';
+          document.getElementById("distrito").textContent = data.distrito || '';
+          document.getElementById("ubigeo").textContent = data.ubigeo || '';
+          document.getElementById("direccion").textContent = data.direccion || '';
+
+          document.getElementById("modal").style.display = "block";
+        })
+        .catch(error => {
+          alert("Error al consultar el DNI.");
+          console.error(error);
+        });
     });
 
-    document.querySelector(".close").onclick = function() {
+    document.querySelector(".close").onclick = function () {
       document.getElementById("modal").style.display = "none";
     };
 
-    window.onclick = function(event) {
-      if (event.target == document.getElementById("modal")) {
+    window.onclick = function (event) {
+      if (event.target === document.getElementById("modal")) {
         document.getElementById("modal").style.display = "none";
       }
     };
   </script>
 </body>
-                                       </html>
+</html>
