@@ -130,14 +130,23 @@
     db.ref('mantenimiento').once('value').then(snapshot => {
       const config = snapshot.val();
       if (config && config.activo) {
-        document.getElementById('loginContainer').style.display = 'none';
-        document.getElementById('mantenimiento').style.display = 'flex';
-        document.getElementById('imgMant').src = config.imagen || 'mantenimiento.png';
-        document.getElementById('tituloMant').innerText = config.titulo || 'En mantenimiento';
-        document.getElementById('mensajeMant').innerText = config.mensaje || 'Estamos trabajando para mejorar tu experiencia.';
-      }
-    });
+  const ahora = new Date();
+  const inicio = config.inicio ? new Date(config.inicio) : null;
+  const fin = config.fin ? new Date(config.fin) : null;
 
+  // Mostrar solo si estamos dentro del intervalo de tiempo
+  const dentroDelRango =
+    (!inicio || ahora >= inicio) &&
+    (!fin || ahora <= fin);
+
+  if (dentroDelRango) {
+    document.getElementById('loginContainer').style.display = 'none';
+    document.getElementById('mantenimiento').style.display = 'flex';
+    document.getElementById('imgMant').src = config.imagen || 'mantenimiento.png';
+    document.getElementById('tituloMant').innerText = config.titulo || 'En mantenimiento';
+    document.getElementById('mensajeMant').innerText = config.mensaje || 'Estamos trabajando para mejorar tu experiencia.';
+  }
+}
     // Login email
     document.getElementById('loginForm').addEventListener('submit', (e) => {
       e.preventDefault();
@@ -185,4 +194,4 @@
     });
   </script>
 </body>
-  </html>
+</html>
