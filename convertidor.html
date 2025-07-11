@@ -1,83 +1,177 @@
-<!DOCTYPE html><html lang="es">
+<!DOCTYPE html>
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Convertidor de Créditos a Soles</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Convertir Créditos a Soles</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <style>
-    body {
-      background-color: #111;
-      color: white;
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .converter-box {
-      background-color: #1f1f2e;
-      padding: 2rem;
-      border-radius: 10px;
-      max-width: 400px;
-      width: 100%;
-    }
-    .form-control, .btn {
-      margin-top: 1rem;
-    }
-    .message {
-      margin-top: 1rem;
-      font-size: 0.95rem;
-    }
+    body { background-color: #121212; color: #fff; font-family: Arial, sans-serif; }
+    .container { max-width: 500px; margin: auto; padding: 2rem; background-color: #1e1e1e; border-radius: 10px; margin-top: 3rem; }
+    label { margin-top: 1rem; }
+    .modal-content { background-color: #2c2c2c; color: white; }
   </style>
 </head>
 <body>
-<div class="converter-box">
-  <h3 class="text-center">Convertir Créditos a Soles</h3>
-  <p class="text-muted">Tasa: 1 crédito = 1 sol</p>
-  <input type="number" id="creditosInput" class="form-control" placeholder="Créditos a convertir" />
-  <button class="btn btn-success w-100" onclick="convertirCreditos()">Convertir</button>
-  <div id="resultado" class="message"></div>
-</div><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script><script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
-    authDomain: "sistema-27b31.firebaseapp.com",
-    databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com",
-    projectId: "sistema-27b31",
-    storageBucket: "sistema-27b31.appspot.com",
-    messagingSenderId: "32031316083",
-    appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
+<div class="container">
+  <h3>Convertir Créditos a Soles</h3>
+  <form id="formulario">
+    <label>Cantidad a retirar:</label>
+    <input type="number" class="form-control" id="monto" required>
+    <label>ID de Usuario:</label>
+    <input type="text" class="form-control" id="uid" required>
+    <label>Correo Electrónico:</label>
+    <input type="email" class="form-control" id="correo" required>
+
+    <!-- Campo de contraseña oculto por defecto -->
+    <div id="campoContrasena" style="display: none;">
+      <label>Contraseña de autorización:</label>
+      <input type="password" class="form-control" id="contrasena">
+    </div>
+
+    <div id="infoExtra" style="display:none;">
+      <label>Billetera Digital:</label>
+      <input type="text" class="form-control" id="billetera">
+      <label>Número:</label>
+      <input type="text" class="form-control" id="numero">
+    </div>
+    <button type="submit" class="btn btn-primary mt-3 w-100">Retirar</button>
+  </form>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalMensaje" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content p-3">
+      <div class="modal-header">
+        <h5 class="modal-title">Notificación</h5>
+      </div>
+      <div class="modal-body" id="modalTexto"></div>
+      <div class="modal-footer">
+        <button class="btn btn-light" data-bs-dismiss="modal">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal estado de retiro -->
+<div class="modal fade" id="estadoModal" tabindex="-1" aria-labelledby="estadoModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header">
+        <h5 class="modal-title" id="estadoModalLabel">Estado de tu retiro</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body" id="estadoMensaje">Cargando estado...</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBMw3Zbb-rcXoOXlT1U-WWN1N4L4bk1aCk",
+  authDomain: "sistema-27b31.firebaseapp.com",
+  databaseURL: "https://sistema-27b31-default-rtdb.firebaseio.com",
+  projectId: "sistema-27b31",
+  storageBucket: "sistema-27b31.appspot.com",
+  messagingSenderId: "32031316083",
+  appId: "1:32031316083:web:32cef8736c5a77fbb9f206"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+const CONTRASENA = "admin123";
+let contrasenaVerificada = false;
+
+document.getElementById("formulario").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  if (!contrasenaVerificada) {
+    document.getElementById("campoContrasena").style.display = "block";
+    mostrarModal("Por favor, ingrese la contraseña antes de retira o si no comunicate con el propietario para solicitar y concordar con el pago.");
+    return;
+  }
+
+  const monto = parseFloat(document.getElementById("monto").value);
+  const uid = document.getElementById("uid").value.trim();
+  const correo = document.getElementById("correo").value.trim();
+  const billetera = document.getElementById("billetera").value.trim();
+  const numero = document.getElementById("numero").value.trim();
+
+  if (!billetera || !numero) {
+    mostrarModal("Por favor, complete los campos de billetera y número.");
+    return;
+  }
+
+  const datos = {
+    uid, correo, monto, billetera, numero,
+    estado: "pendiente",
+    fecha: new Date().toLocaleString()
   };
 
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.database();
+  db.ref("retiros/" + Date.now()).set(datos).then(() => {
+    mostrarModal("✅ Datos enviados correctamente. En 24 horas llegará el dinero.");
+  });
+});
 
-  function convertirCreditos() {
-    const creditos = parseFloat(document.getElementById('creditosInput').value);
-    const resultado = document.getElementById('resultado');
+document.getElementById("contrasena").addEventListener("input", function () {
+  if (this.value.trim() === CONTRASENA) {
+    contrasenaVerificada = true;
+    document.getElementById("campoContrasena").style.display = "none";
+    document.getElementById("infoExtra").style.display = "block";
+    ocultarModal();
+  } else {
+    contrasenaVerificada = false;
+    document.getElementById("infoExtra").style.display = "none";
+  }
+});
 
-    if (isNaN(creditos) || creditos <= 0) {
-      resultado.innerHTML = '<div class="text-danger">Ingrese un número válido de créditos.</div>';
-      return;
-    }
+function mostrarModal(mensaje) {
+  document.getElementById("modalTexto").innerText = mensaje;
+  let modal = new bootstrap.Modal(document.getElementById("modalMensaje"));
+  modal.show();
+}
 
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        const uid = user.uid;
+function ocultarModal() {
+  let modalEl = document.getElementById("modalMensaje");
+  let modal = bootstrap.Modal.getInstance(modalEl);
+  if (modal) modal.hide();
+}
 
-        db.ref(`usuarios/${uid}/depositoConfirmado`).once('value').then(snap => {
-          const deposito = snap.val();
-          if (deposito === true) {
-            resultado.innerHTML = `<div class="text-success">Se ha convertido ${creditos} créditos a ${creditos.toFixed(2)} soles. Puedes solicitar tu retiro.</div>`;
-          } else {
-            resultado.innerHTML = '<div class="text-warning">Debe depositar al menos 100 soles para activar los retiros.</div>';
-          }
-        });
-
-      } else {
-        resultado.innerHTML = '<div class="text-danger">Debes iniciar sesión para continuar.</div>';
+// Estado del retiro por usuario logueado
+firebase.auth().onAuthStateChanged((user) => {
+  if (user) {
+    const uid = user.uid;
+    firebase.database().ref('retiros/' + uid).on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data && data.estado) {
+        let mensaje = "";
+        switch (data.estado) {
+          case "pendiente":
+            mensaje = "Tu solicitud está pendiente de revisión.";
+            break;
+          case "aprobado":
+            mensaje = "✅ Tu retiro ha sido aprobado. El dinero será enviado en breve.";
+            break;
+          case "rechazado":
+            mensaje = "❌ Tu retiro fue rechazado. Contacta con soporte.";
+            break;
+          default:
+            mensaje = "Estado desconocido.";
+        }
+        document.getElementById("estadoMensaje").innerText = mensaje;
+        new bootstrap.Modal(document.getElementById("estadoModal")).show();
       }
     });
   }
-</script></body>
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
