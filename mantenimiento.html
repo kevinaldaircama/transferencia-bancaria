@@ -53,14 +53,20 @@
       <option value="true">Sí</option>
     </select>
 
-    <label for="mensaje">Mensaje de Mantenimiento</label>
-    <textarea id="mensaje" rows="4"></textarea>
-
     <label for="titulo">Título</label>
     <input type="text" id="titulo">
 
+    <label for="mensaje">Mensaje de Mantenimiento</label>
+    <textarea id="mensaje" rows="4"></textarea>
+
     <label for="imagen">URL de la Imagen</label>
     <input type="text" id="imagen">
+
+    <label for="inicio">Inicio del Mantenimiento</label>
+    <input type="datetime-local" id="inicio">
+
+    <label for="fin">Fin del Mantenimiento</label>
+    <input type="datetime-local" id="fin">
 
     <button onclick="guardarConfiguracion()">Guardar Configuración</button>
   </div>
@@ -80,15 +86,19 @@
 
     function guardarConfiguracion() {
       const activo = document.getElementById('activo').value === 'true';
-      const mensaje = document.getElementById('mensaje').value;
       const titulo = document.getElementById('titulo').value;
+      const mensaje = document.getElementById('mensaje').value;
       const imagen = document.getElementById('imagen').value;
+      const inicio = document.getElementById('inicio').value;
+      const fin = document.getElementById('fin').value;
 
       db.ref("mantenimiento").set({
         activo,
-        mensaje,
         titulo,
-        imagen
+        mensaje,
+        imagen,
+        inicio,
+        fin
       }).then(() => {
         alert("✅ Configuración guardada correctamente.");
       }).catch(err => {
@@ -97,15 +107,16 @@
       });
     }
 
-    // Cargar configuración actual
     window.onload = () => {
       db.ref("mantenimiento").once("value").then(snapshot => {
         const data = snapshot.val();
         if (!data) return;
         document.getElementById('activo').value = data.activo ? "true" : "false";
-        document.getElementById('mensaje').value = data.mensaje || "";
         document.getElementById('titulo').value = data.titulo || "";
+        document.getElementById('mensaje').value = data.mensaje || "";
         document.getElementById('imagen').value = data.imagen || "";
+        document.getElementById('inicio').value = data.inicio || "";
+        document.getElementById('fin').value = data.fin || "";
       });
     };
   </script>
