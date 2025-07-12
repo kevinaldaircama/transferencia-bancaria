@@ -9,7 +9,6 @@
     body { background: #111; color: #fff; padding: 2rem; font-family: Arial; }
     .table td, .table th { color: #fff; vertical-align: middle; }
     .table th { background-color: #222; }
-    select, h2 { margin-bottom: 1rem; }
     .btn-sm { margin-right: 5px; }
     .estado-pendiente { color: orange; }
     .estado-aprobado { color: lime; }
@@ -91,20 +90,19 @@ auth.onAuthStateChanged(user => {
   });
 });
 
-filtro.addEventListener("change", () => auth.currentUser && auth.currentUser.email === adminPermitido && location.reload());
+filtro.addEventListener("change", () => location.reload());
 
 function actualizarEstado(id, uid, nuevoEstado) {
   db.ref("retiros/" + id).update({ estado: nuevoEstado }).then(() => {
-    let mensaje = "";
-    if (nuevoEstado === "aprobado") {
-      mensaje = "✅ Tu pago fue aprobado y el dinero será enviado pronto.";
-    } else if (nuevoEstado === "rechazado") {
-      mensaje = "❌ Tu solicitud fue rechazada. Contacta con soporte.";
-    }
+    const mensaje = nuevoEstado === "aprobado"
+      ? "✅ Tu pago fue aprobado y el dinero será enviado pronto."
+      : "❌ Tu solicitud fue rechazada. Contacta con soporte.";
+
     db.ref("notificaciones/" + uid).push({
       mensaje,
       timestamp: Date.now()
     });
+
     alert("✔ Estado actualizado y notificación enviada.");
   });
 }
