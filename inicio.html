@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+e<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -9,6 +9,8 @@
 <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#121212" />
   <link rel="icon" type="image/png" href="3440119_ico.png">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script>
   <style>
     #loaderOverlay {
       position: fixed;
@@ -330,6 +332,22 @@
       alert("Tu sesión ha expirado. Serás redirigido al login.");
       window.location.href = "login.html";
     }, 10 * 60 * 1000);
-  </script>
+  
+window.addEventListener("load", function(){
+  window.cookieconsent.initialise({
+    palette: {
+      popup: { background: "#000" },
+      button: { background: "#f1d600" }
+    },
+    theme: "classic",
+    content: {
+      message: "Este sitio utiliza cookies para mejorar tu experiencia.",
+      dismiss: "Aceptar",
+      link: "Leer más",
+      href: "/politica-de-cookies"
+    }
+  });
+});
+</script>
 </body>
                                                                                            </html>
