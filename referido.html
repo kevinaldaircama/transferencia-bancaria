@@ -366,7 +366,7 @@
   }
 
   auth.onAuthStateChanged(user => {
-    if (!user) return window.location.href = 'login.html';
+    if (!user) return window.location.href = 'index.html';
     const uid = user.uid;
 
     db.ref(`usuarios/${uid}/referidoId`).once('value').then(snapshot => {
@@ -376,7 +376,7 @@
         db.ref(`usuarios/${uid}/referidoId`).set(refId);
       }
       refIdGlobal = refId;
-      document.getElementById('referralLink').value = `https://transferenciavip.netlify.app/referido/${refId}`;
+      document.getElementById('referralLink').value = `https://transferenciavip.xyz/referido/${refId}`;
 
       db.ref(`referidos/${refId}`).once('value', snap => {
         const data = snap.val();
