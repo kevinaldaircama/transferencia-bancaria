@@ -1,13 +1,109 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Redirigiendo...</title>
-    <meta http-equiv="refresh" content="0; URL=/" />
-  </head>
-  <body>
-    <script>
-      window.location.replace("/" + window.location.pathname + window.location.search + window.location.hash);
-    </script>
-  </body>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Página no disponible</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      height: 100vh;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .card {
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 40px 30px;
+      border-radius: 20px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      backdrop-filter: blur(15px);
+      animation: fadeIn 1s ease forwards;
+    }
+
+    h1 {
+      font-size: 2.8em;
+      font-weight: 800;
+      margin-bottom: 15px;
+    }
+
+    p {
+      font-size: 1.1em;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    .icon {
+      font-size: 4em;
+      margin-bottom: 20px;
+      animation: bounce 2s infinite;
+    }
+
+    .btn {
+      text-decoration: none;
+      background-color: #00bcd4;
+      color: #fff;
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: background 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #0097a7;
+    }
+
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-8px);
+      }
+    }
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 500px) {
+      h1 {
+        font-size: 2em;
+      }
+      .icon {
+        font-size: 3em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">🚧</div>
+    <h1>Página en mantenimiento</h1>
+    <p>Estamos trabajando para brindarte una mejor experiencia. Vuelve a visitarnos pronto. Gracias por tu paciencia 🙏</p>
+    <a href="/" class="btn">Volver al inicio</a>
+  </div>
+</body>
 </html>
