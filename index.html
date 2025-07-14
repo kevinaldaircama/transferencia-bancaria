@@ -100,8 +100,8 @@
     </button>  
   
     <div class="actions">  
-      <a href="registro.html">Regístrate</a>  
-      <a href="reset.html">¿Olvidaste tu contraseña?</a>  
+      <a href="https://transferenciavip.xyz/registro.html">Regístrate</a>  
+      <a href="https://transferenciavip.xyz/reset.html">¿Olvidaste tu contraseña?</a>  
     </div>  
   </div>  
   
@@ -155,7 +155,7 @@
           const user = userCredential.user;  
           db.ref('usuarios/' + user.uid).update({ lastLogin: Date.now() });  
           alert('Inicio de sesión exitoso.');  
-          window.location.href = "inicio.html";  
+          window.location.href = "https://transferenciavip.xyz/inicio.html";  
         })  
         .catch(error => {  
           console.error("Error al iniciar sesión:", error);  
@@ -176,7 +176,7 @@
             lastLogin: Date.now()  
           });  
           alert('Inicio de sesión con Google exitoso.');  
-          window.location.href = "inicio.html";  
+          window.location.href = "https://transferenciavip.xyz/inicio.html";  
         })  
         .catch((error) => {  
           console.error("Error con Google Sign-In:", error);  
