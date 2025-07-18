@@ -155,7 +155,7 @@
           const user = userCredential.user;  
           db.ref('usuarios/' + user.uid).update({ lastLogin: Date.now() });  
           alert('Inicio de sesión exitoso.');  
-          window.location.href = "https://transferenciavip.xyz/inicio.html";  
+          window.location.href = "inicio.html";  
         })  
         .catch(error => {  
           console.error("Error al iniciar sesión:", error);  
@@ -176,7 +176,7 @@
             lastLogin: Date.now()  
           });  
           alert('Inicio de sesión con Google exitoso.');  
-          window.location.href = "https://transferenciavip.xyz/inicio.html";  
+          window.location.href = "inicio.html";  
         })  
         .catch((error) => {  
           console.error("Error con Google Sign-In:", error);  
