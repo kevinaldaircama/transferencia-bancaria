@@ -377,7 +377,7 @@ Aquí está el código de referido por favor solucionar
         db.ref(`usuarios/${uid}/referidoId`).set(refId);      
       }      
       refIdGlobal = refId;      
-      document.getElementById('referralLink').value = `https://transferenciavip.netlify.app/referido/${refId}`;      
+      document.getElementById('referralLink').value = `${window.location.origin}/referido/${refId}`;      
       
       db.ref(`referidos/${refId}`).once('value', snap => {      
         const data = snap.val();      
